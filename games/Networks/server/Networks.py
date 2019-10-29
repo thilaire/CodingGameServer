@@ -214,8 +214,8 @@ def CreateBoard(sX, sY):
 					links_in_column.append(y)
 
 			# insert columns around the goal node to create space for new links
-			board.insert(goal_x, [None] * H);
-			board.insert(goal_x+2, [None] * H);
+			board.insert(goal_x, [None] * H)
+			board.insert(goal_x+2, [None] * H)
 			L += 2
 			goal_x += 1
 
@@ -240,8 +240,8 @@ def CreateBoard(sX, sY):
 
 			# insert rows around the goal node to create space for new links
 			for x in range(L):
-				board[x].insert(goal_y, None);
-				board[x].insert(goal_y+2, None);
+				board[x].insert(goal_y, None)
+				board[x].insert(goal_y+2, None)
 			H += 2
 			goal_y += 1
 
@@ -263,8 +263,8 @@ def CreateBoard(sX, sY):
 				links_in_row.append(x)
 
 		for x in range(L):
-			board[x].insert(goal_y, None);
-			board[x].insert(goal_y+2, None);
+			board[x].insert(goal_y, None)
+			board[x].insert(goal_y+2, None)
 		H += 2
 		goal_y += 1
 
