@@ -96,10 +96,11 @@ class Tournament(BaseClass):
 		Parameters:
 		- name: (string) name of the tournament (used for the
 		- nbMaxPlayers: (integer) number maximum of players in the tournament (0 for no limit)
-		- maxVictories: (integer) maximum number of victories to win the match (1, 2 or 3): 1 means the 1st player is randomly determined
+		- maxVictories: (integer) maximum number of victories to win the match (1, 2 or 3): 1 means the 1st player
+		    is randomly determined
 		"""
 		# name of the tournament
-		self._name = sub('\W+', '', name)
+		self._name = sub(r'\W+', '', name)
 		# check if the name is valid (20 characters max, and only in [a-zA-Z0-9_]
 		if name != self._name or len(name) > 20:
 			raise ValueError("The name of the tournament is not valid (must be 20 characters max, and only in [a-zA-Z0-9_]")
@@ -345,11 +346,12 @@ class Tournament(BaseClass):
 		- "HTMLmodeOptions": an HTML string, containing a <div> per mode; each div contains the HTML form for its own options
 		"""
 		# HTMLmode
-		modes = "\n".join("<option value='%s'>%s</option>" % (sc.__name__, sc.mode) for sc in cls.__subclasses__())
+		modes = "\n".join("<option value='%s'>%s</option>" %
+		                  (sc.__name__, sc.mode) for sc in cls.__subclasses__() if isinstance(sc, Tournament))
 
 		# HTMLmodeOptions
 		options = "\n".join('<div display="none" id="%s">%s</div>' %
-		                    (sc.__name__, sc.HTMLoptions) for sc in cls.__subclasses__())
+		                    (sc.__name__, sc.HTMLoptions) for sc in cls.__subclasses__() if isinstance(sc, Tournament))
 
 		# JavascriptModeOptions
 		jOptions = "\n".join('document.getElementById("%s").style.display="none";' %

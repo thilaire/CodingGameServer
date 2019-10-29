@@ -18,9 +18,8 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 from server.Player import TrainingPlayer
 from random import choice, randint
-from .Constants import MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, DO_NOTHING
-from .Constants import ROTATE_COLUMN_DOWN, ROTATE_COLUMN_UP, ROTATE_LINE_LEFT, ROTATE_LINE_RIGHT, ROTATE_ENERGY
-from .Constants import Ddx, Ddy
+from .Constants import MOVE_DOWN, MOVE_UP, DO_NOTHING
+from .Constants import Ddy
 
 boolConv = {'true': True, 'false': False}
 
@@ -59,22 +58,12 @@ class PlayRandomPlayer(TrainingPlayer):
 		moves = []
 
 		# move
-		for move_type in (MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT):
+		for move_type in (MOVE_UP, MOVE_DOWN):
 			x, y = self.game.playerPos[us]
-			x = (x + Ddx[move_type]) % self.game.L
 			y = (y + Ddy[move_type]) % self.game.H
 
 			if self.game.lab[x][y]:
 				moves.append("%d 0" % move_type)
-
-		# rotate line or column
-		if self.game.playerEnergy[us] >= ROTATE_ENERGY and self.rotate:
-			line = randint(0, self.game.H-1)
-			col = randint(0, self.game.L-1)
-			moves.append("%d %d" % (ROTATE_COLUMN_DOWN, col))
-			moves.append("%d %d" % (ROTATE_COLUMN_UP, col))
-			moves.append("%d %d" % (ROTATE_LINE_RIGHT, line))
-			moves.append("%d %d" % (ROTATE_LINE_LEFT, line))
 
 		# choose one (up to 4 moves and 4 rotations)
 		if moves:

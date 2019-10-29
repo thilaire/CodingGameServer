@@ -64,7 +64,7 @@ def runWebServer(host, port, quiet):
 	TEMPLATE_PATH.append('games/' + Game.getTheGameName() + '/server/templates/')
 	TEMPLATE_PATH.reverse()
 	# add the base url to all the templates
-	#Jinja2Template.defaults['base_url'] = 'http://%s:%s/' % (host, port)
+	# Jinja2Template.defaults['base_url'] = 'http://%s:%s/' % (host, port)
 	Jinja2Template.defaults['base_url'] = '/'
 	# add the game name to all the templates (for page title)
 	Jinja2Template.defaults['GameName'] = Game.getTheGameName()
@@ -285,6 +285,7 @@ def disconnectPlayer(playerName):
 		redirect('/')
 	else:
 		return template('noObject.html', className='player', objectName=playerName)
+
 
 # ==========
 # Websockets

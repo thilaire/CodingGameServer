@@ -16,9 +16,8 @@ File: Network.py
 Copyright 2017 M. Pecheux
 """
 
-from random import random, randint, choice, shuffle
+from random import randint, choice, shuffle
 from re import compile
-from ansi2html import Ansi2HTMLConverter
 from colorama import Fore
 
 from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
@@ -204,14 +203,15 @@ def CreateBoard(sX, sY):
 	# to force connection by adding rows/columns and creating links
 	# ----------------------
 	# if old cell was a Link
-	if middle_cell_old_value.__class__.__name__ == 'Link':
+	if isinstance(middle_cell_old_value, Link):
 		# if old cell was a horizontal link
 		if middle_cell_old_value.direction == 0:
 			# remember links in this column that will be cut later
 			links_in_column = []
 			for y in range(H):
-				if board[goal_x][y].__class__.__name__ == 'Link' and board[goal_x][y].direction == 0:
-					links_in_column.append(y)
+				if isinstance(board[goal_x][y], Link):
+					if board[goal_x][y].direction == 0:
+						links_in_column.append(y)
 
 			# insert columns around the goal node to create space for new links
 			board.insert(goal_x, [None] * H)
@@ -430,11 +430,8 @@ class Networks(Game):
 		"""
 		Convert a Game into string (to be send to clients, and display)
 		"""
-		# output storage
-		lines = []
-
 		# add game cutename (board random name)
-		lines.append("\n" + self._cutename.upper() + ":")
+		lines = ["\n" + self._cutename.upper() + ":"]
 
 		# add player names
 		colors = [Fore.BLUE, Fore.RED]
@@ -454,7 +451,7 @@ class Networks(Game):
 					st.append(self.board[x][y].display_str())
 			lines.append("|" + "".join(st) + "|")
 
-		head = "+" + "-" * (self._L) + "+\n"
+		head = "+" + "-" * self._L + "+\n"
 		return "\n".join(lines[0:3]) + "\n" + head + "\n".join(lines[3:]) + "\n" + head
 
 	def updateGame(self, move):

@@ -244,7 +244,7 @@ class WhiteRabbitPlayer(TrainingPlayer):
 				self.game.sendComment(self, "The White Rabbit has tumbled down the hole... loser!!")
 			return "%d 0 0" % DO_NOTHING
 		# else if path is possible but node is currently in-capture, wait for capture to complete
-		elif (len(self.game.inCaptureNodes[us]) != 0):
+		elif len(self.game.inCaptureNodes[us]) != 0:
 			self.game.sendComment(self, "The White Rabbit is on its way to Wonderland!!")
 			return "%d 0 0" % DO_NOTHING
 		# else start capture of next node in path

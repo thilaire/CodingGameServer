@@ -266,7 +266,7 @@ class NeoPlayer(TrainingPlayer):
 					return "%d %d %d" % (DESTROY, destroy_link_x, destroy_link_y)
 
 			# else if path is possible but node is currently in-capture, wait for capture to complete
-			if (len(self.game.inCaptureNodes[us]) != 0):
+			if len(self.game.inCaptureNodes[us]) != 0:
 				self.game.sendComment(self, "There is no spoon...")
 				return "%d 0 0" % DO_NOTHING
 			# else start capture of next node in path

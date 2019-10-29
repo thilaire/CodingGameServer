@@ -20,6 +20,7 @@ import logging
 from geventwebsocket import WebSocketError
 import json
 from server.Logger import configureBaseClassLogger
+
 logger = logging.getLogger()
 
 
@@ -36,11 +37,12 @@ class BaseClass:
 
 	"""
 
-	allInstances = {}          # unnecessary (will be overwritten by the inherited classe, and unused)
-	_LoIWebSockets = []       # list of webSockets for the lists of Instance (LoI) informations
+	allInstances = {}  # unnecessary (will be overwritten by the inherited classe, and unused)
+	_LoIWebSockets = []  # list of webSockets for the lists of Instance (LoI) informations
 
-	# TODO: we should use weak references here (for the allInstances dictionary)
-	# (see http://stackoverflow.com/questions/37232884/in-python-how-to-remove-an-object-from-a-list-if-it-is-only-referenced-in-that)
+	# TODO: we should use weak references here (for the allInstances dictionary) (see
+	#  http://stackoverflow.com/questions/37232884/in-python-how-to-remove-an-object-from-a-list-if-it-is-only
+	#  -referenced-in-that)
 
 	def __init__(self, name):
 		"""
@@ -71,8 +73,6 @@ class BaseClass:
 		# send the new list of instances to web listeners
 		self.sendListofInstances()
 
-
-
 	# ===========
 	# Properties
 	# ===========
@@ -101,7 +101,6 @@ class BaseClass:
 		"""
 		return cls.allInstances.get(name, None)
 
-
 	@classmethod
 	def removeInstance(cls, name):
 		"""
@@ -121,9 +120,6 @@ class BaseClass:
 			del cls.allInstances[name]
 			cls.sendListofInstances()
 
-
-
-
 	# ===================================
 	# List of Instances (LoI) WebSockets
 	# ===================================
@@ -140,7 +136,6 @@ class BaseClass:
 		logger.low_debug("register List of instances")
 		BaseClass._LoIWebSockets.append(wsock)
 
-
 	@staticmethod
 	def removeLoIWebSocket(wsock):
 		"""
@@ -154,8 +149,6 @@ class BaseClass:
 		except ValueError:
 			logger.low_debug("Remove a LoI WebSocket that do not exist !!")
 
-
-
 	@staticmethod
 	def sendListofInstances(wsock=None):
 		"""
@@ -164,7 +157,8 @@ class BaseClass:
 		Parameters:
 		- wsock: (websocket) if None, the data is sent to all the websockets, otherwise only to this one
 		"""
-		d = {cls.__name__: [obj.HTMLrepr() for obj in cls.allInstances.values()] for cls in BaseClass.__subclasses__()}
+		d = {cls.__name__: [obj.HTMLrepr() for obj in cls.allInstances.values()]
+			    for cls in BaseClass.__subclasses__() if isinstance(cls, BaseClass)}
 		js = json.dumps(d)
 		logger.low_debug("send List of instances : {%s}" % (d.keys(),))
 		# send to all the websockets or only to one
@@ -176,10 +170,10 @@ class BaseClass:
 				logger.low_debug("WebSocketError in sendListInstances")
 				BaseClass.removeLoIWebSocket(ws)
 
-
 	# ===================
 	# Instance Websockets
 	# ===================
+
 	def registerWebSocket(self, wsock):
 		"""
 		Register a websocket
@@ -190,7 +184,6 @@ class BaseClass:
 		# add this websocket in the list of  websockets
 		logger.low_debug("register (instance) websocket")
 		self._lwsocks.append(wsock)
-
 
 	def removeWebSocket(self, wsock):
 		"""
@@ -203,7 +196,6 @@ class BaseClass:
 			self._lwsocks.remove(wsock)
 		except ValueError:
 			logger.low_debug("Remove a WebSocket that do not exist !!")
-
 
 	def sendUpdateToWebSocket(self, wsock=None):
 		"""
@@ -223,7 +215,6 @@ class BaseClass:
 				logger.low_debug("WebSocketError in sendUpdateToWebSocket")
 				self.removeWebSocket(ws)
 
-
 	def getDictInformations(self):
 		"""
 		Send information (a dictionary) about the object
@@ -232,4 +223,3 @@ class BaseClass:
 
 		"""
 		return {}
-

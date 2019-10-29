@@ -31,7 +31,7 @@ from .DoNothingPlayer import DoNothingPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
 
 
-regdd = compile("(\d+)\s+(\d+)")  # regex to parse a "%d %d" string
+regdd = compile(r"(\d+)\s+(\d+)")  # regex to parse a "%d %d" string
 
 
 def xshift(L, x, dx):

@@ -169,15 +169,13 @@ class Starships(Game):
 
 		return {'boardcontent': html, 'energy': self._playerEnergy}
 
+	@property
 	def __str__(self):
 		"""
 		Convert a Game into string (to be send to clients, and display)
 		"""
-		# output storage
-		lines = []
-
 		# add game cutename (board random name)
-		lines.append("\n" + self._cutename.upper() + ":")
+		lines = ["\n" + self._cutename.upper() + ":"]
 
 		# add player names
 		colors = [Fore.BLUE, Fore.RED]
@@ -268,7 +266,7 @@ class Starships(Game):
 			self._playerEnergy[self._whoPlays] -= 1
 
 			# check if player looses
-			if(self._playerEnergy[self._whoPlays] <= 0):
+			if self._playerEnergy[self._whoPlays] <= 0:
 				return LOSING_MOVE, "You are out of energy!"
 			else:
 				return NORMAL_MOVE, ""
@@ -281,7 +279,7 @@ class Starships(Game):
 			self._playerEnergy[self._whoPlays] -= 1
 
 			# check if player looses
-			if(self._playerEnergy[self._whoPlays] <= 0):
+			if self._playerEnergy[self._whoPlays] <= 0:
 				return LOSING_MOVE, "You are out of energy!"
 			else:
 				return NORMAL_MOVE, ""
@@ -318,7 +316,7 @@ class Starships(Game):
 			self._playerEnergy[self._whoPlays] -= SHOOT_ENERGY * value
 
 			# check if player looses
-			if(self._playerEnergy[self._whoPlays] <= 0):
+			if self._playerEnergy[self._whoPlays] <= 0:
 				return LOSING_MOVE, "You are out of energy!"
 			else:
 				return NORMAL_MOVE, ""

@@ -17,7 +17,7 @@ Copyright 2017 M. Pecheux
 """
 
 from server.Player import TrainingPlayer
-from random import choice, randint
+from random import choice
 from .Constants import CAPTURE, DESTROY, LINK_H, LINK_V, DO_NOTHING, \
 	LINK_ENERGY, DESTROY_ENERGY
 

@@ -15,7 +15,6 @@ File: League.py
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
-
 from server.Tournament import Tournament, numbering
 
 
@@ -26,14 +25,12 @@ class League(Tournament):
 	mode = "League"
 	HTMLoptions = ""
 
-
-	def __init__(self, name, nbMaxPlayers, nbRounds4Victory, **_):        # **_ stands for the unused other parameters...
+	def __init__(self, name, nbMaxPlayers, nbRounds4Victory, **_):  # **_ stands for the unused other parameters...
 		# call the super class constructor
 		super().__init__(name, nbMaxPlayers, nbRounds4Victory)
 
 		# initial score (empty for the moment, we don't know the players)
 		self._score = {}
-
 
 	def MatchsGenerator(self):
 		"""
@@ -60,7 +57,7 @@ class League(Tournament):
 		# then we iterate using round robin algorithm
 		for i in range(0, len(rotation) - 1):
 			# update the phase name
-			phase = '%d%s phase' % (i+1, numbering(i+1))
+			phase = '%d%s phase' % (i + 1, numbering(i + 1))
 			# generate list of pairs (player1,player2)
 			yield phase, list(zip(*[iter(rotation)] * 2))
 			# prepare the next list by rotating the list
@@ -81,7 +78,6 @@ class League(Tournament):
 			else:
 				self._score[p2] += 1
 
-
 	def HTMLscore(self):
 		"""
 		Display the actual score
@@ -89,7 +85,8 @@ class League(Tournament):
 		Returns a HTML string
 		"""
 		if self._score:
-			return "<ul>"+"".join("<li>%s: %d points</li>" % (self.playerHTMLrepr(pName), score) for pName, score in self._score.items())+"</ul>"
+			return "<ul>" + "".join("<li>%s: %d points</li>" % (
+				    self.playerHTMLrepr(pName), score) for pName, score in self._score.items()
+				    ) + "</ul>"
 		else:
 			return ""
-

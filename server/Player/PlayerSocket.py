@@ -268,7 +268,7 @@ class PlayerSocketHandler(BaseRequestHandler):
 
 
 		# check if the name is valid (20 characters max, and only in [a-zA-Z0-9_]
-		name = sub('\W+', '', data)
+		name = sub(r'\W+', '', data)
 		if name != data or len(name) > 20:
 			self.sendData("The name is invalid (max 20 characters in [a-zA-Z0-9_])")
 			raise ProtocolError("The name '%s' (from %s) is invalid (max 20 characters in [a-zA-Z0-9_])" %

@@ -42,7 +42,6 @@ class RegularPlayer(Player, BaseClass):
 
 	allInstances = {}  # dictionary of all the instances
 
-
 	def __init__(self, name, address, socket):
 		"""
 		Regular Player constructor
@@ -70,7 +69,6 @@ class RegularPlayer(Player, BaseClass):
 		self.logger.info("=================================")
 		self.logger.info(name + " just log in (from " + address + ".")
 
-
 	@property
 	def tournament(self):
 		"""Returns the tournament the player is involved in"""
@@ -91,12 +89,10 @@ class RegularPlayer(Player, BaseClass):
 			self._tournament.unregisterPlayer(self.name)
 			self._tournament = None
 
-
 	@property
 	def isRegular(self):
 		"""Indicates if the player is a regular player or a training player"""
 		return True
-
 
 	@property
 	def game(self):
@@ -135,10 +131,14 @@ class RegularPlayer(Player, BaseClass):
 				currentGameDisplayName = currentGame
 
 			player1, player2 = (p.name for p in self._game.players)
-		return {'currentGame': currentGame, 'currentGameDisplayName': currentGameDisplayName, 'player1': player1, 'player2': player2}
-		# return "Game %s (with players '%s' and '%s'\n<br><br>%s" % (
-		# self.name, self._players[0].name, self._players[1].name, self)
+		return {
+			'currentGame': currentGame,
+			'currentGameDisplayName': currentGameDisplayName,
+			'player1': player1,
+			'player2': player2}
 
+	# return "Game %s (with players '%s' and '%s'\n<br><br>%s" % (
+	# self.name, self._players[0].name, self._players[1].name, self)
 
 	def waitForGame(self, timeout=1):
 		"""
@@ -156,14 +156,9 @@ class RegularPlayer(Player, BaseClass):
 		else:
 			return False
 
-
-
-
 	def HTMLrepr(self):
 		"""Returns the HTML representation of the player"""
-		return "<B><A href='/player/"+self._name+"'>"+self._name+"</A></B>"
-
-
+		return "<B><A href='/player/" + self._name + "'>" + self._name + "</A></B>"
 
 	def disconnect(self):
 		"""
@@ -172,4 +167,3 @@ class RegularPlayer(Player, BaseClass):
 		"""
 		self._socket.request.shutdown(SHUT_RDWR)
 		self._socket.request.close()
-
