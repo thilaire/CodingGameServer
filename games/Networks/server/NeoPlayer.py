@@ -88,8 +88,6 @@ class NeoPlayer(TrainingPlayer):
 		delta = [list((-1,) * self.game.H) for _ in range(self.game.L)]
 		delta[start[0]][start[1]] = 0
 
-		loop = True
-
 		# Loop if data are style to explore
 		new_deltas = {start: 0}
 		checked = []
