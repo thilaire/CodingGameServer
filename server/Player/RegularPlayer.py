@@ -127,7 +127,7 @@ class RegularPlayer(Player, BaseClass):
 			currentGame = self._game.name
 			try:
 				currentGameDisplayName = self._game.getCutename()
-			except NotImplementedError:
+			except AttributeError:
 				currentGameDisplayName = currentGame
 
 			player1, player2 = (p.name for p in self._game.players)
