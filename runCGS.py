@@ -32,7 +32,7 @@ from docopt import docopt  # used to parse the command line
 from server.Game import Game
 from server.Logger import configureRootLogger
 from server.Player import PlayerSocketHandler  # TCP socket handler for players
-from server.Webserver import runWebServer  # to run the webserver (bottle)
+#from server.Webserver import runWebServer  # to run the webserver (bottle)
 
 usage = """
 Coding Game Server
@@ -97,10 +97,10 @@ if __name__ == "__main__":
 	logger.message("")
 
 	# Run the webserver
-	threading.Thread(
-		target=runWebServer,
-		kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
-	).start()
+	# threading.Thread(
+	# 	target=runWebServer,
+	# 	kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
+	# ).start()
 
 	# Start TCP Socket server (connection to players)
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
