@@ -35,10 +35,10 @@ int main()
 
 	/* wait for a game, and retrieve informations about it */
 	//waitForLabyrinth( "PLAY_RANDOM timeout=100 rotate=False tot=25", labName, &sizeX, &sizeY);
-	waitForSnakeGame( "STUPID_PLAYER difficulty=1 timeout=100", gameName, &sizeX, &sizeY, &nbWalls);
+	waitForSnakeGame( "RANDOM_PLAYER difficulty=2 timeout=100 seed=123 start=0", gameName, &sizeX, &sizeY, &nbWalls);
 //	arena = (char*) calloc( sizeX * sizeY );
-	walls = (int*) malloc( nbWalls * sizeof(int));
-	player = getSnakeArena( &X, &Y, &oX, &oY, walls);
+	walls = (int*) malloc( nbWalls * 4 * sizeof(int));
+	player = getSnakeArena( walls);
 
 	do {
 

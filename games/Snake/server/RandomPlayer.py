@@ -9,8 +9,8 @@
 Authors: T. Hilaire, T. Gautier
 Licence: GPL
 
-File: StupidPlayer.py
-	Contains the class StupidPlayer
+File: RandomPlayer.py
+	Contains the class RandomPlayer
 	-> defines a stupid player
 
 Copyright 2019 T. Hilaire, T. Gautier
@@ -19,9 +19,9 @@ Copyright 2019 T. Hilaire, T. Gautier
 from server.Player import TrainingPlayer
 from .Constants import EAST, NORTH, SOUTH, WEST
 
-class StupidPlayer(TrainingPlayer):
+class RandomPlayer(TrainingPlayer):
 	"""
-	class StupidPlayer
+	class RandomPlayer
 
 	Inherits from TrainingPlayer
 	"""
@@ -32,7 +32,7 @@ class StupidPlayer(TrainingPlayer):
 
 		You may use the options dictionary
 		"""
-		super().__init__('StupidPlayer')
+		super().__init__('RandomPlayer')
 		#
 		# insert your code here to get/validate/store the options...
 		#
