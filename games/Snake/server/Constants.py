@@ -23,7 +23,8 @@ SOUTH = 2
 WEST = 3
 
 # simple dictionary of x and y offsets
-Ddx = {NORTH: 0, SOUTH: 0, EAST: -1, WEST: 1}
+Ddx = {NORTH: 0, SOUTH: 0, EAST: 1, WEST: -1}
 Ddy = {NORTH: -1, SOUTH: 1, EAST: 0, WEST: 0}
+
 
 
