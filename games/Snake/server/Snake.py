@@ -51,7 +51,7 @@ class Arena:
 		self._array = [[0 for _ in range(H)] for _ in range(L)]
 		self._walls = []
 		# fill with random walls according to the difficulty
-		nbWalls = [0, L*H//10, L*H//4, L*H//2][difficulty]
+		nbWalls = [0, L*H//4, L*H//2, L*H][difficulty]
 		for i in range(nbWalls):
 			x = randint(0, L-1)
 			y = randint(0, H-1)
