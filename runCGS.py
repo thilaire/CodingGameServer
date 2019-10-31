@@ -32,7 +32,7 @@ from docopt import docopt  # used to parse the command line
 from server.Game import Game
 from server.Logger import configureRootLogger
 from server.Player import PlayerSocketHandler  # TCP socket handler for players
-#from server.Webserver import runWebServer  # to run the webserver (bottle)
+
 
 usage = """
 Coding Game Server
@@ -52,6 +52,7 @@ Options:
   -s SMTP --smtp=SMTP      SMTP server:port used in prod to send the email [default: smtp.gmail.com:587]
   -l LOGS --log=LOGS       Folder where the logs are stored [default: logs/{{hostname}}/]
   --no-email               Do not send email in production [default: False]
+  --no-webserver           Do not run the webserver [default: False]
   --debug                  Debug mode (log and display everything)
   --dev                    Development mode (log everything, display infos, warnings and errors)
   --prod                   Production mode (only log infos, warnings and errors and send emails) [default: True]
@@ -97,10 +98,12 @@ if __name__ == "__main__":
 	logger.message("")
 
 	# Run the webserver
-	# threading.Thread(
-	# 	target=runWebServer,
-	# 	kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
-	# ).start()
+	if not args['--no-webserver']:
+		from server.Webserver import runWebServer  # to run the webserver (bottle)
+		threading.Thread(
+			target=runWebServer,
+			kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
+		).start()
 
 	# Start TCP Socket server (connection to players)
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
