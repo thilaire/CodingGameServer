@@ -16,8 +16,10 @@ File: RandomPlayer.py
 Copyright 2019 T. Hilaire, T. Gautier
 """
 
+from random import choice
 from server.Player import TrainingPlayer
-from .Constants import EAST, NORTH, SOUTH, WEST
+from .Constants import EAST, NORTH, SOUTH, WEST, Ddx, Ddy
+
 
 class RandomPlayer(TrainingPlayer):
 	"""
@@ -30,20 +32,38 @@ class RandomPlayer(TrainingPlayer):
 		"""
 		Initialize the Training Player
 
-		You may use the options dictionary
+		There is no options
 		"""
 		super().__init__('RandomPlayer')
-		#
-		# insert your code here to get/validate/store the options...
-		#
+
 
 
 	def playMove(self):
 		"""
 		Returns the move to play (string)
 		"""
-		#
-		# insert your code here to find which move you want to do...
-		#
-		return "%d" % SOUTH
+		# get our player number
+		us = 0 if (self.game.players[0] is self) else 1
+
+		# build the list of the possible moves
+		moves = []
+
+		# move
+		for direction in (NORTH, EAST, SOUTH, WEST):
+			# head position and next position
+			hx, hy = self.game.playerPos[us][0]
+			nx = hx + Ddx[direction]
+			ny = hy + Ddy[direction]
+			# check if possible
+			if not self.game.arena.getWall(hx, hy, direction) and self.game.arena.getPlayer(nx, ny) is None:
+				moves.append(str(direction))
+
+		# choose one (up to 4 moves and 4 rotations)
+		if moves:
+			return choice(moves)
+		else:
+			# sometimes, we cannot move...
+			self.game.sendComment(self, "I am blocked... I cannot move...")
+			return "%d" % NORTH
+
 
