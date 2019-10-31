@@ -93,26 +93,22 @@ void waitForSnakeGame( char* gameType, char* gameName, int* sizeX, int* sizeY, i
  * Get the data and tell who starts
  *
  * Parameters:
- * - X,Y: (int*) pointers to my position
- * - oX,oY: (int*) pointers to my opponnent position
- * - walls: (int*) array of nbWalls*4 integers (x1, y1, x2 , y2 for a wall between (x1,y1) and (x2,y2))
+  * - walls: (int*) array of nbWalls*4 integers (x1, y1, x2 , y2 for a wall between (x1,y1) and (x2,y2))
  *   (the pointer data MUST HAVE allocated with the right size !!)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getSnakeArena(int* X, int* Y, int* oX, int* oY, int* walls)
+int getSnakeArena(int* walls)
 {
-	char data[4096];
+	char data[4096*8];
 	char *p = data;
 	int n;
 	/* wait for a game */
-	int ret = getGameData( __FUNCTION__, data, 4096);
+	int ret = getGameData( __FUNCTION__, data, 4096*8);
 
 	/* copy the data in the array walls
 	 * the datas is a readable string of integers
 	 * */
-	sscanf(p, "%d %d %d %d%n", X, Y, oX, oY, &n);
-	p += n;
 	for(int i=0; i<nbW; i++)
 	{
 		sscanf(p, "%d %d %d %d%n", walls, walls+1, walls+2, walls+3, &n);
