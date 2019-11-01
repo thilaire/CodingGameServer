@@ -9,7 +9,7 @@ Authors: T. Hilaire, J. Brajard
 Licence: GPL
 
 File: WebSocketBase.py
-	Contains the base class to answer to websockets asking for information about the derived clas
+	Contains the base class to answer to websockets asking for information about the derived class
 	-> defines the generic behavior wrt websockets
 	-> Game, RegularPlayer, Tournament will derived from it
 
