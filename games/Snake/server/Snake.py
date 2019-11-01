@@ -51,17 +51,17 @@ class Arena:
 		self._array = [[0 for _ in range(H)] for _ in range(L)]
 		self._walls = []
 		# fill with random walls according to the difficulty
-		nbWalls = [0, L*H//4, L*H//2, L*H][difficulty]
+		nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
 		for i in range(nbWalls):
 			x = randint(0, L-1)
 			y = randint(0, H-1)
 			direction = randint(0, 3)
 			self._setWall(x, y, direction)     # no need to check if the wall already exists
-			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2)%4)    # wall in the adjacent box
+			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
 			self._walls.append((x, y, x + Ddx[direction], y + Ddy[direction]))
 		# remove walls around the start position (just in case)
 		for x, y in [(2, H//2), (L-3, H//2)]:
-			for dx, dy in product(range(-1,2), range(-1,2)):
+			for dx, dy in product(range(-1, 2), range(-1, 2)):
 				self._removeWall(x+dx, y+dy)
 		# put walls around the arena to bound it
 		for x in range(L):
@@ -206,12 +206,15 @@ class Snake(Game):
 		"""
 		Convert a Game into string (to be send to clients, and display)
 		"""
-		# create the lines
+		# iter over each element of the array
 		lines = []
 		for y in range(self.H):
+			# for each line of the array, build two lines (one for the wall on the north, one for the element)
 			line1 = []
 			line2 = []
 			for x in range(self.L):
+				# get the characters  c1 c2
+				#                     c3 strPl
 				c1, c2, c3 = self.arena.strBox(x, y)
 				# 1st line (with NORTH wall)
 				line1.append(c1+c2)
@@ -226,15 +229,26 @@ class Snake(Game):
 						b = BOX
 					strPl = (Fore.GREEN if pl else Fore.RED) + b + Fore.RESET
 				else:
-					strPl = ' '
+					strPl = '.'
 				# 2nd line (with WEST wall)
 				line2.append(c3 + strPl)
 			# add end of the line (EAST walls)
 			c1, c2, c3 = self.arena.strBox(self.L, y)
 			line1.append(c1)
 			line2.append(c3)
+			# add names
+			if y == self.H//2 - 3:
+				line1.append("\t  Game: " + self.name)
+			if y == self.H//2 - 1:
+				line1.append("\t" + ('> ' if self._whoPlays == 0 else '  ') +	Fore.GREEN + "Player 0: " + Fore.RESET +
+				             self.players[0].name + " (%d)" % self.counter[0])
+			if y == self.H//2 + 1:
+				line1.append("\t" + ('> ' if self._whoPlays == 1 else '  ') + Fore.RED + "Player 1: " + Fore.RESET +
+				             self.players[1].name + " (%d)" % self.counter[1])
+			# add the lines
 			lines.append("".join(line1))
 			lines.append("".join(line2))
+
 		# end the last walls in the SOUTH
 		line1 = []
 		for x in range(self.L+1):
