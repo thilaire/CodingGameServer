@@ -228,7 +228,7 @@ class Snake(Game):
 				c1, c2, c3 = self.arena.strBox(x, y)
 				# 1st line (with NORTH wall)
 				line1.append(c1+c2)
-				# character of the x,y box
+				# build StrPl (character of the x,y box)
 				pl = self.arena.getPlayer(x, y)
 				if pl is not None:
 					hx, hy, _ = self.playerPos[pl][0]
