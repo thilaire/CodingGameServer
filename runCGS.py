@@ -95,7 +95,6 @@ if __name__ == "__main__":
 	# Run the webserver
 	if not args['--no-webserver']:
 		from server.Webserver import runWebServer  # to run the webserver (bottle)
-
 		threading.Thread(
 			target=runWebServer,
 			kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
@@ -106,11 +105,11 @@ if __name__ == "__main__":
 	logger.message("Run the game server on port %d...", args['--port'])
 	threading.Thread(target=PlayerServer.serve_forever())
 
-# !TODO: add a timeout for the dataReceive (this exists in the BaseRequestHandler class) TODO: send pretty emails (
-#  when send from webserver)
-#  !TODO: allows the C API do not quit when there is an error (and to get back the error
+# !TODO: add a timeout for the dataReceive (this exists in the BaseRequestHandler class)
+# TODO: send pretty emails (when send from webserver)
+# !TODO: allows the C API do not quit when there is an error (and to get back the error
 #  message) -> in some hidden variables "onErrorContinue" and "lastError" ?
-#  !TODO: unify the docstrings (`Parameters` vs `param:`, check with sphinx)
-#  FIXME: when a player play (or wait for a move) but it's not his
+# !TODO: unify the docstrings (`Parameters` vs `param:`, check with sphinx)
+# FIXME: when a player play (or wait for a move) but it's not his
 #  turn, the client exits and disconnects. This should be a problem in tournament (should only loose the game): in
 #  the client API, should display the error and return LOSING_MOVE/WINNING_MOVE
