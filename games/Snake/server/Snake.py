@@ -18,7 +18,7 @@ Copyright 2019 T. Hilaire, T. Gautier
 
 from random import randint, seed
 from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy
+from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES, invDdxy
 from server.Game import Game
 from colorama import Fore
 from re import compile
@@ -84,7 +84,19 @@ class Arena:
 		self._array[x][y] &= 128+64
 
 	def getWall(self, x, y, direction):
-		return bool(self._array[x][y] & (1 << direction))
+		if self.isPosValid(x, y):       # Most of the time
+			return bool(self._array[x][y] & (1 << direction))
+		# other wise, it's a corner case (only to draw the bounds of the arena)
+		elif direction == NORTH and self.isPosValid(x, y-1):
+			return bool(self._array[x][y-1] & (1 << SOUTH))
+		elif direction == EAST and self.isPosValid(x+1, y):
+			return bool(self._array[x+1][y] & (1 << WEST))
+		elif direction == SOUTH and self.isPosValid(x, y-1):
+			return bool(self._array[x][y-1] & (1 << NORTH))
+		elif direction == WEST and self.isPosValid(x-1, y):
+			return bool(self._array[x-1][y] & (1 << EAST))
+		else:
+			return False
 
 	def setNoone(self, x, y):
 		self._array[x][y] &= 63
@@ -94,6 +106,30 @@ class Arena:
 
 	def getPlayer(self, x, y):
 		return {0: None, 1: 0, 2: 1}[self._array[x][y] >> 6]
+
+	def isPosValid(self, x, y):
+		"""Returns True if the position x,y is valid"""
+		return 0 <= x < self._L and 0 <= y < self._H
+
+	def strBox(self, x, y):
+		"""Returns three characters to print the Box x,y
+		1 2
+		3 x
+		The characters are taken into the UTF8 Unicode Box Drawing list
+		"""
+		# prepare 2 and 3
+		c2 = HORIZONTAL_BOX if self.getWall(x, y, NORTH) else ' '
+		c3 = VERTICAL_BOX if self.getWall(x, y, WEST) else ' '
+		# prepare 1 from the 4 neighbours
+		nesw = (
+			self.getWall(x, y - 1, WEST),   # North
+			self.getWall(x, y, NORTH),          # East
+			self.getWall(x, y, WEST),           # South
+			self.getWall(x - 1, y, NORTH))    # West
+
+		c1 = DRAWING_BOX[nesw]
+
+		return c1, c2, c3
 
 
 class Snake(Game):
@@ -173,31 +209,45 @@ class Snake(Game):
 		# create the lines
 		lines = []
 		for y in range(self.H):
-			lines1 = []
-			lines2 = []
+			line1 = []
+			line2 = []
 			for x in range(self.L):
+				c1, c2, c3 = self.arena.strBox(x, y)
 				# 1st line (with NORTH wall)
-				lines1.append('+-' if self.arena.getWall(x, y, NORTH) else '+ ')
+				line1.append(c1+c2)
 				# character of the x,y box
 				pl = self.arena.getPlayer(x, y)
-				strPl = {None: ' ', 0: 'M', 1: 'O'}[pl]
-				if pl is not None and (x, y) == self.playerPos[pl][0]:
-					strPl = (Fore.GREEN if pl else Fore.RED) + strPl + Fore.RESET
+				if pl is not None:
+					if (x, y) == self.playerPos[pl][0] and len(self.playerPos[pl])>1:
+						dx = self.playerPos[pl][0][0] - self.playerPos[pl][1][0]
+						dy = self.playerPos[pl][0][1] - self.playerPos[pl][1][1]
+						b = TRIANGLES[invDdxy[(dx,dy)]]
+					else:
+						b = BOX
+					strPl = (Fore.GREEN if pl else Fore.RED) + b + Fore.RESET
+				else:
+					strPl = ' '
 				# 2nd line (with WEST wall)
-				lines2.append(('|' if self.arena.getWall(x, y, WEST) else ' ') + strPl)
+				line2.append(c3 + strPl)
 			# add end of the line (EAST walls)
-			lines1.append('+')
-			lines2.append('|' if self.arena.getWall(-1, y, EAST) else ' ')
-			lines.append("".join(lines1))
-			lines.append("".join(lines2))
+			c1, c2, c3 = self.arena.strBox(self.L, y)
+			line1.append(c1)
+			line2.append(c3)
+			lines.append("".join(line1))
+			lines.append("".join(line2))
 		# end the last walls in the SOUTH
-		lines.append("".join(('+-' if self.arena.getWall(x, -1, SOUTH) else '+ ') for x in range(self.L)) + "+")
+		line1 = []
+		for x in range(self.L+1):
+			c1, c2, c3 = self.arena.strBox(x, self.H)
+			line1.append(c1+c2)
+		lines.append("".join(line1))
 
 		#TODO: add colors
 		#TODO: add player names
 		#TODO: add counter (length of the snakes?)
 		#TODO: add gameName, etc.
-		return "\n".join(lines)
+		return "\n".join(lines) + "\n\n"
+
 
 	def updateGame(self, move):
 		"""
