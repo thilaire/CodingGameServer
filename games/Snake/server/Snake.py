@@ -15,10 +15,10 @@ File: Snake.py
 
 Copyright 2019 T. Hilaire, T. Gautier
 """
-
+from typing import Tuple, Union, List
 from random import randint, seed
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES, invDdxy
+from server.Constants import NORMAL_MOVE, LOSING_MOVE
+from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES
 from server.Game import Game
 from colorama import Fore
 from re import compile
@@ -62,7 +62,7 @@ class Arena:
 		# remove walls around the start position (just in case)
 		for x, y in [(2, H//2), (L-3, H//2)]:
 			for dx, dy in product(range(-1, 2), range(-1, 2)):
-				self._removeWall(x+dx, y+dy)
+				self._removeWalls(x+dx, y+dy)
 		# put walls around the arena to bound it
 		for x in range(L):
 			self._setWall(x, 0, NORTH)
@@ -74,16 +74,22 @@ class Arena:
 
 	@property
 	def walls(self):
+		"""Returns the list of walls (x,y, x+dx, y+dy)"""
 		return self._walls
 
 	def _setWall(self, x, y, direction):
+		"""Set a wall direction on x, y"""
 		if -1 <= x < self._L and -1 <= y < self._H:
 			self._array[x][y] |= 1 << direction
 
-	def _removeWall(self, x, y):
+	def _removeWalls(self, x, y):
+		"""Remove the walls at x,y"""
 		self._array[x][y] &= 128+64
 
 	def getWall(self, x, y, direction):
+		"""Check if there is a wall at x,y
+		Check at x,y, and if we are on the borders,
+		check the adjacent boxes"""
 		if self.isPosValid(x, y):       # Most of the time
 			return bool(self._array[x][y] & (1 << direction))
 		# other wise, it's a corner case (only to draw the bounds of the arena)
@@ -99,12 +105,16 @@ class Arena:
 			return False
 
 	def setNoone(self, x, y):
+		"""Remove the player at x,y"""
 		self._array[x][y] &= 63
 
 	def setPlayer(self, x, y, nPlayer):
+		"""Set the player nPlayer at x,y"""
 		self._array[x][y] |= 1 << (6+nPlayer)
 
 	def getPlayer(self, x, y):
+		"""Get the player at x,y
+		Returns None if there is no one, or the number of the player (0 or 1)"""
 		return {0: None, 1: 0, 2: 1}[self._array[x][y] >> 6]
 
 	def isPosValid(self, x, y):
@@ -126,7 +136,6 @@ class Arena:
 			self.getWall(x, y, NORTH),          # East
 			self.getWall(x, y, WEST),           # South
 			self.getWall(x - 1, y, NORTH))    # West
-
 		c1 = DRAWING_BOX[nesw]
 
 		return c1, c2, c3
@@ -172,14 +181,15 @@ class Snake(Game):
 		self.L, self.H = max(self.L, self.H), min(self.L, self.H)   # L is greater than H
 		self.arena = Arena(self.L, self.H, int(options.get("difficulty", 1)))
 
-		# players positions (list of positions, firsst is the head)
-		self.playerPos = [[(2, self.H // 2)], [(self.L - 3, self.H // 2)]]
+		# players positions (list of positions+direction, first is the head)
+		self.playerPos: List[List[Tuple[int, int, Union[None, int]]]] = \
+			[[(2, self.H // 2, None)], [(self.L - 3, self.H // 2, None)]]
 
 		self.arena.setPlayer(2, self.H // 2, 0)
 		self.arena.setPlayer(self.L - 3, self.H // 2, 1)
 
 		# counter (one per player), used to know when the snake grows
-		self.counter = [0,0]
+		self.counter = [0, 0]
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
@@ -221,10 +231,9 @@ class Snake(Game):
 				# character of the x,y box
 				pl = self.arena.getPlayer(x, y)
 				if pl is not None:
-					if (x, y) == self.playerPos[pl][0] and len(self.playerPos[pl])>1:
-						dx = self.playerPos[pl][0][0] - self.playerPos[pl][1][0]
-						dy = self.playerPos[pl][0][1] - self.playerPos[pl][1][1]
-						b = TRIANGLES[invDdxy[(dx,dy)]]
+					hx, hy, _ = self.playerPos[pl][0]
+					if (x, y) == (hx, hy) and len(self.playerPos[pl]) > 1:
+						b = TRIANGLES[self.playerPos[pl][1][2]]
 					else:
 						b = BOX
 					strPl = (Fore.GREEN if pl else Fore.RED) + b + Fore.RESET
@@ -240,7 +249,7 @@ class Snake(Game):
 			if y == self.H//2 - 3:
 				line1.append("\t  Game: " + self.name)
 			if y == self.H//2 - 1:
-				line1.append("\t" + ('> ' if self._whoPlays == 0 else '  ') +	Fore.GREEN + "Player 0: " + Fore.RESET +
+				line1.append("\t" + ('> ' if self._whoPlays == 0 else '  ') + Fore.GREEN + "Player 0: " + Fore.RESET +
 				             self.players[0].name + " (%d)" % self.counter[0])
 			if y == self.H//2 + 1:
 				line1.append("\t" + ('> ' if self._whoPlays == 1 else '  ') + Fore.RED + "Player 1: " + Fore.RESET +
@@ -256,10 +265,8 @@ class Snake(Game):
 			line1.append(c1+c2)
 		lines.append("".join(line1))
 
-		#TODO: add colors
-		#TODO: add player names
-		#TODO: add counter (length of the snakes?)
-		#TODO: add gameName, etc.
+		# TODO: add BOX on the wall if the snakes is there
+
 		return "\n".join(lines) + "\n\n"
 
 
@@ -285,7 +292,7 @@ class Snake(Game):
 		# move the player
 		pl = self._whoPlays
 		# head position and new position
-		hx, hy = self.playerPos[pl][0]
+		hx, hy, d = self.playerPos[pl][0]
 		nx = hx + Ddx[direction]
 		ny = hy + Ddy[direction]
 		# check if there is a wall and if the new position is free
@@ -295,15 +302,16 @@ class Snake(Game):
 			return LOSING_MOVE, "The move make the snakes collides..."
 		# the snake move
 		self.arena.setPlayer(nx, ny, pl)
-		self.playerPos[pl].insert(0, (nx, ny))
+		self.playerPos[pl][0] = (hx, hy, direction)
+		self.playerPos[pl].insert(0, (nx, ny, None))
 		# and it may grow or not
-		if self.counter[pl]%10 != 0:
-			qx, qy = self.playerPos[pl].pop()
+		if self.counter[pl] % 10 != 0:
+			qx, qy, _ = self.playerPos[pl].pop()
 			self.arena.setNoone(qx, qy)
 		# increase the counter
 		self.counter[pl] = (self.counter[pl] + 1) % 10
 
-		logger.debug("self._playerPos=%s",self.playerPos)
+		logger.debug("self._playerPos=%s", self.playerPos)
 
 		return NORMAL_MOVE, ""
 

@@ -51,7 +51,7 @@ class RandomPlayer(TrainingPlayer):
 		# move
 		for direction in (NORTH, EAST, SOUTH, WEST):
 			# head position and next position
-			hx, hy = self.game.playerPos[us][0]
+			hx, hy, _ = self.game.playerPos[us][0]
 			nx = hx + Ddx[direction]
 			ny = hy + Ddy[direction]
 			# check if possible
