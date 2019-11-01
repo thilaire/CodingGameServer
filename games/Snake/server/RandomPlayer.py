@@ -34,6 +34,7 @@ class RandomPlayer(TrainingPlayer):
 
 		There is no options
 		"""
+
 		super().__init__('RandomPlayer')
 
 

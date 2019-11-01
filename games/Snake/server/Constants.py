@@ -27,7 +27,6 @@ WEST = 3
 # simple dictionary of x and y offsets
 Ddx = {NORTH: 0, SOUTH: 0, EAST: 1, WEST: -1}
 Ddy = {NORTH: -1, SOUTH: 1, EAST: 0, WEST: 0}
-invDdxy = {(0,-1): NORTH, (1,0): EAST, (0,1): SOUTH, (-1,0): WEST}
 
 # Build UTF-8 Box Drawing dictionnary
 # from the neighboorhood, it associates the corresponding box caracter
@@ -48,4 +47,4 @@ for n, e, s, w in product([False, True], [False, True], [False, True], [False, T
 HORIZONTAL_BOX = DRAWING_BOX[(False, True, False, True)]
 VERTICAL_BOX = DRAWING_BOX[(True, False, True, False)]
 BOX = "\N{FULL BLOCK}"
-TRIANGLES = [ lookup("BLACK %s-POINTING TRIANGLE"%s) for s in ("UP", "RIGHT", "DOWN", "LEFT")]
+TRIANGLES = [lookup("BLACK %s-POINTING TRIANGLE" % s) for s in ("UP", "RIGHT", "DOWN", "LEFT")]

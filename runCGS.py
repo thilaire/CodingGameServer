@@ -23,7 +23,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
 import threading  # to run threads
-from importlib import import_module    # to dynamically import modules
+from importlib import import_module  # to dynamically import modules
 from socketserver import ThreadingTCPServer  # socket server (with multi-threads capabilities)
 
 from colorama import Fore
@@ -32,7 +32,6 @@ from docopt import docopt  # used to parse the command line
 from server.Game import Game
 from server.Logger import configureRootLogger
 from server.Player import PlayerSocketHandler  # TCP socket handler for players
-
 
 usage = """
 Coding Game Server
@@ -58,7 +57,6 @@ Options:
   --prod                   Production mode (only log infos, warnings and errors and send emails) [default: True]
 """
 
-
 if __name__ == "__main__":
 
 	# parse the command line
@@ -69,20 +67,17 @@ if __name__ == "__main__":
 	args['--web'] = int(args['--web'])
 	gameName = args['<gameName>']
 
-
 	# import the <gameName> module and store it (in Game)
 	try:
 		mod = import_module('games.' + gameName + '.server.' + gameName)
 		if gameName not in mod.__dict__:
-			print(
-					Fore.RED + "Error: The file `games/" + gameName + "/server/" + gameName
-					+ ".py` must contain a class named `" + gameName + "`." + Fore.RESET
-			)
+			print(Fore.RED + "Error: The file `games/" + gameName + "/server/" + gameName +
+			      ".py` must contain a class named `" + gameName + "`." + Fore.RESET)
 			quit()
 		Game.setTheGameClass(mod.__dict__[gameName])
 	except ImportError as e:
 		print(Fore.RED + "Error: Impossible to import the file `games/" + gameName +
-			    "/server/" + gameName + ".py`." + Fore.RESET)
+		      "/server/" + gameName + ".py`." + Fore.RESET)
 		print(e)
 		quit()
 
@@ -100,6 +95,7 @@ if __name__ == "__main__":
 	# Run the webserver
 	if not args['--no-webserver']:
 		from server.Webserver import runWebServer  # to run the webserver (bottle)
+
 		threading.Thread(
 			target=runWebServer,
 			kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
@@ -109,8 +105,6 @@ if __name__ == "__main__":
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
 	logger.message("Run the game server on port %d...", args['--port'])
 	threading.Thread(target=PlayerServer.serve_forever())
-
-
 
 # !TODO: add a timeout for the dataReceive (this exists in the BaseRequestHandler class) TODO: send pretty emails (
 #  when send from webserver)
