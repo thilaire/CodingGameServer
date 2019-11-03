@@ -17,7 +17,6 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
 import logging
-from geventwebsocket import WebSocketError
 import json
 from server.Logger import configureBaseClassLogger
 

@@ -16,10 +16,13 @@ File: runCGS.py
 	Main file/entry for the Coding Game Server
 
 
-CGS requires Python3 and the following packages: colorama, colorlog, docopt, bottle, jinja2, gevent-websocket
->> pip install colorama colorlog docopt bottle jinja2 ansi2html karellen-geventws
+CGS requires Python3 and the following packages:
+- colorama, colorlog: display color in text (and logs)
+- docopt: parse the documentation and implement it
+- jinja2, flask, flask-socketio, eventlet: webserver (+ websocket)
+>> pip install colorama colorlog docopt jinja2 ansi2html flask flask-socketio eventlet
 
-Copyright 2016-2017 T. Hilaire, J. Brajard
+Copyright 2016-2019 T. Hilaire, J. Brajard
 """
 
 import threading  # to run threads
@@ -94,11 +97,12 @@ if __name__ == "__main__":
 
 	# Run the webserver
 	if not args['--no-webserver']:
-		from server.Webserver import runWebServer  # to run the webserver (bottle)
+		from server.Webserver import runWebServer  # to run the webserver (Flask)
 		threading.Thread(
 			target=runWebServer,
 			kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
 		).start()
+		#runWebServer(host=args['--host'], port=args['--web'], quiet=False)
 
 	# Start TCP Socket server (connection to players)
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
