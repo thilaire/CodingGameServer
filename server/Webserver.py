@@ -16,7 +16,7 @@ File: webserver.py
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, abort, send_from_directory
 from jinja2 import ChoiceLoader, FileSystemLoader, Template
 
 from flask_socketio import SocketIO
@@ -33,24 +33,25 @@ from server.BaseClass import BaseClass
 # flask object
 flask = Flask("webserver")
 
+# set the template paths so that in priority,
+# it first looks in <gameName>/server/templates/ and then in CGS/server/templates
+templatePaths = ['games/' + Game.getTheGameName() + '/server/templates/', 'server/templates/']
+
+
 def runWebServer(host, port, quiet):
 	"""
 	Run the webserver
 	"""
-	# update the template paths so that in priority,
-	# it first looks in <gameName>/server/templates/ and then in CGS/server/templates
-	TemplateFolder = [
-		'games/' + Game.getTheGameName() + '/server/templates/',
-		'server/templates']
-
 	# add a custom jinja loader
 	my_loader = ChoiceLoader(
-		[flask.jinja_loader, FileSystemLoader(TemplateFolder), ])
+		[flask.jinja_loader, FileSystemLoader(templatePaths), ])
 	flask.jinja_loader = my_loader
 
 	# set some global variables
 	flask.jinja_env.globals['base_url'] = '/'
 	flask.jinja_env.globals['GameName'] = Game.getTheGameName()
+	flask.jinja_env.globals['host'] = Config.host
+	flask.jinja_env.globals['webPort'] = Config.webPort
 
 	# Start the web server
 	flask.logger.message('Run the web server on port %d...', port)
@@ -68,53 +69,51 @@ def index():
 	"""
 	Main page (based on index.html template)
 	"""
-	return render_template('index.html',host=Config.host, webPort=Config.webPort)
+	return render_template('index.html')
 
 
+# ================
+#   static files
+# ================
+def static_file(fileName):
+	"""
+	Returns a static_file from the static paths
+	The function first searches in the first path of the template path list (staticPaths).
+	If the file exists, the function returns that file, otherwise it searches
+	for the file in the next path...
+	Redirects to error 404 if the file is not found.
+	"""
+	for path in templatePaths:
+		if isfile(join(path, fileName)):
+			return send_from_directory(path, fileName)
+	abort(404)
 
-#
-# # ================
-# #   static files
-# # ================
-# def static_file_from_templates(fileName):
-# 	"""
-# 	Returns a static_file from the template paths
-# 	The function first searches in the first path of the template path list (TEMPLATE_PATH).
-# 	If the file exists, the function returns that file (static_file function), otherwise it searches
-# 	for the file in the next path...
-# 	Redirects to error 404 if the file is not found.
-# 	"""
-# 	for path in TEMPLATE_PATH:
-# 		if isfile(join(path, fileName)):
-# 			return static_file(fileName, path)
-# 	abort(404)
-#
-#
-# # some static files
-# @route('/favicon.ico')
-# def favicon():
-# 	"""Returns the favicon"""
-# 	return static_file_from_templates('favicon.ico')
-#
-#
-# @route('/style.css')
-# def css():
-# 	"""Returns the CSS style"""
-# 	return static_file_from_templates('style.css')
-#
-#
-# @route('/game/gamestyle.css')
-# def css():
-# 	"""Returns the CSS game display style"""
-# 	return static_file_from_templates('game/gamestyle.css')
-#
-#
-# @route('/banner.png')
-# def banner():
-# 	"""Returns the pages top banner PNG file"""
-# 	return static_file_from_templates('banner.png')
-#
-#
+
+# some static files
+@flask.route('/favicon.ico')
+def favicon():
+	"""Returns the favicon"""
+	return static_file('favicon.ico')
+
+
+@flask.route('/style.css')
+def css():
+	"""Returns the CSS style"""
+	return static_file('style.css')
+
+
+@flask.route('/game/gamestyle.css')
+def game_css():
+	"""Returns the CSS game display style"""
+	return static_file('game/gamestyle.css')
+
+
+@flask.route('/banner.png')
+def banner():
+	"""Returns the pages top banner PNG file"""
+	return static_file('banner.png')
+
+
 
 #
 #
