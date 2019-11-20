@@ -427,7 +427,10 @@ class Game(BaseClass):
 		nPlayer = 0 if player is self._players[0] else 1
 		# noinspection PyUnresolvedReferences
 		names = [p.name for p in self._players]
-		return str(self) + "\n" + self._comments.getString(nPlayer, names) + "\n"*4
+
+		test_str = str(self) + "\n" + self._comments.getString(nPlayer, names) + "\n"*4
+		self.logger.debug(test_str)		
+		return test_str
 
 
 

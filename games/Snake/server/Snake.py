@@ -53,8 +53,8 @@ class Arena:
 		# fill with random walls according to the difficulty
 		nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
 		for i in range(nbWalls):
-			x = randint(0, L-1)
-			y = randint(0, H-1)
+			x = randint(1, L-2)
+			y = randint(1, H-2)
 			direction = randint(0, 3)
 			self._setWall(x, y, direction)     # no need to check if the wall already exists
 			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
@@ -63,6 +63,15 @@ class Arena:
 		for x, y in [(2, H//2), (L-3, H//2)]:
 			for dx, dy in product(range(-1, 2), range(-1, 2)):
 				self._removeWalls(x+dx, y+dy)
+		tmp_array = []
+		for wall in self._walls:
+			x1, y1, x2, y2 = wall
+			x = max(x1, x2)
+			y = max(y1, y2)
+			if not(((x >= 2-1 and x < 2+2) or (x >= (L-3)-1 and x < (L-3)+2)) and  (y >= H//2 - 1 and y < H//2 + 2)):
+				tmp_array.append(wall)
+		self._walls = tmp_array
+
 		# put walls around the arena to bound it
 		for x in range(L):
 			self._setWall(x, 0, NORTH)
@@ -97,8 +106,8 @@ class Arena:
 			return bool(self._array[x][y-1] & (1 << SOUTH))
 		elif direction == EAST and self.isPosValid(x+1, y):
 			return bool(self._array[x+1][y] & (1 << WEST))
-		elif direction == SOUTH and self.isPosValid(x, y-1):
-			return bool(self._array[x][y-1] & (1 << NORTH))
+		elif direction == SOUTH and self.isPosValid(x, y+1):
+			return bool(self._array[x][y+1] & (1 << NORTH))
 		elif direction == WEST and self.isPosValid(x-1, y):
 			return bool(self._array[x-1][y] & (1 << EAST))
 		else:
