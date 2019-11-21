@@ -53,8 +53,8 @@ class Arena:
 		# fill with random walls according to the difficulty
 		nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
 		for i in range(nbWalls):
-			x = randint(1, L-2)
-			y = randint(1, H-2)
+			x = randint(0, L-1)
+			y = randint(0, H-1)
 			direction = randint(0, 3)
 			self._setWall(x, y, direction)     # no need to check if the wall already exists
 			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
