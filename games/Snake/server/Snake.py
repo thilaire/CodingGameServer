@@ -26,6 +26,7 @@ from itertools import product
 
 # import here your training players
 from .RandomPlayer import RandomPlayer
+from .SuperPlayer import SuperPlayer
 
 import logging
 logger = logging.getLogger("Snake")  # general logger ('root')
@@ -169,7 +170,7 @@ class Snake(Game):
 	"""
 
 	# dictionary of the possible training Players (name-> class)
-	type_dict = {"RANDOM_PLAYER": RandomPlayer}
+	type_dict = {"RANDOM_PLAYER": RandomPlayer, "SUPER_PLAYER": SuperPlayer}
 
 	def __init__(self, player1, player2, **options):
 		"""

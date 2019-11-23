@@ -37,7 +37,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 
 #define HEAD_SIZE 4 /*number of bytes to code the size of the message (header)*/
-#define MAX_LENGTH 1000 /* maximum size of the buffer expect for print_Game */
+#define MAX_LENGTH 20000 /* maximum size of the buffer expect for print_Game */
 
 /* global variables about the connection
  * we use them just to hide all the connection details to the user
@@ -118,10 +118,15 @@ int read_inbuf(const char *fct, char *buf, size_t nbuf){
 		dispDebug (fct, 3, "prepare to receive a message of length :%lu",length);
 	}
 	int mini = length > nbuf ? nbuf: length;
+	int read_length = 0;
 	bzero(buf, nbuf);
-	r = read(sockfd, buf, mini);
-	if (r < 0)
-		dispError(fct, "Cannot read message (called by : %s)");
+	do
+	{
+		r = read(sockfd, buf + read_length, mini);
+		if (r < 0)
+			dispError(fct, "Cannot read message (called by : %s)");
+		read_length += r;
+	} while (read_length < mini);
   
 	length -= mini; // length to be read again
 	return length;
