@@ -9,9 +9,9 @@
 Authors: T. Hilaire, T. Gautier
 Licence: GPL
 
-File: RandomPlayer.py
-	Contains the class RandomPlayer
-	-> defines a stupid player
+File: SuperPlayer.py
+	Contains the class SuperPlayer
+	-> defines a better player than RandomPlayer
 
 Copyright 2019 T. Hilaire, T. Gautier
 """
