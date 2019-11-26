@@ -52,6 +52,7 @@ def runWebServer(host, port, quiet):
 	flask.jinja_env.globals['GameName'] = Game.getTheGameName()
 	flask.jinja_env.globals['host'] = Config.host
 	flask.jinja_env.globals['webPort'] = Config.webPort
+	flask.jinja_env.globals['SubTitle'] = 'A CGS-based game'
 
 	# Start the web server
 	flask.logger.message('Run the web server on port %d...', port)
@@ -102,10 +103,10 @@ def css():
 	return static_file('style.css')
 
 
-@flask.route('/game/gamestyle.css')
-def game_css():
-	"""Returns the CSS game display style"""
-	return static_file('game/gamestyle.css')
+# @flask.route('/game/gamestyle.css')
+# def game_css():
+# 	"""Returns the CSS game display style"""
+# 	return static_file('game/gamestyle.css')
 
 
 @flask.route('/banner.png')
@@ -375,15 +376,15 @@ def banner():
 # 	return {}
 #
 #
-# # =======
-# #  errors
-# # ========
-# @error(404)
-# @view('error404.html')
-# def error404():
-# 	"""Returns error 404 page"""
-# 	# TODO: log this
-# 	return {'url': request.url}
+# =======
+#  errors
+# ========
+@flask.errorhandler(404)
+@flask.route('/error404.html')
+def error404():
+	"""Returns error 404 page"""
+	# TODO: log this
+	return render_template('error404.html')
 # #
 # #
 # # @error(500)
