@@ -142,7 +142,7 @@ t_return_code getMove( t_move* move )
     int ret = getCGSMove( __FUNCTION__, data, 128);
 
 	/* extract move */
-	sscanf( data, "%d", (int*) &move);
+	sscanf( data, "%d", (int*) move);
 	dispDebug(__FUNCTION__,2,"move: %d, ret: %d",move,ret);
 	return ret;
 }

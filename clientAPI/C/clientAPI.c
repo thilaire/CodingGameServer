@@ -37,7 +37,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 
 #define HEAD_SIZE 4 /*number of bytes to code the size of the message (header)*/
-#define MAX_LENGTH 1000 /* maximum size of the buffer expect for print_Game */
+#define MAX_LENGTH 50000 /* maximum size of the buffer expect for print_Game */
 
 /* global variables about the connection
  * we use them just to hide all the connection details to the user

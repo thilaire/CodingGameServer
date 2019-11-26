@@ -29,13 +29,13 @@ int main()
 	debug=1;	/* enable debug */
 
 	/* connection to the server */
-	connectToServer( "localhost", 1234, "TH_test");
+	connectToServer( "localhost", 1235, "TH_test");
 	printf("Youhou, connecté au serveur !\n");
 
 
 	/* wait for a game, and retrieve informations about it */
 	//waitForLabyrinth( "PLAY_RANDOM timeout=100 rotate=False tot=25", labName, &sizeX, &sizeY);
-	waitForSnakeGame( "RANDOM_PLAYER difficulty=2 timeout=100 seed=123 start=0", gameName, &sizeX, &sizeY, &nbWalls);
+	waitForSnakeGame( "RANDOM_PLAYER difficulty=2 timeout=100 seed=42 start=0", gameName, &sizeX, &sizeY, &nbWalls);
 //	arena = (char*) calloc( sizeX * sizeY );
 	walls = (int*) malloc( nbWalls * 4 * sizeof(int));
 	player = getSnakeArena( walls);
