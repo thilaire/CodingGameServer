@@ -24,6 +24,8 @@ from colorama import Fore
 from re import compile
 from itertools import product
 
+from ansi2html import Ansi2HTMLConverter
+
 # import here your training players
 from .RandomPlayer import RandomPlayer
 from .SuperPlayer import SuperPlayer
@@ -211,15 +213,15 @@ class Snake(Game):
 		# this, or something you want...
 		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
 
-	# def getDictInformations(self):
-	# 	"""
-	# 	Returns a dictionary for HTML display
-	# 	:return:
-	# 	"""
-	# 	conv = Ansi2HTMLConverter()
-	# 	html = conv.convert(str(self))
-	# 	#TODO:
-	# 	return {'content': html}
+	def getDictInformations(self):
+	 	"""
+	 	Returns a dictionary for HTML display
+	 	:return:
+	 	"""
+	 	conv = Ansi2HTMLConverter()
+	 	html = conv.convert(str(self))
+	 	#TODO:
+	 	return {'content': html}
 
 
 	def __str__(self):
@@ -341,6 +343,16 @@ class Snake(Game):
 		ie the list of positions of walls
 		"""
 		return " ".join("%d %d %d %d" % wall for wall in self.arena.walls)
+	
+
+	def getCutename(self):
+		"""
+		Returns the cutename of the game (to display in html views)
+		"""
+		if hasattr(self, '_cutename'):
+			return self._cutename
+		else:
+			return None
 
 
 

@@ -46,14 +46,14 @@ class ClientAPI:
 
 		self.dispDebug(fct, 3, "prepare to receive a message of length :%lu" % length)
 
-		buffer = ""
+		buffer = b""
 		read_length = 0
 		while read_length < length:
 			res = self.sock.recv(length - read_length)
 			read_length += len(res)
-			buffer += res.decode()
+			buffer += res
 				
-		return buffer
+		return buffer.decode()
 
 	def connectToCGS(self, fct, serverName, port, name):
 		self.playerName = name
