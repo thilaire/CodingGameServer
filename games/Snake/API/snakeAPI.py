@@ -48,7 +48,8 @@ class SnakeClient(ClientAPI):
 		gameName, data = self.waitForGame(gameType)
 		sizeX, sizeY, nbWalls = [int(x) for x in data.split(" ")]
 		return gameName, sizeX, sizeY, nbWalls
-	
+
+
 	def getSnakeArena(self):
 		"""Get the snake arena
 		Returns the tuple (walls,whoStarts):
@@ -58,7 +59,8 @@ class SnakeClient(ClientAPI):
 		data, whoStarts = self.getGameData()
 		walls = [int(wall) for wall in data.split()]
 		return walls, whoStarts
-	
+
+
 	def getMove(self):
 		"""Get the opponent move
 		Returns the status of the move
@@ -83,11 +85,13 @@ class SnakeClient(ClientAPI):
 		self._logger.info("move sent : " + str(move))
 		return self.sendCGSMove(str(move))
 
+
 	def printArena(self):
 		"""Display the Game
 			in a pretty way (ask the server what to print)"""
 		self.printGame()
-	
+
+
 	def sendComment(self, comment):
 		"""Send a comment to the server
 		- comment: (string) comment to be sent to the server (max 100 char)"""
