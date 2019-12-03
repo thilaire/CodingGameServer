@@ -17,21 +17,41 @@ Copyright 2019 T. Hilaire, T. Gautier
 
 import socket
 import sys
+from logging import getLogger
+
+# some constants
+NORMAL_MOVE = 0
+WINNING_MOVE = 1
+LOOSING_MOVE = -1
+
 
 class ClientAPI:
-	def __init__(self, debug = 1):
-		self.playerName = ""
-		self.debug = debug
+	"""Simple API for the client
+	Served as a based class to be extended"""
+	def __init__(self, serverName, port, name):
+		"""Initialize the game
+		debug is the debug level"""
+		self._servername = serverName
+		self._port = port
+		self.playerName = name
+		# logger
+		self._logger = getLogger('CGS')
+
 
 	def dispError(self, fct, msg):
+		"""Display error"""
+		# TODO: should be done with logger package
 		print("\033[5m\033[31m\u2327\033[2m [%s] (%s)\033[0m %s" % (self.playerName, fct, msg))
 		sys.exit(1)
 	
 	def dispDebug(self, fct, level, msg):
+		"""Display debug"""
+		# TODO: should be done with logger package
 		if self.debug >= level:
-			print("\033[35m\u26A0\033[0m [%s] (%s) %s" % (self.playerName, fct, msg), file = sys.stderr)
+			print("\033[35m\u26A0\033[0m [%s] (%s) %s" % (self.playerName, fct, msg), file=sys.stderr)
 
 	def sendString(self, fct, msg):
+		"""Send string through socket and acknowledge"""
 		self.sock.send(msg.encode())
 		self.dispDebug(fct, 2, "Send '%s' to the server" % msg)
 
@@ -42,6 +62,7 @@ class ClientAPI:
 		self.dispDebug(fct, 3, "Receive acknowledgment from the server")
 
 	def read_inbuf(self, fct):
+		"""Read data through socket"""
 		length = int(self.sock.recv(4).decode())
 
 		self.dispDebug(fct, 3, "prepare to receive a message of length :%lu" % length)
@@ -55,22 +76,20 @@ class ClientAPI:
 				
 		return buffer
 
-	def connectToCGS(self, fct, serverName, port, name):
-		self.playerName = name
-
-		self.dispDebug(fct, 2, "Initiate connection with %s (port: %d)" % (serverName, port))
+	def __enter__(self):
+		self.dispDebug("", 2, "Initiate connection with %s (port: %d)" % (self._serverName, self._port))
 
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.connect((serverName, port))
+		self.sock.connect((self._serverName, self._port))
 
-		self.sendString(fct, "CLIENT_NAME %s" % name)
+		self.sendString("", "CLIENT_NAME %s" % self.name)
 	
-	def closeCGSConnection(self, fct):
+	def __exit__(self):
 		self.sock.close()
 
 	def waitForGame(self, fct, training = ""):
 		if training != "":
-			self.sendString(fct,"WAIT_GAME %s" % training)
+			self.sendString(fct, "WAIT_GAME %s" % training)
 		else:
 			self.sendString(fct, "WAIT_GAME ")
 		
@@ -80,12 +99,12 @@ class ClientAPI:
 		
 		self.dispDebug(fct, 1, "Receive Game name=%s" % gameName)
 
-		# read Labyrinth size
+		# read game size
 		buffer = self.read_inbuf(fct)
 
 		self.dispDebug(fct, 2, "Receive Game sizes=%s" % buffer)
 
-		return (gameName, buffer)
+		return gameName, buffer
 	
 	def getGameData(self, fct):
 		self.sendString(fct, "GET_GAME_DATA")
