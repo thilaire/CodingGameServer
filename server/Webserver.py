@@ -16,14 +16,12 @@ File: webserver.py
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
 
-from flask import Flask, render_template, abort, send_from_directory
+from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader, Template
 
 from flask_socketio import SocketIO
 
-from logging import getLogger
 from os.path import isfile, join
-from functools import wraps										# use to wrap a logger for bottle
 from server.Game import Game
 from server.Player import RegularPlayer
 from server.Logger import Config
@@ -38,7 +36,7 @@ flask = Flask("webserver")
 templatePaths = ['games/' + Game.getTheGameName() + '/server/templates/', 'server/templates/']
 
 
-def runWebServer(host, port, quiet):
+def runWebServer(host, port):
 	"""
 	Run the webserver
 	"""
@@ -104,10 +102,10 @@ def css():
 	return static_file('style.css')
 
 
-# @flask.route('/game/gamestyle.css')
-# def game_css():
-# 	"""Returns the CSS game display style"""
-# 	return static_file('game/gamestyle.css')
+@flask.route('/game/gamestyle.css')
+def game_css():
+	"""Returns the CSS game display style"""
+	return static_file('game/gamestyle.css')
 
 
 @flask.route('/banner.png')
@@ -131,28 +129,29 @@ def new_game():
 	return render_template('game/new_game.html', list_players=Players)
 
 
-# @flask.route('/create_new_game.html', method='POST')
-# def create_new_game():
-# 	"""
-# 	Receive the form to create a new game
-# 	-> create the game (ie runPhase it)
-# 	"""
-# 	# get Players
-# 	player1 = RegularPlayer.getFromName(request.forms.get('player1'))
-# 	player2 = RegularPlayer.getFromName(request.forms.get('player2'))
-#
-# 	# !TODO: add some options (timeout, seed, etc.) in the html, and send them to the constructor
-# 	try:
-# 		# the constructor will check if player1 and player2 are available to play
-# 		# no need to store the game object created here
-# 		Game.getTheGameClass()(player1, player2)
-#
-# 	except ValueError as e:
-# 		# !TODO: redirect to an error page
-# 		# TODO: log this
-# 		return 'Error. Impossible to create a game with ' + str(request.forms.get('player1')) + ' and ' + str(request.forms.get('player2')) + ': "' + str(e) + '"'
-# 	else:
-# 		redirect('/')
+@flask.route('/create_new_game.html', method='POST')
+def create_new_game():
+	"""
+	Receive the form to create a new game
+	-> create the game (ie runPhase it)
+	"""
+	# get Players
+	player1 = RegularPlayer.getFromName(request.form.get('player1'))
+	player2 = RegularPlayer.getFromName(request.form.get('player2'))
+
+	# !TODO: add some options (timeout, seed, etc.) in the html, and send them to the constructor
+	try:
+		# the constructor will check if player1 and player2 are available to play
+		# no need to store the game object created here
+		Game.getTheGameClass()(player1, player2)
+
+	except ValueError as e:
+		# !TODO: redirect to an error page
+		# TODO: log this
+		return 'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
+		       ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"'
+	else:
+		redirect('/')
 
 
 @flask.route('/game/<gameName>')
@@ -169,7 +168,8 @@ def game(gameName):
 		except NotImplementedError:
 			displayName = gameName
 		return render_template('game/Game.html', host=Config.host, webPort=Config.webPort,
-		                gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(), player2=g.players[1].HTMLrepr())
+		                       gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
+		                       player2=g.players[1].HTMLrepr())
 	else:
 		return render_template('noObject.html', className='game', objectName=gameName)
 
@@ -362,6 +362,7 @@ def logG(gameName):
 	"""
 	return send_from_directory(join(Config.logPath, 'games'), gameName + '.log')
 
+
 @flask.route('/logs/tournament/<tournamentName>')
 def logT(tournamentName):
 	"""
@@ -394,8 +395,13 @@ def error404(err):
 
 @flask.errorhandler(500)
 def errror500(err):
+	"""
+	Return for error 500
+	"""
+	# TODO: return a full page ?
 	flask.logger.error(err, exc_info=True)
-	return "We have an unexpected error. It has been reported and logged, and we will work on it so that it never occurs again !"
+	return "We have an unexpected error. It has been reported and logged,"\
+	       " and we will work on it so that it never occurs again !"
 
 
 

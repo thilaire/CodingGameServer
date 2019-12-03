@@ -100,9 +100,8 @@ if __name__ == "__main__":
 		from server.Webserver import runWebServer  # to run the webserver (Flask)
 		threading.Thread(
 			target=runWebServer,
-			kwargs={'host': args['--host'], 'port': args['--web'], 'quiet': False}
+			kwargs={'host': args['--host'], 'port': args['--web']}
 		).start()
-		#runWebServer(host=args['--host'], port=args['--web'], quiet=False)
 
 	# Start TCP Socket server (connection to players)
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
