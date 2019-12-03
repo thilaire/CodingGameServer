@@ -17,10 +17,10 @@ Copyright 2016-2019 T. Hilaire, J. Brajard
 """
 
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
-from jinja2 import ChoiceLoader, FileSystemLoader, Template
+from jinja2 import ChoiceLoader, FileSystemLoader
 
 from flask_socketio import SocketIO
-
+import threading
 from os.path import isfile, join
 from server.Game import Game
 from server.Player import RegularPlayer
@@ -129,7 +129,7 @@ def new_game():
 	return render_template('game/new_game.html', list_players=Players)
 
 
-@flask.route('/create_new_game.html', method='POST')
+@flask.route('/create_new_game.html', methods=['POST'])
 def create_new_game():
 	"""
 	Receive the form to create a new game
@@ -186,92 +186,91 @@ def new_tournament():
 	return render_template("tournament/new_tournament.html", **Tournament.HTMLFormDict(Game.getTheGameName()))
 
 
-# @route('/create_new_tournament.html', method='POST')
-# def create_new_tournament():
-# 	"""
-# 	Receive the form to create a new tournament
-# 	"""
-# 	# create the tournament
-# 	try:
-# 		Tournament.factory(**dict(request.forms))
-# 	except ValueError as e:
-# 		# !TODO: redirect to an error page
-# 		# TODO: log this
-# 		return 'Error. Impossible to create a tournament with ' + str(dict(request.forms)) + ':"' + str(e) + '"'
-# 	else:
-# 		redirect('/')
-#
-#
-# @route('/tournament/<tournamentName>')
-# def tournament(tournamentName):
-# 	"""
-# 	Web page for a tournament
-# 	redirect to `noTournament.html` if tournament doesn't exist
-# 	Parameters:
-# 	- tournamentName: name of the tournament
-# 	"""
-# 	t = Tournament.getFromName(tournamentName)
-# 	if t:
-# 		return template('tournament/tournament.html', {'t': t, 'host': Config.host, 'webPort': Config.webPort})
-# 	else:
-# 		return template('noObject.html', className='tournament', objectName=tournamentName)
-#
-#
-#
-# @route('/run_tournament/<tournamentName>', method='POST')
-# def runTournament(tournamentName):
-# 	"""
-# 	Receive the runPhase tournament form
-# 	redirect to `noTournament.html` if the tournament doesn't exit
-# 	other, return nothing, since it is run from ajax (doesn't wait for any response)
-# 	Parameters:
-# 	- tournamentName: name of the tournament
-# 	"""
-# 	t = Tournament.getFromName(tournamentName)
-# 	if t:
-# 		threading.Thread(target=t.runPhase, kwargs=dict(request.forms)).start()
-# 	else:
-# 		return template('noObject.html', className='tournament', objectName=tournamentName)
-#
-#
-# # =========
-# #  Player
-# # =========
-#
-# @route('/player/<playerName>')
-# def player(playerName):
-# 	"""
-# 	Web page for a player
-# 	Redirects to `noPlayer.html` if the player doesn't exist
-# 	"""
-# 	pl = RegularPlayer.getFromName(playerName)
-# 	if pl:
-# 		# TODO: use a template
-# 		return template('player/Player.html', host=Config.host, webPort=Config.webPort,
-# 		                playerName=playerName)
-# 	else:
-# 		return template('noObject.html', className='player', objectName=playerName)
-#
-#
-#
-# @route('/player/disconnect/<playerName>')
-# def disconnectPlayer(playerName):
-# 	"""
-# 	Disconnect a player
-# 	Only for debug...
-# 	:param playerName:
-# 	:return:
-# 	"""
-# 	# !FIXME: activate this only in debug or dev mode
-# 	# TODO: if necessary, add a disconnectAllPlayer
-# 	pl = RegularPlayer.getFromName(playerName)
-# 	if pl:
-# 		pl.disconnect()
-# 		redirect('/')
-# 	else:
-# 		return template('noObject.html', className='player', objectName=playerName)
-#
-#
+@flask.route('/create_new_tournament.html', methods=['POST'])
+def create_new_tournament():
+	"""
+	Receive the form to create a new tournament
+	"""
+	# create the tournament
+	try:
+		Tournament.factory(**dict(request.form))
+	except ValueError as e:
+		# !TODO: redirect to an error page
+		# TODO: log this
+		return 'Error. Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"'
+	else:
+		redirect('/')
+
+
+@flask.route('/tournament/<tournamentName>')
+def tournament(tournamentName):
+	"""
+	Web page for a tournament
+	redirect to `noTournament.html` if tournament doesn't exist
+	Parameters:
+	- tournamentName: name of the tournament
+	"""
+	t = Tournament.getFromName(tournamentName)
+	if t:
+		return render_template('tournament/tournament.html', t=t, host=Config.host, webPort=Config.webPort)
+	else:
+		return render_template('noObject.html', className='tournament', objectName=tournamentName)
+
+
+
+@flask.route('/run_tournament/<tournamentName>', methods=['POST'])
+def runTournament(tournamentName):
+	"""
+	Receive the runPhase tournament form
+	redirect to `noTournament.html` if the tournament doesn't exit
+	other, return nothing, since it is run from ajax (doesn't wait for any response)
+	Parameters:
+	- tournamentName: name of the tournament
+	"""
+	t = Tournament.getFromName(tournamentName)
+	if t:
+		threading.Thread(target=t.runPhase, kwargs=dict(request.form)).start()
+	else:
+		return render_template('noObject.html', className='tournament', objectName=tournamentName)
+
+
+# =========
+#  Player
+# =========
+
+@flask.route('/player/<playerName>')
+def player(playerName):
+	"""
+	Web page for a player
+	Redirects to `noPlayer.html` if the player doesn't exist
+	"""
+	pl = RegularPlayer.getFromName(playerName)
+	if pl:
+		# TODO: use a template
+		return render_template('player/Player.html', host=Config.host, webPort=Config.webPort, playerName=playerName)
+	else:
+		return render_template('noObject.html', className='player', objectName=playerName)
+
+
+
+@flask.route('/player/disconnect/<playerName>')
+def disconnectPlayer(playerName):
+	"""
+	Disconnect a player
+	Only for debug...
+	:param playerName:
+	:return:
+	"""
+	# !FIXME: activate this only in debug or dev mode
+	# TODO: if necessary, add a disconnectAllPlayer
+	pl = RegularPlayer.getFromName(playerName)
+	if pl:
+		pl.disconnect()
+		redirect('/')
+	else:
+		return render_template('noObject.html', className='player', objectName=playerName)
+
+
 # # ==========
 # # Websockets
 # # ==========
