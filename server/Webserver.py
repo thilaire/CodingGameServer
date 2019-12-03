@@ -117,23 +117,21 @@ def banner():
 
 
 
-#
-#
-# # =======
-# #  Games
-# # =======
-# @route('/new_game.html')
-# @view('game/new_game.html')
-# def new_game():
-# 	"""
-# 	Page to create a new game
-# 	"""
-# 	Players = '\n'.join(['<option>' + p.name + '</option>\n' for p in RegularPlayer.allInstances.values()])
-#
-# 	return {'list_players': Players}
-#
-#
-# @route('/create_new_game.html', method='POST')
+
+
+# =======
+#  Games
+# =======
+@flask.route('/new_game.html')
+def new_game():
+	"""
+	Page to create a new game
+	"""
+	Players = '\n'.join(['<option>' + p.name + '</option>\n' for p in RegularPlayer.allInstances.values()])
+	return render_template('game/new_game.html', list_players=Players)
+
+
+# @flask.route('/create_new_game.html', method='POST')
 # def create_new_game():
 # 	"""
 # 	Receive the form to create a new game
@@ -155,40 +153,39 @@ def banner():
 # 		return 'Error. Impossible to create a game with ' + str(request.forms.get('player1')) + ' and ' + str(request.forms.get('player2')) + ': "' + str(e) + '"'
 # 	else:
 # 		redirect('/')
-#
-#
-# @route('/game/<gameName>')
-# def game(gameName):
-# 	"""Returns the webpage of a game
-# 	<gameName> is the name of the game
-# 	If the name is not valid, the answer with the noObject page
-# 	"""
-# 	g = Game.getFromName(gameName)
-#
-# 	if g:
-# 		try:
-# 			displayName = g.getCutename()
-# 		except NotImplementedError:
-# 			displayName = gameName
-# 		return template('game/Game.html', host=Config.host, webPort=Config.webPort,
-# 		                gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(), player2=g.players[1].HTMLrepr())
-# 	else:
-# 		return template('noObject.html', className='game', objectName=gameName)
-#
-#
-# # ============
-# #  Tournament
-# # ============
-# @route('/new_tournament.html')
-# @view("tournament/new_tournament.html")
-# def new_tournament():
-# 	"""
-# 	Page to create a new tournament
-# 	Build from HTMLFormDict class method of TournamentMode (build from all the tournament modes)
-# 	"""
-# 	return Tournament.HTMLFormDict(Game.getTheGameName())
-#
-#
+
+
+@flask.route('/game/<gameName>')
+def game(gameName):
+	"""Returns the webpage of a game
+	<gameName> is the name of the game
+	If the name is not valid, the answer with the noObject page
+	"""
+	g = Game.getFromName(gameName)
+
+	if g:
+		try:
+			displayName = g.getCutename()
+		except NotImplementedError:
+			displayName = gameName
+		return render_template('game/Game.html', host=Config.host, webPort=Config.webPort,
+		                gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(), player2=g.players[1].HTMLrepr())
+	else:
+		return render_template('noObject.html', className='game', objectName=gameName)
+
+
+# ============
+#  Tournament
+# ============
+@flask.route('/new_tournament.html')
+def new_tournament():
+	"""
+	Page to create a new tournament
+	Build from HTMLFormDict class method of TournamentMode (build from all the tournament modes)
+	"""
+	return render_template("tournament/new_tournament.html", **Tournament.HTMLFormDict(Game.getTheGameName()))
+
+
 # @route('/create_new_tournament.html', method='POST')
 # def create_new_tournament():
 # 	"""
@@ -365,14 +362,13 @@ def logG(gameName):
 	"""
 	return send_from_directory(join(Config.logPath, 'games'), gameName + '.log')
 
-@flask.route('/logs/tournament/<gameName>')
-def logT(TournamentName):
+@flask.route('/logs/tournament/<tournamentName>')
+def logT(tournamentName):
 	"""
-	Returns a game log file
-	:param gameName: (string) name of the game
+	Returns a tournament log file
+	:param tournamentName: (string) name of the game
 	"""
-	return static_file(gameName+'.log', root=join(Config.logPath, 'games'))
-
+	return send_from_directory(join(Config.logPath, 'tournaments'), tournamentName + '.log')
 
 
 # ================
