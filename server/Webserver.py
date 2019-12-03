@@ -19,7 +19,7 @@ Copyright 2016-2019 T. Hilaire, J. Brajard
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader
 
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
 import threading
 from os.path import isfile, join
 from server.Game import Game
@@ -30,6 +30,7 @@ from server.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
+socketio = SocketIO(flask)
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
@@ -55,7 +56,6 @@ def runWebServer(host, port):
 	# Start the web server
 	flask.logger.message('Run the web server on port %d...', port)
 	flask.config['SECRET_KEY'] = 'QSDFGHJKLM|'
-	socketio = SocketIO(flask)
 
 	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
 
@@ -149,7 +149,7 @@ def create_new_game():
 		# !TODO: redirect to an error page
 		# TODO: log this
 		return 'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
-		       ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"'
+			   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"'
 	else:
 		redirect('/')
 
@@ -168,8 +168,8 @@ def game(gameName):
 		except NotImplementedError:
 			displayName = gameName
 		return render_template('game/Game.html', host=Config.host, webPort=Config.webPort,
-		                       gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
-		                       player2=g.players[1].HTMLrepr())
+							   gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
+							   player2=g.players[1].HTMLrepr())
 	else:
 		return render_template('noObject.html', className='game', objectName=gameName)
 
@@ -271,19 +271,25 @@ def disconnectPlayer(playerName):
 		return render_template('noObject.html', className='player', objectName=playerName)
 
 
-# # ==========
-# # Websockets
-# # ==========
-# # TODO: can be directly obtained from {x.__name__:x for x in WebSocket.__subclasses__()}
-# wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
-#
-#
-# @route('/websocket/ListOfInstances')
+# ==========
+# Websockets
+# ==========
+# TODO: can be directly obtained from {x.__name__:x for x in WebSocket.__subclasses__()}
+wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
+
+
+@socketio.on('listOfInstances')
+def handle_my_custom_event(data):
+	print(data)
+	emit('listOfInstances', {'toto':'titi'})
+
+
+
+# @flask.route('/websocket/ListOfInstances')
 # def classWebSocket():
 # 	"""
 # 	Websocket for the list of instances of the classes Game, Player and Tournament
 # 	-> used to get the a json with the list of instances of theses classes
-#
 # 	"""
 # 	# should be a websocket
 # 	wsock = request.environ.get('wsgi.websocket')
@@ -300,7 +306,13 @@ def disconnectPlayer(playerName):
 # 		except WebSocketError:
 # 			BaseClass.removeLoIWebSocket(wsock)
 # 			break
-#
+
+
+
+
+
+
+
 #
 # @route('/websocket/<clsName>/<name>')
 # def classWebSocket(clsName, name):
@@ -400,7 +412,7 @@ def errror500(err):
 	# TODO: return a full page ?
 	flask.logger.error(err, exc_info=True)
 	return "We have an unexpected error. It has been reported and logged,"\
-	       " and we will work on it so that it never occurs again !"
+		   " and we will work on it so that it never occurs again !"
 
 
 
