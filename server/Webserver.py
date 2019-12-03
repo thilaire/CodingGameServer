@@ -61,6 +61,7 @@ def runWebServer(host, port, quiet):
 
 	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
 
+
 # # ================
 # #   main page
 # # ================
@@ -336,63 +337,69 @@ def banner():
 # 			break
 #
 #
-# # ======
-# #  logs
-# # =======
-#
-# @route('/logs')
-# def log():
-# 	"""Returns the activity.log file"""
-# 	return static_file('activity.log', root=Config.logPath)
-#
-#
-# @route('/logs/player/<playerName>')
-# def logP(playerName):
-# 	"""
-# 	Returns a player log file
-# 	:param playerName: (string) name of the player
-# 	"""
-# 	return static_file(playerName+'.log', root=join(Config.logPath, 'players'))
-#
-#
-# @route('/logs/game/<gameName>')
-# def logG(gameName):
-# 	"""
-# 	Returns a game log file
-# 	:param gameName: (string) name of the game
-# 	"""
-# 	return static_file(gameName+'.log', root=join(Config.logPath, 'games'))
-#
-#
-# # ================
-# #   info page
-# # ================
-# @route('/about.html')
-# @view('about.html')
-# def about():
-# 	"""
-# 	About page
-# 	"""
-# 	return {}
-#
-#
+
+
+# ======
+#  logs
+# =======
+@flask.route('/logs')
+def log():
+	"""Returns the activity.log file"""
+	return send_from_directory(Config.logPath, 'activity.log')
+
+
+@flask.route('/logs/player/<playerName>')
+def logP(playerName):
+	"""
+	Returns a player log file
+	:param playerName: (string) name of the player
+	"""
+	return send_from_directory(join(Config.logPath, 'players'), playerName+'.log')
+
+
+@flask.route('/logs/game/<gameName>')
+def logG(gameName):
+	"""
+	Returns a game log file
+	:param gameName: (string) name of the game
+	"""
+	return send_from_directory(join(Config.logPath, 'games'), gameName + '.log')
+
+@flask.route('/logs/tournament/<gameName>')
+def logT(TournamentName):
+	"""
+	Returns a game log file
+	:param gameName: (string) name of the game
+	"""
+	return static_file(gameName+'.log', root=join(Config.logPath, 'games'))
+
+
+
+# ================
+#   info page
+# ================
+@flask.route('/about.html')
+def about():
+	"""
+	About page
+	"""
+	return render_template("about.html")
+
+
 # =======
 #  errors
 # ========
 @flask.errorhandler(404)
-@flask.route('/error404.html')
-def error404():
+def error404(err):
 	"""Returns error 404 page"""
 	# TODO: log this
-	return render_template('error404.html')
-# #
-# #
-# # @error(500)
-# # def errror500(err):
-# # 	# !TODO: useful ? to be checked
-# # 	weblogger.error(err, exc_info=True)
-# #
-# # 	return "We have an unexpected error. It has been reported, and we will work on it so that it never occurs again !"
-#
-#
-#
+	return render_template('error404.html', message=err)
+
+
+@flask.errorhandler(500)
+def errror500(err):
+	flask.logger.error(err, exc_info=True)
+	return "We have an unexpected error. It has been reported and logged, and we will work on it so that it never occurs again !"
+
+
+
