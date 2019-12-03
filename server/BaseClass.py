@@ -70,6 +70,8 @@ class BaseClass:
 			raise ValueError("A %s with the same name already exist" % self.__class__.__name__)
 		self.allInstances[name] = self
 
+		print("Donc la ça donne : ", __name__, self.allInstances[name])
+
 		# send the new list of instances to web listeners
 		self.sendListofInstances()
 
@@ -158,7 +160,7 @@ class BaseClass:
 		- wsock: (websocket) if None, the data is sent to all the websockets, otherwise only to this one
 		"""
 		d = {cls.__name__: [obj.HTMLrepr() for obj in cls.allInstances.values()]
-			    for cls in BaseClass.__subclasses__() if isinstance(cls, BaseClass)}
+			    for cls in BaseClass.__subclasses__()}
 		js = json.dumps(d)
 		logger.low_debug("send List of instances : {%s}" % (d.keys(),))
 		# send to all the websockets or only to one

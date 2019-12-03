@@ -17,11 +17,13 @@ Copyright 2019 T. Hilaire, T. Gautier
 
 from snakeAPI import SnakeAPI
 
+import random
+
 client = SnakeAPI(5)
 
-client.connectToServer("localhost", 1234, "PY_TEST")
+client.connectToServer("localhost", 1234, "PY_TEST_" + str(random.randint(0, 1000)))
 
-gameName, sizeX, sizeY, nbWalls = client.waitForSnakeGame("RANDOM_PLAYER difficulty=2 timeout=100 seed=123 start=0")
+gameName, sizeX, sizeY, nbWalls = client.waitForSnakeGame("SUPER_PLAYER difficulty=2 timeout=100 seed=123 start=0")
 
 walls, player = client.getSnakeArena()
 
