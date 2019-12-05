@@ -166,7 +166,7 @@ t_return_code sendMove( t_move move )
     /* build the string move */
     char data[128];
     sprintf( data, "%d", move);
-	dispDebug(__FUNCTION__, 2, "move send : %s",data);
+	dispDebug(__FUNCTION__, 2, "move sent : %s",data);
     /* send the move */
 	return sendCGSMove( __FUNCTION__, data);
 }

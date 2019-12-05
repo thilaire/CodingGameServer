@@ -214,13 +214,13 @@ class Snake(Game):
 		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
 
 	def getDictInformations(self):
-	 	"""
+		"""
 	 	Returns a dictionary for HTML display
 	 	:return:
 	 	"""
-	 	conv = Ansi2HTMLConverter()
-	 	html = conv.convert(str(self))
-	 	#TODO:
+		conv = Ansi2HTMLConverter()
+		html = conv.convert(str(self))
+		#TODO:
 	 	return {'content': html}
 
 
@@ -299,7 +299,7 @@ class Snake(Game):
 		direction = int(result.group(1))
 		# check the possible values
 		if not (NORTH <= direction <= WEST):
-			return LOSING_MOVE, "The direction is not valid (should be between 0 and 3!"
+			return LOSING_MOVE, "The direction is not valid (should be between 0 and 3)!"
 
 		# move the player
 		pl = self._whoPlays
@@ -309,9 +309,9 @@ class Snake(Game):
 		ny = hy + Ddy[direction]
 		# check if there is a wall and if the new position is free
 		if self.arena.getWall(hx, hy, direction):
-			return LOSING_MOVE, "The move make the snakes goes into a wall"
+			return LOSING_MOVE, "The move makes the snake goes into a wall"
 		if self.arena.getPlayer(nx, ny) is not None:
-			return LOSING_MOVE, "The move make the snakes collides..."
+			return LOSING_MOVE, "The move makes the snakes collide..."
 		# the snake move
 		self.arena.setPlayer(nx, ny, pl)
 		self.playerPos[pl][0] = (hx, hy, direction)
@@ -353,20 +353,3 @@ class Snake(Game):
 			return self._cutename
 		else:
 			return None
-
-
-
-#
-# 	def getNextPlayer(self):
-# 		"""
-# 		Change the player who plays
-#
-# 		Returns the next player (but do not update self._whoPlays)
-# 		"""
-# 		#
-# 		# insert your code here...
-# 		#
-# 		return 1 - self._whoPlays       # in a tour-by-tour game, it's the opponent to play
-#
-#
-# ""
