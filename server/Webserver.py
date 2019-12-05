@@ -278,11 +278,11 @@ def disconnectPlayer(playerName):
 wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
 
 
-@socketio.on('listOfInstances')
-def handle_my_custom_event(data):
-	print(data)
-	emit('listOfInstances', {'toto':'titi'})
-
+# @socketio.on('listOfInstances')
+# def handle_my_custom_event(data):
+# 	print(data)
+# 	emit('listOfInstances', {'toto':'titi'})
+#
 
 
 # @flask.route('/websocket/ListOfInstances')

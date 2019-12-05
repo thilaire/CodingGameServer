@@ -64,7 +64,7 @@ class BaseClass:
 		# list of (instance) websocket
 		self._lwsocks = []
 
-		# add itself to the dictionary of games
+		# add itself to the dictionary of games/player/tournament
 		if name in self.allInstances:
 			raise ValueError("A %s with the same name already exist" % self.__class__.__name__)
 		self.allInstances[name] = self
@@ -85,17 +85,16 @@ class BaseClass:
 		"""Returns the logger of the object"""
 		return self._logger
 
+
 	# ========================
 	# Manage list of instances
 	# ========================
-
 	@classmethod
 	def getFromName(cls, name):
 		"""
 		Get an instance of this class from its name
 		Parameters:
 		- name: (string) name of the instance (used as key in the dictionary)
-
 		Returns the object or None if it doesn't exist
 		"""
 		return cls.allInstances.get(name, None)
