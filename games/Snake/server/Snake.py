@@ -260,10 +260,10 @@ class Snake(Game):
 			if y == self.H//2 - 3:
 				line1.append("\t  Game: " + self.name)
 			if y == self.H//2 - 1:
-				line1.append("\t" + ('> ' if self._whoPlays == 0 else '  ') + Fore.GREEN + "Player 0: " + Fore.RESET +
+				line1.append("\t" + ('> ' if self._whoPlays == 0 else '  ') + Fore.RED + "Player 0: " + Fore.RESET +
 				             self.players[0].name + " (%d)" % self.counter[0])
 			if y == self.H//2 + 1:
-				line1.append("\t" + ('> ' if self._whoPlays == 1 else '  ') + Fore.RED + "Player 1: " + Fore.RESET +
+				line1.append("\t" + ('> ' if self._whoPlays == 1 else '  ') + Fore.GREEN + "Player 1: " + Fore.RESET +
 				             self.players[1].name + " (%d)" % self.counter[1])
 			# add the lines
 			lines.append("".join(line1))
