@@ -69,8 +69,6 @@ class BaseClass:
 			raise ValueError("A %s with the same name already exist" % self.__class__.__name__)
 		self.allInstances[name] = self
 
-		print("Donc la ça donne : ", __name__, self.allInstances[name])
-
 		# send the new list of instances to web listeners
 		self.sendListofInstances()
 
