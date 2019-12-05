@@ -59,7 +59,7 @@ class Arena:
 			x = randint(1, L-2)
 			y = randint(1, H-2)
 			direction = randint(0, 3)
-			self._setWall(x, y, direction)     # no need to check if the wall already exists
+			self._setWall(x, y, direction)                              # no need to check if the wall already exists
 			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
 			self._walls.append((x, y, x + Ddx[direction], y + Ddy[direction]))
 		# remove walls around the start position (just in case)
@@ -215,13 +215,12 @@ class Snake(Game):
 
 	def getDictInformations(self):
 		"""
-	 	Returns a dictionary for HTML display
-	 	:return:
-	 	"""
+	    Returns a dictionary for HTML display
+		"""
 		conv = Ansi2HTMLConverter()
 		html = conv.convert(str(self))
-		#TODO:
-	 	return {'content': html}
+		# TODO: add the right content for the HTML display
+		return {'content': html}
 
 
 	def __str__(self):

@@ -29,7 +29,7 @@ int main()
 	debug=1;	/* enable debug */
 
 	/* connection to the server */
-	connectToServer( "localhost", 1235, "TH_test");
+	connectToServer( "localhost", 1234, "TH_test");
 	printf("Youhou, connecté au serveur !\n");
 
 
