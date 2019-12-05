@@ -2,25 +2,38 @@
 
 
 {% block script %}
-<script type="text/javascript">
-    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/ListOfInstances");
-    ws.onmessage = function (evt) {
-        /* the server send a dictionary (JSON) with the list of instances (its HTML representation) of each class */
-        var data = JSON.parse(evt.data);
-        /* iterate on each class (RegularPlayer, Game and Tournament) */
-        for (var cls in data)
-        {
-            /* we convert the list of instances in HTML */
-            //var HTML = [for (p of data[cls]) "<li>" + p + "</li>"].join("");
-            if (data.hasOwnProperty(cls))
-            {
-                var HTML = data[cls].map(function (x){return "<li>"+x+"</li>"}).join("");
-                document.getElementById('list'+cls).innerHTML = "<ul class='triple'>"+HTML+"</ul>";
-            }
-        }
-        ws.send('OK')
-    };
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.emit('listOfInstances', {data: 'I\'m connected!'});
+    socket.on('listOfInstances', function(msg) {
+        console.log(msg);
+    });
 </script>
+
+
+
+
+
+{#<script type="text/javascript">#}
+{#    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/ListOfInstances");#}
+{#    ws.onmessage = function (evt) {#}
+{#        /* the server send a dictionary (JSON) with the list of instances (its HTML representation) of each class */#}
+{#        var data = JSON.parse(evt.data);#}
+{#        /* iterate on each class (RegularPlayer, Game and Tournament) */#}
+{#        for (var cls in data)#}
+{#        {#}
+{#            /* we convert the list of instances in HTML */#}
+{#            //var HTML = [for (p of data[cls]) "<li>" + p + "</li>"].join("");#}
+{#            if (data.hasOwnProperty(cls))#}
+{#            {#}
+{#                var HTML = data[cls].map(function (x){return "<li>"+x+"</li>"}).join("");#}
+{#                document.getElementById('list'+cls).innerHTML = "<ul class='triple'>"+HTML+"</ul>";#}
+{#            }#}
+{#        }#}
+{#        ws.send('OK')#}
+{#    };#}
+{#</script>#}
 {% endblock %}
 
 

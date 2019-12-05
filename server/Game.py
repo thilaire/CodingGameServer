@@ -425,7 +425,6 @@ class Game(BaseClass):
 		- the comments
 		"""
 		nPlayer = 0 if player is self._players[0] else 1
-		# noinspection PyUnresolvedReferences
 		names = [p.name for p in self._players]
 
 		test_str = str(self) + "\n" + self._comments.getString(nPlayer, names) + "\n"*4

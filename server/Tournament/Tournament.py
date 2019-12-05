@@ -347,11 +347,11 @@ class Tournament(BaseClass):
 		"""
 		# HTMLmode
 		modes = "\n".join("<option value='%s'>%s</option>" %
-		                  (sc.__name__, sc.mode) for sc in cls.__subclasses__() if isinstance(sc, Tournament))
+		                  (sc.__name__, sc.mode) for sc in cls.__subclasses__())
 
 		# HTMLmodeOptions
 		options = "\n".join('<div display="none" id="%s">%s</div>' %
-		                    (sc.__name__, sc.HTMLoptions) for sc in cls.__subclasses__() if isinstance(sc, Tournament))
+		                    (sc.__name__, sc.HTMLoptions) for sc in cls.__subclasses__())
 
 		# JavascriptModeOptions
 		jOptions = "\n".join('document.getElementById("%s").style.display="none";' %

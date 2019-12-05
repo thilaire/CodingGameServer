@@ -9,151 +9,135 @@ Authors: T. Hilaire, J. Brajard
 Licence: GPL
 
 File: webserver.py
-	Contains the webserver routines (based on bottle)
+	Contains the webserver routines (based on Flask)
 	-> all the routes are defined here
 	-> the template files used are in templates
 
-Copyright 2016-2017 T. Hilaire, J. Brajard
+Copyright 2016-2019 T. Hilaire, J. Brajard
 """
 
+from flask import Flask, render_template, abort, send_from_directory, request, redirect
+from jinja2 import ChoiceLoader, FileSystemLoader
 
-from gevent import monkey
-monkey.patch_all()
-
-from logging import getLogger
+from flask_socketio import SocketIO, send, emit
 import threading
-from bottle import route, request, jinja2_view as view, jinja2_template as template
-from bottle import Jinja2Template
-from bottle import redirect, static_file, TEMPLATE_PATH, error, abort
-from bottle import run, response, install, default_app		# webserver (bottle)
-from geventwebsocket.handler import WebSocketHandler
-from geventwebsocket import WebSocketError
 from os.path import isfile, join
-from functools import wraps										# use to wrap a logger for bottle
 from server.Game import Game
 from server.Player import RegularPlayer
 from server.Logger import Config
 from server.Tournament import Tournament
 from server.BaseClass import BaseClass
 
-# weblogger
-weblogger = getLogger('bottle')
+# flask object
+flask = Flask("webserver")
+socketio = SocketIO(flask)
 
-# Path to the template (it will be completed with <gameName>/server/templates/)
-TEMPLATE_PATH[:] = ['server/templates']
+# set the template paths so that in priority,
+# it first looks in <gameName>/server/templates/ and then in CGS/server/templates
+templatePaths = ['games/' + Game.getTheGameName() + '/server/templates/', 'server/templates/']
 
 
-def runWebServer(host, port, quiet):
+def runWebServer(host, port):
 	"""
-	Install the logger and run the webserver
+	Run the webserver
 	"""
-	# add a logger wrapper for bottle (in order to log its activity)
-	# See http://stackoverflow.com/questions/31080214/python-bottle-always-logs-to-console-no-logging-to-file
-	def log_to_logger(fn):
-		"""	Wrap a Bottle request so that a log line is emitted after it's handled."""
-		@wraps(fn)
-		def _log_to_logger(*_args, **_kwargs):
-			actual_response = fn(*_args, **_kwargs)
-			weblogger.info('%s %s %s %s' % (request.remote_addr, request.method, request.url, response.status))
-			return actual_response
-		return _log_to_logger
+	# add a custom jinja loader
+	my_loader = ChoiceLoader(
+		[flask.jinja_loader, FileSystemLoader(templatePaths), ])
+	flask.jinja_loader = my_loader
 
+	# set some global variables
+	flask.jinja_env.globals['base_url'] = '/'
+	flask.jinja_env.globals['GameName'] = Game.getTheGameName()
+	flask.jinja_env.globals['host'] = Config.host
+	flask.jinja_env.globals['webPort'] = Config.webPort
+	flask.jinja_env.globals['SubTitle'] = 'A CGS-based game'
 
-	# update the template paths so that in priority,
-	# it first looks in <gameName>/server/templates/ and then in CGS/server/templates
-	TEMPLATE_PATH.append('games/' + Game.getTheGameName() + '/server/templates/')
-	TEMPLATE_PATH.reverse()
-	# add the base url to all the templates
-	# Jinja2Template.defaults['base_url'] = 'http://%s:%s/' % (host, port)
-	Jinja2Template.defaults['base_url'] = '/'
-	# add the game name to all the templates (for page title)
-	Jinja2Template.defaults['GameName'] = Game.getTheGameName()
 	# Start the web server
-	install(log_to_logger)
-	weblogger.message('Run the web server on port %d...', port)
+	flask.logger.message('Run the web server on port %d...', port)
+	flask.config['SECRET_KEY'] = 'QSDFGHJKLM|'
 
-	default_app().catchall = True       # all the exceptions/errors are catched, and re-routed to error500
-	run(host=host, port=port, quiet=quiet, server='gevent', handler_class=WebSocketHandler)
+	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
+
+
+# # ================
+# #   main page
+# # ================
+@flask.route('/')
+@flask.route('/index.html')
+def index():
+	"""
+	Main page (based on index.html template)
+	"""
+	return render_template('index.html')
 
 
 # ================
 #   static files
 # ================
-def static_file_from_templates(fileName):
+def static_file(fileName):
 	"""
-	Returns a static_file from the template paths
-	The function first searches in the first path of the template path list (TEMPLATE_PATH).
-	If the file exists, the function returns that file (static_file function), otherwise it searches
+	Returns a static_file from the static paths
+	The function first searches in the first path of the template path list (staticPaths).
+	If the file exists, the function returns that file, otherwise it searches
 	for the file in the next path...
 	Redirects to error 404 if the file is not found.
 	"""
-	for path in TEMPLATE_PATH:
+	for path in templatePaths:
 		if isfile(join(path, fileName)):
-			return static_file(fileName, path)
+			return send_from_directory(path, fileName)
 	abort(404)
 
 
 # some static files
-@route('/favicon.ico')
+@flask.route('/favicon.ico')
 def favicon():
 	"""Returns the favicon"""
-	return static_file_from_templates('favicon.ico')
+	return static_file('favicon.ico')
 
 
-@route('/style.css')
+@flask.route('/style.css')
 def css():
 	"""Returns the CSS style"""
-	return static_file_from_templates('style.css')
+	return static_file('style.css')
 
 
-@route('/game/gamestyle.css')
-def css():
+@flask.route('/game/gamestyle.css')
+def game_css():
 	"""Returns the CSS game display style"""
-	return static_file_from_templates('game/gamestyle.css')
+	return static_file('game/gamestyle.css')
 
 
-@route('/banner.png')
+@flask.route('/banner.png')
 def banner():
 	"""Returns the pages top banner PNG file"""
-	return static_file_from_templates('banner.png')
+	return static_file('banner.png')
 
 
-# ================
-#   main page
-# ================
-@route('/')
-@route('/index.html')
-@view('index.html')
-def index():
-	"""
-	Main page (based on index.html template)
-	"""
-	return {'host': Config.host, 'webPort': Config.webPort}
+
 
 
 # =======
 #  Games
 # =======
-@route('/new_game.html')
-@view('game/new_game.html')
+@flask.route('/new_game.html')
 def new_game():
 	"""
 	Page to create a new game
 	"""
 	Players = '\n'.join(['<option>' + p.name + '</option>\n' for p in RegularPlayer.allInstances.values()])
+	return render_template('game/new_game.html', list_players=Players)
 
-	return {'list_players': Players}
 
-
-@route('/create_new_game.html', method='POST')
+@flask.route('/create_new_game.html', methods=['POST'])
 def create_new_game():
 	"""
 	Receive the form to create a new game
 	-> create the game (ie runPhase it)
 	"""
 	# get Players
-	player1 = RegularPlayer.getFromName(request.forms.get('player1'))
-	player2 = RegularPlayer.getFromName(request.forms.get('player2'))
+	player1 = RegularPlayer.getFromName(request.form.get('player1'))
+	player2 = RegularPlayer.getFromName(request.form.get('player2'))
 
 	# !TODO: add some options (timeout, seed, etc.) in the html, and send them to the constructor
 	try:
@@ -164,12 +148,13 @@ def create_new_game():
 	except ValueError as e:
 		# !TODO: redirect to an error page
 		# TODO: log this
-		return 'Error. Impossible to create a game with ' + str(request.forms.get('player1')) + ' and ' + str(request.forms.get('player2')) + ': "' + str(e) + '"'
+		return 'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
+			   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"'
 	else:
 		redirect('/')
 
 
-@route('/game/<gameName>')
+@flask.route('/game/<gameName>')
 def game(gameName):
 	"""Returns the webpage of a game
 	<gameName> is the name of the game
@@ -182,42 +167,42 @@ def game(gameName):
 			displayName = g.getCutename()
 		except NotImplementedError:
 			displayName = gameName
-		return template('game/Game.html', host=Config.host, webPort=Config.webPort,
-		                gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(), player2=g.players[1].HTMLrepr())
+		return render_template('game/Game.html', host=Config.host, webPort=Config.webPort,
+							   gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
+							   player2=g.players[1].HTMLrepr())
 	else:
-		return template('noObject.html', className='game', objectName=gameName)
+		return render_template('noObject.html', className='game', objectName=gameName)
 
 
 # ============
 #  Tournament
 # ============
-@route('/new_tournament.html')
-@view("tournament/new_tournament.html")
+@flask.route('/new_tournament.html')
 def new_tournament():
 	"""
 	Page to create a new tournament
 	Build from HTMLFormDict class method of TournamentMode (build from all the tournament modes)
 	"""
-	return Tournament.HTMLFormDict(Game.getTheGameName())
+	return render_template("tournament/new_tournament.html", **Tournament.HTMLFormDict(Game.getTheGameName()))
 
 
-@route('/create_new_tournament.html', method='POST')
+@flask.route('/create_new_tournament.html', methods=['POST'])
 def create_new_tournament():
 	"""
 	Receive the form to create a new tournament
 	"""
 	# create the tournament
 	try:
-		Tournament.factory(**dict(request.forms))
+		Tournament.factory(**dict(request.form))
 	except ValueError as e:
 		# !TODO: redirect to an error page
 		# TODO: log this
-		return 'Error. Impossible to create a tournament with ' + str(dict(request.forms)) + ':"' + str(e) + '"'
+		return 'Error. Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"'
 	else:
 		redirect('/')
 
 
-@route('/tournament/<tournamentName>')
+@flask.route('/tournament/<tournamentName>')
 def tournament(tournamentName):
 	"""
 	Web page for a tournament
@@ -227,13 +212,13 @@ def tournament(tournamentName):
 	"""
 	t = Tournament.getFromName(tournamentName)
 	if t:
-		return template('tournament/tournament.html', {'t': t, 'host': Config.host, 'webPort': Config.webPort})
+		return render_template('tournament/tournament.html', t=t, host=Config.host, webPort=Config.webPort)
 	else:
-		return template('noObject.html', className='tournament', objectName=tournamentName)
+		return render_template('noObject.html', className='tournament', objectName=tournamentName)
 
 
 
-@route('/run_tournament/<tournamentName>', method='POST')
+@flask.route('/run_tournament/<tournamentName>', methods=['POST'])
 def runTournament(tournamentName):
 	"""
 	Receive the runPhase tournament form
@@ -244,16 +229,16 @@ def runTournament(tournamentName):
 	"""
 	t = Tournament.getFromName(tournamentName)
 	if t:
-		threading.Thread(target=t.runPhase, kwargs=dict(request.forms)).start()
+		threading.Thread(target=t.runPhase, kwargs=dict(request.form)).start()
 	else:
-		return template('noObject.html', className='tournament', objectName=tournamentName)
+		return render_template('noObject.html', className='tournament', objectName=tournamentName)
 
 
 # =========
 #  Player
 # =========
 
-@route('/player/<playerName>')
+@flask.route('/player/<playerName>')
 def player(playerName):
 	"""
 	Web page for a player
@@ -262,14 +247,13 @@ def player(playerName):
 	pl = RegularPlayer.getFromName(playerName)
 	if pl:
 		# TODO: use a template
-		return template('player/Player.html', host=Config.host, webPort=Config.webPort,
-		                playerName=playerName)
+		return render_template('player/Player.html', host=Config.host, webPort=Config.webPort, playerName=playerName)
 	else:
-		return template('noObject.html', className='player', objectName=playerName)
+		return render_template('noObject.html', className='player', objectName=playerName)
 
 
 
-@route('/player/disconnect/<playerName>')
+@flask.route('/player/disconnect/<playerName>')
 def disconnectPlayer(playerName):
 	"""
 	Disconnect a player
@@ -284,7 +268,7 @@ def disconnectPlayer(playerName):
 		pl.disconnect()
 		redirect('/')
 	else:
-		return template('noObject.html', className='player', objectName=playerName)
+		return render_template('noObject.html', className='player', objectName=playerName)
 
 
 # ==========
@@ -294,118 +278,141 @@ def disconnectPlayer(playerName):
 wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
 
 
-@route('/websocket/ListOfInstances')
-def classWebSocket():
-	"""
-	Websocket for the list of instances of the classes Game, Player and Tournament
-	-> used to get the a json with the list of instances of theses classes
-
-	"""
-	# should be a websocket
-	wsock = request.environ.get('wsgi.websocket')
-	if not wsock:
-		abort(400, 'Expected Websocket request.')
-	# register this websocket
-	BaseClass.registerLoIWebSocket(wsock)
-	# send to this websocket
-	BaseClass.sendListofInstances(wsock)
-	# loop until the end of this websocket
-	while True:
-		try:
-			wsock.receive()
-		except WebSocketError:
-			BaseClass.removeLoIWebSocket(wsock)
-			break
+# @socketio.on('listOfInstances')
+# def handle_my_custom_event(data):
+# 	print(data)
+# 	emit('listOfInstances', {'toto':'titi'})
+#
 
 
-@route('/websocket/<clsName>/<name>')
-def classWebSocket(clsName, name):
-	"""
-	Websocket for an instance of the classes Game, Player or Tournament
-	-> used to get the a json with informations about this object
+# @flask.route('/websocket/ListOfInstances')
+# def classWebSocket():
+# 	"""
+# 	Websocket for the list of instances of the classes Game, Player and Tournament
+# 	-> used to get the a json with the list of instances of theses classes
+# 	"""
+# 	# should be a websocket
+# 	wsock = request.environ.get('wsgi.websocket')
+# 	if not wsock:
+# 		abort(400, 'Expected Websocket request.')
+# 	# register this websocket
+# 	BaseClass.registerLoIWebSocket(wsock)
+# 	# send to this websocket
+# 	BaseClass.sendListofInstances(wsock)
+# 	# loop until the end of this websocket
+# 	while True:
+# 		try:
+# 			wsock.receive()
+# 		except WebSocketError:
+# 			BaseClass.removeLoIWebSocket(wsock)
+# 			break
 
-	"""
-	# should be a websocket
-	wsock = request.environ.get('wsgi.websocket')
-	if not wsock:
-		abort(400, 'Expected Websocket request.')
-	# check if that instance exists
-	if clsName not in wsCls:
-		abort(400, 'Invalid class %s is not in %s' % (clsName, wsCls.keys()))
-	cls = wsCls[clsName]
-	obj = cls.getFromName(name)
-	if obj is None:
-		abort(400, 'Invalid name (%s) for class %s' % (name, clsName))
-	# register this websocket
-	obj.registerWebSocket(wsock)
-	# send to this websocket
-	obj.sendUpdateToWebSocket(wsock)
-	# loop until the end of this websocket
-	while True:
-		try:
-			wsock.receive()
-		except WebSocketError:
-			BaseClass.removeLoIWebSocket(wsock)
-			break
+
+
+
+
+
+
+#
+# @route('/websocket/<clsName>/<name>')
+# def classWebSocket(clsName, name):
+# 	"""
+# 	Websocket for an instance of the classes Game, Player or Tournament
+# 	-> used to get the a json with informations about this object
+#
+# 	"""
+# 	# should be a websocket
+# 	wsock = request.environ.get('wsgi.websocket')
+# 	if not wsock:
+# 		abort(400, 'Expected Websocket request.')
+# 	# check if that instance exists
+# 	if clsName not in wsCls:
+# 		abort(400, 'Invalid class %s is not in %s' % (clsName, wsCls.keys()))
+# 	cls = wsCls[clsName]
+# 	obj = cls.getFromName(name)
+# 	if obj is None:
+# 		abort(400, 'Invalid name (%s) for class %s' % (name, clsName))
+# 	# register this websocket
+# 	obj.registerWebSocket(wsock)
+# 	# send to this websocket
+# 	obj.sendUpdateToWebSocket(wsock)
+# 	# loop until the end of this websocket
+# 	while True:
+# 		try:
+# 			wsock.receive()
+# 		except WebSocketError:
+# 			BaseClass.removeLoIWebSocket(wsock)
+# 			break
+#
+#
 
 
 # ======
 #  logs
 # =======
-
-@route('/logs')
+@flask.route('/logs')
 def log():
 	"""Returns the activity.log file"""
-	return static_file('activity.log', root=Config.logPath)
+	return send_from_directory(Config.logPath, 'activity.log')
 
 
-@route('/logs/player/<playerName>')
+@flask.route('/logs/player/<playerName>')
 def logP(playerName):
 	"""
 	Returns a player log file
 	:param playerName: (string) name of the player
 	"""
-	return static_file(playerName+'.log', root=join(Config.logPath, 'players'))
+	return send_from_directory(join(Config.logPath, 'players'), playerName+'.log')
 
 
-@route('/logs/game/<gameName>')
+@flask.route('/logs/game/<gameName>')
 def logG(gameName):
 	"""
 	Returns a game log file
 	:param gameName: (string) name of the game
 	"""
-	return static_file(gameName+'.log', root=join(Config.logPath, 'games'))
+	return send_from_directory(join(Config.logPath, 'games'), gameName + '.log')
+
+
+@flask.route('/logs/tournament/<tournamentName>')
+def logT(tournamentName):
+	"""
+	Returns a tournament log file
+	:param tournamentName: (string) name of the game
+	"""
+	return send_from_directory(join(Config.logPath, 'tournaments'), tournamentName + '.log')
 
 
 # ================
 #   info page
 # ================
-@route('/about.html')
-@view('about.html')
+@flask.route('/about.html')
 def about():
 	"""
 	About page
 	"""
-	return {}
+	return render_template("about.html")
 
 
 # =======
 #  errors
 # ========
-@error(404)
-@view('error404.html')
-def error404():
+@flask.errorhandler(404)
+def error404(err):
 	"""Returns error 404 page"""
 	# TODO: log this
-	return {'url': request.url}
-#
-#
-# @error(500)
-# def errror500(err):
-# 	# !TODO: useful ? to be checked
-# 	weblogger.error(err, exc_info=True)
-#
-# 	return "We have an unexpected error. It has been reported, and we will work on it so that it never occurs again !"
+	return render_template('error404.html', message=err)
+
+
+@flask.errorhandler(500)
+def errror500(err):
+	"""
+	Return for error 500
+	"""
+	# TODO: return a full page ?
+	flask.logger.error(err, exc_info=True)
+	return "We have an unexpected error. It has been reported and logged,"\
+		   " and we will work on it so that it never occurs again !"
 
 
 
