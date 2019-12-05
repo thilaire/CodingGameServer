@@ -20,7 +20,7 @@ from random import randint, seed
 from server.Constants import NORMAL_MOVE, LOSING_MOVE
 from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES
 from server.Game import Game
-from colorama import Fore
+from colorama import Fore, Style
 from re import compile
 from itertools import product
 
@@ -237,20 +237,31 @@ class Snake(Game):
 				# get the characters  c1 c2
 				#                     c3 strPl
 				c1, c2, c3 = self.arena.strBox(x, y)
-				# 1st line (with NORTH wall)
-				line1.append(c1+c2)
 				# build StrPl (character of the x,y box)
 				pl = self.arena.getPlayer(x, y)
 				if pl is not None:
-					hx, hy, _ = self.playerPos[pl][0]
-					if (x, y) == (hx, hy) and len(self.playerPos[pl]) > 1:
+					# find where it is in the list
+					indexSnake = 0
+					for indexSnake, (px, py, _) in enumerate(self.playerPos[pl]):
+						if (px, py) == (x, y):
+							break
+					# define strPl (is it the head or not)
+					if indexSnake == 0 and len(self.playerPos[pl]) > 1:
 						b = TRIANGLES[self.playerPos[pl][1][2]]
 					else:
 						b = BOX
 					strPl = (Fore.GREEN if pl else Fore.RED) + b + Fore.RESET
+					# modify c2 or c3 if there is a connection with another block of Snake
+					neighbours = [self.playerPos[pl][indexSnake+i] for i in (-1,+1) if 0 <= indexSnake+i < len(self.playerPos[pl])]
+					for nx, ny, _ in neighbours:
+						if nx+1 == x:
+							c3 = (Fore.GREEN if pl else Fore.RED) + Style.DIM + BOX + Fore.RESET + Style.NORMAL
+						elif ny+1 == y:
+							c2 = (Fore.GREEN if pl else Fore.RED) + Style.DIM + BOX + Fore.RESET + Style.NORMAL
 				else:
 					strPl = '.'
-				# 2nd line (with WEST wall)
+				# append the 1st line (with NORTH wall) and 2nd line (with WEST wall)
+				line1.append(c1+c2)
 				line2.append(c3 + strPl)
 			# add end of the line (EAST walls)
 			c1, c2, c3 = self.arena.strBox(self.L, y)
@@ -279,6 +290,7 @@ class Snake(Game):
 		# TODO: add BOX on the wall if the snakes is there
 
 		return "\n".join(lines) + "\n\n"
+
 
 
 	def updateGame(self, move):

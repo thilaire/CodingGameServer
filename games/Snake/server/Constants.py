@@ -46,5 +46,5 @@ for n, e, s, w in product([False, True], [False, True], [False, True], [False, T
 		DRAWING_BOX[(n, e, s, w)] = lookup("BOX DRAWINGS HEAVY " + " AND ".join(d))
 HORIZONTAL_BOX = DRAWING_BOX[(False, True, False, True)]
 VERTICAL_BOX = DRAWING_BOX[(True, False, True, False)]
-BOX = "\N{FULL BLOCK}"
+BOX = "\N{BLACK SQUARE}"    # FULL BLOCK
 TRIANGLES = [lookup("BLACK %s-POINTING TRIANGLE" % s) for s in ("UP", "RIGHT", "DOWN", "LEFT")]
