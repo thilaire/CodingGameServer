@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.0)
+project(TH_test)
+set(SOURCES arena.c clientAPI.c snakeAPI.c TH_test.c)
+add_executable(TH_test ${SOURCES})
+add_compile_options(Wall)

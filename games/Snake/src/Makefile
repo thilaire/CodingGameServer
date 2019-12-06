@@ -4,15 +4,17 @@ CCFLAGS = -Wall
 LDFLAGS = -lm
 
 # fichiers du projet
-SRC = Q1.c clientAPI.c snakeAPI.c
+SRC = clientAPI.c snakeAPI.c arena.c TH_test.c
 OBJ = $(SRC:.c=.o)
-EXEC = Q1
+EXEC = TH_test
 
 
 # règle initiale
 all: $(EXEC)
 
 # règles de compilation
+arena.o: arena.h
+TH_test.o: arena.h
 %.o: %.c
 	$(CC) $(CCFLAGS) -o $@ -c $<
 	
