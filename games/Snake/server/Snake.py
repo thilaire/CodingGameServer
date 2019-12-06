@@ -328,7 +328,7 @@ class Snake(Game):
 		self.playerPos[pl][0] = (hx, hy, direction)
 		self.playerPos[pl].insert(0, (nx, ny, None))
 		# and it may grow or not
-		if self.counter[pl] % 10 != 0:
+		if self.counter[pl] != 0:
 			qx, qy, _ = self.playerPos[pl].pop()
 			self.arena.setNoone(qx, qy)
 		# increase the counter
