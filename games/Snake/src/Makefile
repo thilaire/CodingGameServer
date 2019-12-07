@@ -4,7 +4,7 @@ CCFLAGS = -Wall
 LDFLAGS = -lm
 
 # fichiers du projet
-SRC = clientAPI.c snakeAPI.c arena.c TH_test.c
+SRC = clientAPI.c snakeAPI.c arena.c TH_test.c utils.c
 OBJ = $(SRC:.c=.o)
 EXEC = TH_test
 

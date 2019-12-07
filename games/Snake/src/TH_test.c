@@ -19,7 +19,8 @@ int main()
 	t_move move;						    /* a move */
 	int sizeX,sizeY, nbWalls;
 debug=0;
-	srand(time(NULL));
+
+	srand(time(NULL));	/* random initialized from time */
 
 	/* connection to the server */
 	connectToServer( "localhost", 1234, "TH_test");
@@ -30,11 +31,11 @@ debug=0;
 		/* new game */
 		game = (t_game*) malloc(sizeof(t_game));
 		/* wait for a game, and retrieve informations about it */
-		waitForSnakeGame( "RANDOM_PLAYER difficulty=3 timeout=100  start=0", gameName, &sizeX, &sizeY, &nbWalls);
+		waitForSnakeGame( "SUPER_PLAYER difficulty=0 timeout=100 start=0", gameName, &sizeX, &sizeY, &nbWalls);
 		/* get the walls and build the game */
 		walls = (int*) malloc( nbWalls * 4 * sizeof(int));
-		game->player = getSnakeArena( walls);
-		buildGame(game, walls, nbWalls, sizeX, sizeY);
+		game->player = (uint8_t) getSnakeArena( walls);
+		initGame(game, walls, nbWalls, (uint8_t)sizeX, (uint8_t)sizeY);
 		free(walls);
 
 		/* let's play !! */
@@ -44,21 +45,22 @@ debug=0;
 			printArena();
 			//displayArena(game);
 
-			if (game->player) {/* The opponent plays */
+			/* The opponent plays */
+			if (game->player)
 				ret = getMove( &move);
-			}
 			else {
-				move = getRandomMove(game);
-				//move = bestMove(game);
-				//printf("\nIt's your turn to play (0:NORTH, 1:EAST, 2:SOUTH, 3:WEST):");
-				//scanf("%d", &move);
+				/* or we play */
+				//move = getRandomMove(game);
+				move = getOneRoundBestMove(game);
 				ret = sendMove(move);
 			}
+			/* update the game */
 			if (ret==NORMAL_MOVE)
 				playMove(game, move);
 
 		} while (ret==NORMAL_MOVE);
 
+		/* show who wins */
 		if ( (game->player==0 && ret==WINNING_MOVE) || (game->player==1 && ret==LOOSING_MOVE) )
 			printf("\n Héhé, I win!!\n");
 		else
