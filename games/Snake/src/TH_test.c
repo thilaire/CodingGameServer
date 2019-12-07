@@ -8,6 +8,7 @@
 #include "snakeAPI.h"
 #include "arena.h"
 
+extern int debug;
 
 int main()
 {
@@ -17,7 +18,7 @@ int main()
 	t_return_code ret = NORMAL_MOVE;		/* indicates the status of the previous move */
 	t_move move;						    /* a move */
 	int sizeX,sizeY, nbWalls;
-
+debug=0;
 	srand(time(NULL));
 
 	/* connection to the server */
@@ -29,7 +30,7 @@ int main()
 		/* new game */
 		game = (t_game*) malloc(sizeof(t_game));
 		/* wait for a game, and retrieve informations about it */
-		waitForSnakeGame( "RANDOM_PLAYER difficulty=1 timeout=100 seed=42 start=0", gameName, &sizeX, &sizeY, &nbWalls);
+		waitForSnakeGame( "RANDOM_PLAYER difficulty=3 timeout=100  start=0", gameName, &sizeX, &sizeY, &nbWalls);
 		/* get the walls and build the game */
 		walls = (int*) malloc( nbWalls * 4 * sizeof(int));
 		game->player = getSnakeArena( walls);
@@ -48,6 +49,7 @@ int main()
 			}
 			else {
 				move = getRandomMove(game);
+				//move = bestMove(game);
 				//printf("\nIt's your turn to play (0:NORTH, 1:EAST, 2:SOUTH, 3:WEST):");
 				//scanf("%d", &move);
 				ret = sendMove(move);
@@ -63,8 +65,7 @@ int main()
 			printf("\n Unfortunately, the opponent wins\n");
 
 		/* we do not forget to free the allocated array */
-		free(game->arena);
-		free(game);
+		freeGame(game);
 
 		//}
 
