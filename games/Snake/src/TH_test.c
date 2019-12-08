@@ -31,7 +31,7 @@ debug=0;
 		/* new game */
 		game = (t_game*) malloc(sizeof(t_game));
 		/* wait for a game, and retrieve informations about it */
-		waitForSnakeGame( "SUPER_PLAYER difficulty=0 timeout=100 start=0", gameName, &sizeX, &sizeY, &nbWalls);
+		waitForSnakeGame( "SUPER_PLAYER difficulty=5 timeout=100 seed=0 start=0", gameName, &sizeX, &sizeY, &nbWalls);
 		/* get the walls and build the game */
 		walls = (int*) malloc( nbWalls * 4 * sizeof(int));
 		game->player = (uint8_t) getSnakeArena( walls);

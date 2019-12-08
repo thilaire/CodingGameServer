@@ -185,10 +185,21 @@ class PlayerSocketHandler(BaseRequestHandler):
 		Receive data (from self.request.recv)
 		and log it
 		"""
+		# get raw data
 		try:
-			data = str(self.request.recv(size).strip(), "utf-8")
+			rawdata = self.request.recv(size).strip()
 		except ConnectionResetError:
 			raise DisconnectionError()
+		# convert it to utf-8 (but it could be utf-8 or latin1, let's try and see)
+		for enc in ('utf-8', 'latin1'):
+			try:
+				data = str(rawdata, enc)
+				break
+			except UnicodeDecodeError:
+				pass
+		else:
+			# if we don't get which encoding it is, with just ignore non utf-8 characteres
+			data = str(rawdata, 'utf-8', 'ignore')
 
 		# check if the client has closed the connection
 		# (don't know why, but when the connection is cloded by the client when the server wait with recv, we cannot
