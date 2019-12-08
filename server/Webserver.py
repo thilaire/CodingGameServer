@@ -350,10 +350,15 @@ wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
 # ======
 #  logs
 # =======
-@flask.route('/logs')
+@flask.route('/logs/activity')
 def log():
 	"""Returns the activity.log file"""
 	return send_from_directory(Config.logPath, 'activity.log')
+
+@flask.route('/logs/errors')
+def log():
+	"""Returns the errors.log file"""
+	return send_from_directory(Config.logPath, 'errors.log')
 
 
 @flask.route('/logs/player/<playerName>')
