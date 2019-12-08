@@ -23,4 +23,10 @@ void printxy(t_game* game, t_xy xy);
 /* find a random index, among the indexes that gives the highest score */
 int randomBest(int score[4]);
 
+/* allocate data for the color and stack arrays */
+void allocateUtilsArray(uint8_t sizeX, uint8_t sizeY);
+
+/* free the color and stack arrays */
+void freeUtilsArray();
+
 #endif

@@ -60,18 +60,16 @@ void initGame(t_game *game, int *walls, int nbWalls, uint8_t sizeX, uint8_t size
 	game->arena[game->heads[1]].p = 1;
 	/* init the counters */
 	game->counters[0] = game->counters[1] = 0;
-	/* allocate data for the color array */
-	game->color = (uint8_t*) malloc(sizeX*sizeY* sizeof(uint8_t));
-	game->stack = (t_xy*) malloc(sizeX*sizeY* sizeof(t_xy));	/* TODO: probably sizeX*sizeY/3 should be enough */
+	/* allocate data for the color and stack arrays */
+	allocateUtilsArray(sizeX,sizeY);
 }
 
 
 /* free the allocated memory */
 void freeGame(t_game* game){
 	free(game->arena);
-	free(game->color);
-	free(game->stack);
 	free(game);
+	freeUtilsArray();
 }
 
 
@@ -127,8 +125,8 @@ t_move getRandomMove(t_game* game){
 
 /* find a good valid move (only consider one round) */
 t_move getOneRoundBestMove(t_game* game){
-	//static int nbC = 0;
-	//printf("nbC=%d\n",nbC++);
+	static int nbC = 0;
+	printf("nbC=%d\n",nbC++);
 	t_xy hxy = game->heads[game->player];
 	int score[4] = {0};
 	t_game* gameT = (t_game*) malloc(sizeof(t_game));
@@ -149,7 +147,7 @@ t_move getOneRoundBestMove(t_game* game){
 		}
 	}
 	/* no more need for them */
-	free(gameT->arena);
+	free(arena);
 	free(gameT);
 
 	/* will we die ? */

@@ -33,8 +33,6 @@ typedef struct{
 	uint8_t counters[2];    /* counters 0 to 9, to know when we grow */
 	uint8_t player;    		/* who plays (0 or 1) */
 	t_xy heads[2];  		/* position of the head of the snakes */
-	uint8_t *color;			/* array used to colorize the arena (see what is reachable or not) */
-	t_xy *stack;			/* stack used to colorize */
 } t_game;
 
 
