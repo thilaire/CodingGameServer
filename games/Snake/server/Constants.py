@@ -24,6 +24,9 @@ EAST = 1
 SOUTH = 2
 WEST = 3
 
+# difficulty level by default (when not specified)
+DEFAULT_DIFFICULTY = 2
+
 # simple dictionary of x and y offsets
 Ddx = {NORTH: 0, SOUTH: 0, EAST: 1, WEST: -1}
 Ddy = {NORTH: -1, SOUTH: 1, EAST: 0, WEST: 0}

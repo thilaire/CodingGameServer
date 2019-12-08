@@ -19,6 +19,7 @@ from typing import Tuple, Union, List
 from random import randint, seed
 from server.Constants import NORMAL_MOVE, LOSING_MOVE
 from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES
+from .Constants import DEFAULT_DIFFICULTY
 from server.Game import Game
 from colorama import Fore, Style
 from re import compile
@@ -54,7 +55,10 @@ class Arena:
 		self._array = [[0 for _ in range(H)] for _ in range(L)]
 		self._walls = []
 		# fill with random walls according to the difficulty
-		nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
+		if 0 <= difficulty <= 3:
+			nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
+		else:
+			nbWalls = [0, L * H // 5, L * H // 3, L * H][DEFAULT_DIFFICULTY]
 		for i in range(nbWalls):
 			x = randint(1, L-2)
 			y = randint(1, H-2)
@@ -191,7 +195,7 @@ class Snake(Game):
 		self.L = randint(20, 40)
 		self.H = totalSize - self.L
 		self.L, self.H = max(self.L, self.H), min(self.L, self.H)   # L is greater than H
-		self.arena = Arena(self.L, self.H, int(options.get("difficulty", 2)))
+		self.arena = Arena(self.L, self.H, int(options.get("difficulty", DEFAULT_DIFFICULTY)))
 
 		# players positions (list of positions+direction, first is the head)
 		self.playerPos: List[List[Tuple[int, int, Union[None, int]]]] = \
