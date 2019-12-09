@@ -25,7 +25,7 @@ typedef enum
 {
 	NORMAL_MOVE = 0,
 	WINNING_MOVE = 1,
-	LOOSING_MOVE = -1
+	LOSING_MOVE = -1
 } t_return_code;
 
 #endif
