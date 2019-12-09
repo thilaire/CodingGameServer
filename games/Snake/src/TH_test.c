@@ -1,7 +1,7 @@
 //
 // Created by Thib on 05/12/2019.
 //
-
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
