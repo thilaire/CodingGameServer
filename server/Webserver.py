@@ -374,7 +374,7 @@ def logP(playerName):
 	Returns a player log file
 	:param playerName: (string) name of the player
 	"""
-	return send_from_directory(join(Config.logPath, 'players'), playerName+'.log')
+	return send_from_directory(join(Config.logPath, 'Players'), playerName+'.log')
 
 
 @flask.route('/logs/game/<gameName>')
@@ -383,7 +383,7 @@ def logG(gameName):
 	Returns a game log file
 	:param gameName: (string) name of the game
 	"""
-	return send_from_directory(join(Config.logPath, 'games'), gameName + '.log')
+	return send_from_directory(join(Config.logPath, 'Games'), gameName + '.log')
 
 
 @flask.route('/logs/tournament/<tournamentName>')
@@ -392,7 +392,7 @@ def logT(tournamentName):
 	Returns a tournament log file
 	:param tournamentName: (string) name of the game
 	"""
-	return send_from_directory(join(Config.logPath, 'tournaments'), tournamentName + '.log')
+	return send_from_directory(join(Config.logPath, 'Tournaments'), tournamentName + '.log')
 
 
 # ================
