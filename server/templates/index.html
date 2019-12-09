@@ -4,12 +4,19 @@
 {% block script %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
-    var socket = io.connect();
+    var socket = io();
     socket.on('connect', function(){
-        console.log("joing Games");
-        socket.join('Game')
+        console.log("join Games");
+        socket.emit('join', 'Game');
     });
     socket.on('Snake', function(msg) {
+        console.log(msg);
+    });
+    socket.on('Game', function(msg) {
+        console.log('receive Game');
+        console.log(msg);
+    });
+    socket.on('RegularPlayer', function(msg) {
         console.log(msg);
     });
 </script>

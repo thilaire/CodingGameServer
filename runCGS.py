@@ -28,7 +28,6 @@ Copyright 2016-2019 T. Hilaire, J. Brajard
 import threading  # to run threads
 from importlib import import_module  # to dynamically import modules
 from socketserver import ThreadingTCPServer  # socket server (with multi-threads capabilities)
-
 from colorama import Fore
 from docopt import docopt  # used to parse the command line
 
@@ -98,6 +97,8 @@ if __name__ == "__main__":
 	# Run the webserver
 	if not args['--no-webserver']:
 		from server.Webserver import runWebServer  # to run the webserver (Flask)
+		# TODO: do not run it in a separate thread, but use socketio.start_background_task instead
+		# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
 		threading.Thread(
 			target=runWebServer,
 			kwargs={'host': args['--host'], 'port': args['--web']}

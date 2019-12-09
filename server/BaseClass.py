@@ -22,8 +22,6 @@ from server.Logger import configureBaseClassLogger
 from flask_socketio import SocketIO, send, emit
 from flask import Flask
 
-flask = Flask("webserver")
-socketio = SocketIO(flask)
 logger = logging.getLogger()
 
 
@@ -39,7 +37,7 @@ class BaseClass:
 	(send informations about objects and list of objects to webpages, through websockets)
 
 	"""
-
+	socketio = None
 	allInstances = {}  # unnecessary (will be overwritten by the inherited classe, and unused)
 
 	# TODO: we should use weak references here (for the allInstances dictionary) (see
@@ -127,13 +125,13 @@ class BaseClass:
 		Broadcast the list of instances
 		Called everytime the list of instances is changed
 		"""
-		d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
-		js = json.dumps(d)
-		print('Emit ', cls.__name__, js)
-		logger.low_debug("send List of instances : {%s}" % cls.__name__)
-		# send to all the websockets
-		#with flask.test_request_context('/'):
-		socketio.send('Game', js, room=cls.__name__)
+		if cls.socketio:
+			# prepare the list
+			d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
+			js = json.dumps(d)
+			# broadcast to all the websockets
+			logger.low_debug("send List of instances : {%s}" % cls.__name__)
+			cls.socketio.emit(cls.__name__, js, broadcast=True)
 
 	def sendUpdateToWebSocket(self):
 		"""
@@ -145,7 +143,7 @@ class BaseClass:
 		js = json.dumps(self.getDictInformations())
 		logger.debug("send information to webseocket")
 		# send to all the websockets or only to one
-		#socketio.emit(self.__class__.__name__+'/'+self.name, js, broadcast=True)
+		self.socketio.emit(self.__class__.__name__+'/'+self.name, js, broadcast=True)
 
 	def getDictInformations(self):
 		"""

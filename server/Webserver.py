@@ -15,6 +15,8 @@ File: webserver.py
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
+import eventlet
+
 
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader
@@ -30,7 +32,7 @@ from server.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
-socketio = SocketIO(flask)
+socketio = SocketIO(flask, async_mode='threading')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
@@ -57,7 +59,10 @@ def runWebServer(host, port):
 	flask.logger.message('Run the web server on port %d...', port)
 	flask.config['SECRET_KEY'] = 'QSDFGHJKLM|'
 
+	BaseClass.socketio = socketio
+
 	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
+
 
 
 # # ================
@@ -280,8 +285,7 @@ wsCls = {'Games': Game, 'Players': RegularPlayer, 'Tournaments': Tournament}
 
 @socketio.on('join')
 def websocket_class(data):
-	print('Join',data)
-	join_room(data)
+	print('Hello ', data)
 	Game.sendListofInstances()
 
 
