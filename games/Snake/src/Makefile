@@ -1,6 +1,6 @@
 # options
 CC = gcc
-CCFLAGS = -Wall
+CCFLAGS = -Wall -std=c99
 LDFLAGS = -lm
 
 # fichiers du projet
