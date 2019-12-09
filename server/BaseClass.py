@@ -19,7 +19,11 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 import logging
 import json
 from server.Logger import configureBaseClassLogger
+from flask_socketio import SocketIO, send, emit
+from flask import Flask
 
+flask = Flask("webserver")
+socketio = SocketIO(flask)
 logger = logging.getLogger()
 
 
@@ -37,7 +41,6 @@ class BaseClass:
 	"""
 
 	allInstances = {}  # unnecessary (will be overwritten by the inherited classe, and unused)
-	_LoIWebSockets = []  # list of webSockets for the lists of Instance (LoI) informations
 
 	# TODO: we should use weak references here (for the allInstances dictionary) (see
 	#  http://stackoverflow.com/questions/37232884/in-python-how-to-remove-an-object-from-a-list-if-it-is-only
@@ -61,16 +64,13 @@ class BaseClass:
 		# create and configure the logger
 		self._logger = configureBaseClassLogger(self.__class__, name)
 
-		# list of (instance) websocket
-		self._lwsocks = []
-
 		# add itself to the dictionary of games/player/tournament
 		if name in self.allInstances:
 			raise ValueError("A %s with the same name already exist" % self.__class__.__name__)
 		self.allInstances[name] = self
 
 		# send the new list of instances to web listeners
-		self.sendListofInstances()
+		self.__class__.sendListofInstances()
 
 	# ===========
 	# Properties
@@ -121,81 +121,21 @@ class BaseClass:
 	# ===================================
 	# List of Instances (LoI) WebSockets
 	# ===================================
-
-	@staticmethod
-	def registerLoIWebSocket(wsock):
+	@classmethod
+	def sendListofInstances(cls):
 		"""
-		Register a List of Instance websocket
-		-> this websocket will receive informations (list of all the instances) everytime these lists change
-		Parameter:
-		- wsock: (WebSocket) the websocket to register
-		"""
-		# add this websocket in the list of LoI websockets
-		logger.low_debug("register List of instances")
-		BaseClass._LoIWebSockets.append(wsock)
-
-	@staticmethod
-	def removeLoIWebSocket(wsock):
-		"""
-		Remove this websocket (the socket has closed)
-		Parameter:
-		- wsock: (WebSocket) the websocket to remove
- 		"""
-		logger.low_debug("remove list of instances websocket")
-		try:
-			BaseClass._LoIWebSockets.remove(wsock)
-		except ValueError:
-			logger.low_debug("Remove a LoI WebSocket that do not exist !!")
-
-	@staticmethod
-	def sendListofInstances(wsock=None):
-		"""
-		Send list of instances through all the websockets (or only one if given)
+		Broadcast the list of instances
 		Called everytime the list of instances is changed
-		Parameters:
-		- wsock: (websocket) if None, the data is sent to all the websockets, otherwise only to this one
 		"""
-		d = {cls.__name__: [obj.HTMLrepr() for obj in cls.allInstances.values()]
-			    for cls in BaseClass.__subclasses__()}
+		d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
 		js = json.dumps(d)
-		logger.low_debug("send List of instances : {%s}" % (d.keys(),))
-		# send to all the websockets or only to one
-		lws = BaseClass._LoIWebSockets if wsock is None else [wsock]
-		for ws in lws:
-			try:
-				ws.send(js)
-			except WebSocketError:
-				logger.low_debug("WebSocketError in sendListInstances")
-				BaseClass.removeLoIWebSocket(ws)
+		print('Emit ', cls.__name__, js)
+		logger.low_debug("send List of instances : {%s}" % cls.__name__)
+		# send to all the websockets
+		#with flask.test_request_context('/'):
+		socketio.send('Game', js, room=cls.__name__)
 
-	# ===================
-	# Instance Websockets
-	# ===================
-
-	def registerWebSocket(self, wsock):
-		"""
-		Register a websocket
-		-> this websocket will receive informations (json dictionary) everytime this object has changed
-		Parameter:
-		- wsock: (WebSocket) the websocket to register
-		"""
-		# add this websocket in the list of  websockets
-		logger.low_debug("register (instance) websocket")
-		self._lwsocks.append(wsock)
-
-	def removeWebSocket(self, wsock):
-		"""
-		Remove this websocket (the socket has closed)
-		Parameter:
-		- wsock: (WebSocket) the websocket to remove
- 		"""
-		logger.low_debug("remove (instance) websocket")
-		try:
-			self._lwsocks.remove(wsock)
-		except ValueError:
-			logger.low_debug("Remove a WebSocket that do not exist !!")
-
-	def sendUpdateToWebSocket(self, wsock=None):
+	def sendUpdateToWebSocket(self):
 		"""
 		Send some informations about self through all the websockets (or only one, if wsock is specified)
 		Called everytime the object (self) is changed
@@ -203,15 +143,9 @@ class BaseClass:
 		- wsock: (websocket) if None, the data is sent to all the websockets, otherwise only to this one
 		"""
 		js = json.dumps(self.getDictInformations())
-		logger.low_debug("send information to webseocket")
+		logger.debug("send information to webseocket")
 		# send to all the websockets or only to one
-		lws = self._lwsocks if wsock is None else [wsock]
-		for ws in lws:
-			try:
-				ws.send(js)
-			except WebSocketError:
-				logger.low_debug("WebSocketError in sendUpdateToWebSocket")
-				self.removeWebSocket(ws)
+		#socketio.emit(self.__class__.__name__+'/'+self.name, js, broadcast=True)
 
 	def getDictInformations(self):
 		"""

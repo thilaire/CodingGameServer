@@ -19,7 +19,7 @@ Copyright 2016-2019 T. Hilaire, J. Brajard
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader
 
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room
 import threading
 from os.path import isfile, join
 from server.Game import Game
@@ -275,14 +275,15 @@ def disconnectPlayer(playerName):
 # Websockets
 # ==========
 # TODO: can be directly obtained from {x.__name__:x for x in WebSocket.__subclasses__()}
-wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
+wsCls = {'Games': Game, 'Players': RegularPlayer, 'Tournaments': Tournament}
 
 
-# @socketio.on('listOfInstances')
-# def handle_my_custom_event(data):
-# 	print(data)
-# 	emit('listOfInstances', {'toto':'titi'})
-#
+@socketio.on('join')
+def websocket_class(data):
+	print('Join',data)
+	join_room(data)
+	Game.sendListofInstances()
+
 
 
 # @flask.route('/websocket/ListOfInstances')
@@ -350,8 +351,14 @@ wsCls = {'Game': Game, 'Player': RegularPlayer, 'Tournament': Tournament}
 # ======
 #  logs
 # =======
+# @flask.route('logs/')
+# def log():
+# 	"""Returns the log.html"""
+# 	return
+
+
 @flask.route('/logs/activity')
-def log():
+def activity():
 	"""Returns the activity.log file"""
 	return send_from_directory(Config.logPath, 'activity.log')
 
