@@ -24,6 +24,8 @@ CGS requires Python3 and the following packages:
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
+from gevent import monkey
+monkey.patch_all()
 
 import threading  # to run threads
 from importlib import import_module  # to dynamically import modules
@@ -104,10 +106,12 @@ if __name__ == "__main__":
 			kwargs={'host': args['--host'], 'port': args['--web']}
 		).start()
 
+
 	# Start TCP Socket server (connection to players)
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
 	logger.message("Run the game server on port %d...", args['--port'])
 	threading.Thread(target=PlayerServer.serve_forever())
+
 
 # !TODO: add a timeout for the dataReceive (this exists in the BaseRequestHandler class)
 # TODO: send pretty emails (when send from webserver)

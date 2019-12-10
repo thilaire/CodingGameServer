@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block script %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    const socket = io();
+    /* at connection, register to get update about theses classes */
+    socket.on('connect', function(){
+        socket.emit('register', ['RegularPlayer']);
+    });
+     /* when received update about players, just display it */
+    socket.on('updateRegularPlayer', function(msg) {
+        var HTML = JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
+        document.getElementById('listPlayers').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
+    });
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>{{ GameName }}: Home</h1>
+List of connected players:
+<div id="listPlayers"></div>
+<br/><br/><br/>
+
+{% endblock %}

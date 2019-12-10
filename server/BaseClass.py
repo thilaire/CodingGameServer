@@ -114,7 +114,7 @@ class BaseClass:
 				handler.close()
 				obj.logger.removeHandler(handler)
 			del cls.allInstances[name]
-			cls.sendListofInstances()
+			type(obj).sendListofInstances()     # type(obj) may be different to cls (obj may be a Snake and cls the Game class)
 
 	# ===================================
 	# List of Instances (LoI) WebSockets
@@ -129,9 +129,8 @@ class BaseClass:
 			# prepare the list
 			d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
 			js = json.dumps(d)
-			# broadcast to all the websockets
-			logger.low_debug("send List of instances : {%s}" % cls.__name__)
-			cls.socketio.emit(cls.__name__, js, broadcast=True)
+			# broadcast to the client in the room)
+			cls.socketio.emit('update'+cls.__name__, js, room=cls.__name__)
 
 	def sendUpdateToWebSocket(self):
 		"""
@@ -143,7 +142,7 @@ class BaseClass:
 		js = json.dumps(self.getDictInformations())
 		logger.debug("send information to webseocket")
 		# send to all the websockets or only to one
-		self.socketio.emit(self.__class__.__name__+'/'+self.name, js, broadcast=True)
+		self.socketio.emit(self.__class__.__name__+'/'+self.name, js, room="toto")
 
 	def getDictInformations(self):
 		"""

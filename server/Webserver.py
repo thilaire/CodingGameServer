@@ -15,8 +15,6 @@ File: webserver.py
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
-import eventlet
-
 
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader
@@ -32,7 +30,7 @@ from server.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
-socketio = SocketIO(flask, async_mode='threading')
+socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
@@ -44,8 +42,7 @@ def runWebServer(host, port):
 	Run the webserver
 	"""
 	# add a custom jinja loader
-	my_loader = ChoiceLoader(
-		[flask.jinja_loader, FileSystemLoader(templatePaths), ])
+	my_loader = ChoiceLoader([flask.jinja_loader, FileSystemLoader(templatePaths), ])
 	flask.jinja_loader = my_loader
 
 	# set some global variables
@@ -55,12 +52,13 @@ def runWebServer(host, port):
 	flask.jinja_env.globals['webPort'] = Config.webPort
 	flask.jinja_env.globals['SubTitle'] = 'A CGS-based game'
 
-	# Start the web server
+	# Start the web server, in background
 	flask.logger.message('Run the web server on port %d...', port)
 	flask.config['SECRET_KEY'] = 'QSDFGHJKLM|'
 
 	BaseClass.socketio = socketio
-
+	# TODO: do not run it in a separate thread, but use socketio.start_background_task instead
+		# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
 	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
 
 
@@ -256,7 +254,10 @@ def player(playerName):
 	else:
 		return render_template('noObject.html', className='player', objectName=playerName)
 
-
+@flask.route('/players')
+def players():
+	"""Web page that display all the (available) players"""
+	return render_template('players.html')
 
 @flask.route('/player/disconnect/<playerName>')
 def disconnectPlayer(playerName):
@@ -279,77 +280,23 @@ def disconnectPlayer(playerName):
 # ==========
 # Websockets
 # ==========
-# TODO: can be directly obtained from {x.__name__:x for x in WebSocket.__subclasses__()}
-wsCls = {'Games': Game, 'Players': RegularPlayer, 'Tournaments': Tournament}
+# the clients just register to have update
+wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament}
 
-
-@socketio.on('join')
+@socketio.on('register')
 def websocket_class(data):
-	print('Hello ', data)
-	Game.sendListofInstances()
+	"""When a client want to register and have the list of Game, Player, Tournament,..."""
+	if not isinstance(data, list):
+		data = [data]
+	# iter over the class the page want to receive the list of instances
+	for p in data:
+		if p in wsCls:
+			join_room(room=p)
+			wsCls[p].sendListofInstances()
+		else:
+			flask.logger.debug("Receive (ang ignore) incompatible data on channel 'join': %s", data)
 
 
-
-# @flask.route('/websocket/ListOfInstances')
-# def classWebSocket():
-# 	"""
-# 	Websocket for the list of instances of the classes Game, Player and Tournament
-# 	-> used to get the a json with the list of instances of theses classes
-# 	"""
-# 	# should be a websocket
-# 	wsock = request.environ.get('wsgi.websocket')
-# 	if not wsock:
-# 		abort(400, 'Expected Websocket request.')
-# 	# register this websocket
-# 	BaseClass.registerLoIWebSocket(wsock)
-# 	# send to this websocket
-# 	BaseClass.sendListofInstances(wsock)
-# 	# loop until the end of this websocket
-# 	while True:
-# 		try:
-# 			wsock.receive()
-# 		except WebSocketError:
-# 			BaseClass.removeLoIWebSocket(wsock)
-# 			break
-
-
-
-
-
-
-
-#
-# @route('/websocket/<clsName>/<name>')
-# def classWebSocket(clsName, name):
-# 	"""
-# 	Websocket for an instance of the classes Game, Player or Tournament
-# 	-> used to get the a json with informations about this object
-#
-# 	"""
-# 	# should be a websocket
-# 	wsock = request.environ.get('wsgi.websocket')
-# 	if not wsock:
-# 		abort(400, 'Expected Websocket request.')
-# 	# check if that instance exists
-# 	if clsName not in wsCls:
-# 		abort(400, 'Invalid class %s is not in %s' % (clsName, wsCls.keys()))
-# 	cls = wsCls[clsName]
-# 	obj = cls.getFromName(name)
-# 	if obj is None:
-# 		abort(400, 'Invalid name (%s) for class %s' % (name, clsName))
-# 	# register this websocket
-# 	obj.registerWebSocket(wsock)
-# 	# send to this websocket
-# 	obj.sendUpdateToWebSocket(wsock)
-# 	# loop until the end of this websocket
-# 	while True:
-# 		try:
-# 			wsock.receive()
-# 		except WebSocketError:
-# 			BaseClass.removeLoIWebSocket(wsock)
-# 			break
-#
-#
 
 
 # ======

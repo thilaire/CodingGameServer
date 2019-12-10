@@ -4,46 +4,28 @@
 {% block script %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
-    var socket = io();
+    const socket = io();
+    /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        console.log("join Games");
-        socket.emit('join', 'Game');
+        socket.emit('register', ['{{GameName}}','RegularPlayer','Tournament']);
     });
-    socket.on('Snake', function(msg) {
-        console.log(msg);
+    /* when received update about a Game, just display it */
+    socket.on('update{{GameName}}', function(msg) {
+        var HTML =JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
+        document.getElementById('listGames').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });
-    socket.on('Game', function(msg) {
-        console.log('receive Game');
-        console.log(msg);
+    /* when received update about players, just display it */
+    socket.on('updateRegularPlayer', function(msg) {
+        var HTML = JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
+        document.getElementById('listPlayers').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });
-    socket.on('RegularPlayer', function(msg) {
-        console.log(msg);
+    /* when received update about tournaments, just display it */
+    socket.on('updateTournament', function(msg) {
+        var HTML = JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
+        document.getElementById('listTournaments').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });
+
 </script>
-
-
-
-
-
-{#<script type="text/javascript">#}
-{#    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/ListOfInstances");#}
-{#    ws.onmessage = function (evt) {#}
-{#        /* the server send a dictionary (JSON) with the list of instances (its HTML representation) of each class */#}
-{#        var data = JSON.parse(evt.data);#}
-{#        /* iterate on each class (RegularPlayer, Game and Tournament) */#}
-{#        for (var cls in data)#}
-{#        {#}
-{#            /* we convert the list of instances in HTML */#}
-{#            //var HTML = [for (p of data[cls]) "<li>" + p + "</li>"].join("");#}
-{#            if (data.hasOwnProperty(cls))#}
-{#            {#}
-{#                var HTML = data[cls].map(function (x){return "<li>"+x+"</li>"}).join("");#}
-{#                document.getElementById('list'+cls).innerHTML = "<ul class='triple'>"+HTML+"</ul>";#}
-{#            }#}
-{#        }#}
-{#        ws.send('OK')#}
-{#    };#}
-{#</script>#}
 {% endblock %}
 
 
@@ -51,14 +33,14 @@
 
     <h1>{{ GameName }}: Home</h1>
 List of connected players:
-<div id="listRegularPlayer"></div>
-<br/>
+<div id="listPlayers"></div>
+<br/><br/><br/>
 
 List of games:
-<div id="listGame"></div>
-<br/>
+<div id="listGames"></div>
+<br/><br/><br/>
 
 List of Tournaments:
-<div id="listTournament"></div>
+<div id="listTournaments"></div>
 
 {% endblock %}
