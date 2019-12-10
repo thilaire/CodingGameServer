@@ -1,21 +1,28 @@
 {% extends "base.html" %}
 
-
 {% block content %}
-<form action="{{base_url}}create_new_game.html" method="POST">
-    <label>
-        Player 1:
-        <select name="player1">
-        {{list_players}}
-        </select>
-    </label>
-    <label>
-        Player2:
-        <select name="player2">
-            {{list_players}}
-        </select>
-    </label>
-    <button name="send">Create Game</button>
+{% if error %}
+    {{ error }}
+{% else %}
+    {% if nb_players > 1 %}
+    <form action="{{base_url}}create_new_game.html" method="POST">
+        <label>
+            Player 1:
+            <select name="player1">
+                {{list_players|safe}}
+            </select>
+        </label>
+        <label>
+            Player2:
+            <select name="player2">
+                {{list_players|safe}}
+            </select>
+        </label>
+        <button name="send">Create Game</button>
 
-</form>
+    </form>
+    {% else %}
+        There is not enough players !
+    {% endif %}
+{% endif %}
 {% endblock %}

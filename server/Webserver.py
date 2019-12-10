@@ -123,13 +123,19 @@ def banner():
 # =======
 #  Games
 # =======
+@flask.route('/games.html')
+def games():
+	"""Web page that display all the (available) players"""
+	return render_template('game/games.html')
+
 @flask.route('/new_game.html')
 def new_game():
 	"""
 	Page to create a new game
 	"""
-	Players = '\n'.join(['<option>' + p.name + '</option>\n' for p in RegularPlayer.allInstances.values()])
-	return render_template('game/new_game.html', list_players=Players)
+	Players = ''.join(['<option value="%s">%s</option>\n' % (p.name, p.name) for p in RegularPlayer.allInstances.values()])
+	print(Players)
+	return render_template('game/new_game.html', list_players=Players, nb_players=len(RegularPlayer.allInstances))
 
 
 @flask.route('/create_new_game.html', methods=['POST'])
@@ -149,12 +155,11 @@ def create_new_game():
 		Game.getTheGameClass()(player1, player2)
 
 	except ValueError as e:
-		# !TODO: redirect to an error page
-		# TODO: log this
-		return 'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
-			   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"'
+		return render_template('game/new_game.html', error=
+							   'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
+							   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"')
 	else:
-		redirect('/')
+		return redirect('/')
 
 
 @flask.route('/game/<gameName>')
@@ -254,10 +259,11 @@ def player(playerName):
 	else:
 		return render_template('noObject.html', className='player', objectName=playerName)
 
-@flask.route('/players')
+
+@flask.route('/players.html')
 def players():
 	"""Web page that display all the (available) players"""
-	return render_template('players.html')
+	return render_template('player/players.html')
 
 @flask.route('/player/disconnect/<playerName>')
 def disconnectPlayer(playerName):
