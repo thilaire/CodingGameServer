@@ -21,7 +21,8 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 
 from flask_socketio import SocketIO, send, emit, join_room
 import threading
-from os.path import isfile, join
+from glob import glob
+from os.path import isfile, join, basename, splitext
 from server.Game import Game
 from server.Player import RegularPlayer
 from server.Logger import Config
@@ -30,7 +31,8 @@ from server.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
-socketio = SocketIO(flask, async_mode='gevent')
+socketio = SocketIO(flask, async_mode='threading')
+#socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
@@ -254,7 +256,6 @@ def player(playerName):
 	"""
 	pl = RegularPlayer.getFromName(playerName)
 	if pl:
-		# TODO: use a template
 		return render_template('player/Player.html', host=Config.host, webPort=Config.webPort, playerName=playerName)
 	else:
 		return render_template('noObject.html', className='player', objectName=playerName)
@@ -308,19 +309,41 @@ def websocket_class(data):
 # ======
 #  logs
 # =======
-# @flask.route('logs/')
-# def log():
-# 	"""Returns the log.html"""
-# 	return
+@flask.route('/log.html')
+def log_():
+	"""Returns the log.html"""
+	return render_template("log/logs.html")
+
+
+@flask.route('/logs/games.html')
+def log_games():
+	"""Returns the log/games.html
+	The list of game logs availables"""
+	# build the list of files in log/games
+	files = glob(join(Config.logPath, "Games/*.log"))
+	# render the page
+	logg = ['<li><a href="/logs/game/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0]) for f in files]
+	return render_template("log/games.html", games_log="\n".join(logg))
+
+
+@flask.route('/logs/players.html')
+def log_players():
+	"""Returns the log/players.html
+	The list of player logs availables"""
+	# build the list of files in log/games
+	files = glob(join(Config.logPath, "Players/*.log"))
+	# render the page
+	logg = ['<li><a href="/logs/player/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0]) for f in files]
+	return render_template("log/players.html", players_log="\n".join(logg))
 
 
 @flask.route('/logs/activity')
-def activity():
+def log_activity():
 	"""Returns the activity.log file"""
 	return send_from_directory(Config.logPath, 'activity.log')
 
 @flask.route('/logs/errors')
-def log():
+def log_error():
 	"""Returns the errors.log file"""
 	return send_from_directory(Config.logPath, 'errors.log')
 
