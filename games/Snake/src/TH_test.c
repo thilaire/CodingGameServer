@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include "snakeAPI.h"
 #include "arena.h"
 
@@ -12,6 +13,7 @@ extern int debug;
 
 int main()
 {
+	char playerName[50];
 	t_game* game;            /* arena */
 	char gameName[50];
 	int* walls;            /* array of walls */
@@ -22,8 +24,11 @@ debug=0;
 
 	srand(time(NULL));	/* random initialized from time */
 
+	sprintf(playerName, "TH_test_%d",getpid());
+
 	/* connection to the server */
-	connectToServer( "localhost", 1234, "TH_test");
+	//connectToServer( "polydev.cia-polytech-sorbonne.fr", 8080, "TH_test");
+	connectToServer( "localhost", 1234, playerName);
 
 	/* play forever */
 	//while(1){
@@ -31,7 +36,8 @@ debug=0;
 		/* new game */
 		game = (t_game*) malloc(sizeof(t_game));
 		/* wait for a game, and retrieve informations about it */
-		waitForSnakeGame( "SUPER_PLAYER difficulty=5 timeout=100 seed=0 start=0", gameName, &sizeX, &sizeY, &nbWalls);
+//waitForSnakeGame( "SUPER_PLAYER difficulty=2 timeout=100  start=0", gameName, &sizeX, &sizeY, &nbWalls);
+waitForSnakeGame( "TOURNAMENT toto", gameName, &sizeX, &sizeY, &nbWalls);
 		/* get the walls and build the game */
 		walls = (int*) malloc( nbWalls * 4 * sizeof(int));
 		game->player = (uint8_t) getSnakeArena( walls);
@@ -61,7 +67,7 @@ debug=0;
 		} while (ret==NORMAL_MOVE);
 
 		/* show who wins */
-		if ( (game->player==0 && ret==WINNING_MOVE) || (game->player==1 && ret==LOOSING_MOVE) )
+		if ( (game->player==0 && ret==WINNING_MOVE) || (game->player==1 && ret==LOSING_MOVE) )
 			printf("\n Héhé, I win!!\n");
 		else
 			printf("\n Unfortunately, the opponent wins\n");
