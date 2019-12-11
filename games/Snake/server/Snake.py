@@ -70,6 +70,10 @@ class Arena:
 		for x, y in [(2, H//2), (L-3, H//2)]:
 			for dx, dy in product(range(-1, 2), range(-1, 2)):
 				self._removeWalls(x+dx, y+dy)
+				self._removeWall(x+dx, y+dy - 1, SOUTH)
+				self._removeWall(x+dx, y+dy + 1, NORTH)
+				self._removeWall(x+dx - 1, y+dy, EAST)
+				self._removeWall(x+dx + 1, y+dy, WEST)
 		tmp_array = []
 		for wall in self._walls:
 			x1, y1, x2, y2 = wall
@@ -97,6 +101,10 @@ class Arena:
 		"""Set a wall direction on x, y"""
 		if -1 <= x < self._L and -1 <= y < self._H:
 			self._array[x][y] |= 1 << direction
+
+	def _removeWall(self, x, y, direction):
+		"""Remove the wall at x, y for direction"""
+		self._array[x][y] &= ~(1 << direction)
 
 	def _removeWalls(self, x, y):
 		"""Remove the walls at x,y"""
