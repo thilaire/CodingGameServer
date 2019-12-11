@@ -7,12 +7,12 @@
     const socket = io();
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        socket.emit('register', ['RegularPlayer']);
+        socket.emit('register', ['Tournament']);
     });
-     /* when received update about players, just display it */
-    socket.on('updateRegularPlayer', function(msg) {
-        var HTML = JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
-        document.getElementById('listPlayers').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
+     /* when received update about a Game, just display it */
+    socket.on('updateTournament', function(msg) {
+        var HTML =JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
+        document.getElementById('listTournaments').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });
 
 </script>
@@ -21,9 +21,9 @@
 
 {% block content %}
 
-    <h1>{{ GameName }}: Players</h1>
-List of connected players:
-<div id="listPlayers"></div>
+    <h1>{{ GameName }}: Tournaments</h1>
+List of running tournaments:
+<div id="listTournaments"></div>
 <br/><br/><br/>
 
 {% endblock %}

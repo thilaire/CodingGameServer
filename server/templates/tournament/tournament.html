@@ -3,18 +3,20 @@
 
 {% block script %}
 <script type="text/javascript">
-    /* configure the webSocket */
-    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/Tournament/{{ t.name }}" );
-    ws.onmessage = function (evt) {
-        /* the server send a dictionary (JSON) with information about the game */
-        var data = JSON.parse(evt.data);
+    const socket = io();
+    /* at connection, register to get update about theses classes */
+    socket.on('connect', function(){
+        socket.emit('tournament', {{ t.name }});
+    });
+     /* when received update about a Tournament, just display it */
+    socket.on('update', function(msg) {
+       var data = JSON.parse(msg.data);
         document.getElementById('div_nbPlayers').innerHTML = data['nbPlayers'];
         document.getElementById('div_phase').innerHTML = data['phase'];
         document.getElementById('div_score').innerHTML = data['score'];
         document.getElementById('div_nextPhaseButton').innerHTML = data['HTMLbutton'];
-        document.getElementById('list_players').innerHTML = "<ul class='triple'>" + data['Players'].map(function (x){return "<li>"+x+"</li>"}).join("") + "</ul>";
-        document.getElementById('list_games').innerHTML = "<ul>" + data['Games'].map(function (x){return "<li>"+x+"</li>"}).join("") + "</ul>";
-        ws.send('OK');
+        document.getElementById('list_players').innerHTML = "<ul class='triple'>" + data['Players'].map(x=> "<li>"+x+"</li>").join("") + "</ul>";
+        document.getElementById('list_games').innerHTML = "<ul>" + data['Games'].map(x => "<li>"+x+"</li>").join("") + "</ul>";
         /* configure the form to send data asynchroneously */
         $("#nextPhaseButton").click(function(){
            $.ajax({
@@ -23,13 +25,13 @@
                  data: $('#nextPhaseForm').serialize()
             });
         });
-    };
+    });
 </script>
 {% endblock %}
 
 
 {% block content %}
-Tournament {{t.name}}
+    <h1>Tournament {{t.name}}</h1>h1>
 <hr/>
 Parameters:
 <ul>

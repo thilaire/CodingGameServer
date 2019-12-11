@@ -31,8 +31,8 @@ from server.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
-socketio = SocketIO(flask, async_mode='threading')
-#socketio = SocketIO(flask, async_mode='gevent')
+#socketio = SocketIO(flask, async_mode='threading')
+socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
@@ -157,7 +157,7 @@ def create_new_game():
 		Game.getTheGameClass()(player1, player2)
 
 	except ValueError as e:
-		return render_template('game/new_game.html', error=
+		return render_template('error.html', error=
 							   'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
 							   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"')
 	else:
@@ -181,12 +181,18 @@ def game(gameName):
 							   gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
 							   player2=g.players[1].HTMLrepr())
 	else:
-		return render_template('noObject.html', className='game', objectName=gameName)
+		return render_template('error.html', error="The Game %s doesn't exist." % (gameName,))
 
 
 # ============
 #  Tournament
 # ============
+@flask.route('/tournaments.html')
+def tournaments():
+	"""Web page that display all the (available) tournaments"""
+	return render_template('tournament/tournaments.html')
+
+
 @flask.route('/new_tournament.html')
 def new_tournament():
 	"""
@@ -207,9 +213,9 @@ def create_new_tournament():
 	except ValueError as e:
 		# !TODO: redirect to an error page
 		# TODO: log this
-		return 'Error. Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"'
+		return render_template('error.html', 'Error: Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"')
 	else:
-		redirect('/')
+		return redirect('/')
 
 
 @flask.route('/tournament/<tournamentName>')
@@ -224,7 +230,7 @@ def tournament(tournamentName):
 	if t:
 		return render_template('tournament/tournament.html', t=t, host=Config.host, webPort=Config.webPort)
 	else:
-		return render_template('noObject.html', className='tournament', objectName=tournamentName)
+		return render_template('error.html', error="The Tournament %s doesn't exist." % (tournamentName,))
 
 
 
@@ -241,7 +247,7 @@ def runTournament(tournamentName):
 	if t:
 		threading.Thread(target=t.runPhase, kwargs=dict(request.form)).start()
 	else:
-		return render_template('noObject.html', className='tournament', objectName=tournamentName)
+		return render_template('error.html', error="The Tournament %s doesn't exist." % (tournamentName,))
 
 
 # =========
@@ -258,13 +264,14 @@ def player(playerName):
 	if pl:
 		return render_template('player/Player.html', host=Config.host, webPort=Config.webPort, playerName=playerName)
 	else:
-		return render_template('noObject.html', className='player', objectName=playerName)
+		return render_template('error.html', error="The Player %s doesn't exist." % (playerName,))
 
 
 @flask.route('/players.html')
 def players():
 	"""Web page that display all the (available) players"""
 	return render_template('player/players.html')
+
 
 @flask.route('/player/disconnect/<playerName>')
 def disconnectPlayer(playerName):
@@ -281,7 +288,7 @@ def disconnectPlayer(playerName):
 		pl.disconnect()
 		redirect('/')
 	else:
-		return render_template('noObject.html', className='player', objectName=playerName)
+		return render_template('error.html', error="The Player %s doesn't exist." % (playerName,))
 
 
 # ==========
