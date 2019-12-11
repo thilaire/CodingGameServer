@@ -193,7 +193,7 @@ class Snake(Game):
 		# random arena
 		totalSize = randint(40, 60)  # sX + sY is randomly in [30,60]
 		self.L = randint(20, 40)
-		self.H = totalSize - self.L
+		self.H = max(totalSize - self.L, 5)     # at least 5
 		self.L, self.H = max(self.L, self.H), min(self.L, self.H)   # L is greater than H
 		self.arena = Arena(self.L, self.H, int(options.get("difficulty", DEFAULT_DIFFICULTY)))
 
