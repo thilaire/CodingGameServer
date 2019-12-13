@@ -3,18 +3,18 @@
 
 {% block script %}
 <script type="text/javascript">
-    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/Player/{{ playerName }}" );
-    var lastgame = '';
-    var player1 = '';
-    var player2 = '';
-    ws.onmessage = function (evt) {
-        /* the server send a dictionary (JSON) with information about the game */
-        var data = JSON.parse(evt.data);
+    const socket = io();
+    /* at connection, register to get update about theses classes */
+    socket.on('connect', function(){
+        socket.emit('registerObject', ['RegularPlayer',{{ t.name }}]);
+    });
+     /* when received update about a Player, just display it */
+    socket.on('update', function(msg) {
+       var data = JSON.parse(msg.data);
         if (data.hasOwnProperty('currentGame'))
         {
             if (data['currentGame'] != lastgame)
             {
-
                 lastgame = data['currentGame'];
                 if (data['currentGame'] != '') {
                     if (data.hasOwnProperty('player1'))
@@ -23,25 +23,23 @@
                             player2 = data['player2'];
                     document.getElementById('div_gameheader').innerHTML =
                             'Game ' + data['currentGame'] + ' : ' + player1 + ' Vs ' + player2;
-                    var ws2 = new WebSocket("ws://"+window.location.host+"/websocket/Game/"+data['currentGame']);
-                    ws2.onmessage = function(evt) {
-                    /* the server send a dictionary (JSON) with information about the game */
-                    var gdata = JSON.parse(evt.data);
-                    for(var el in gdata)
-                     {
-                         if (gdata.hasOwnProperty(el))
-                            document.getElementById('div_'+el).innerHTML = gdata[el];
-                    }
-                    ws2.send('OK');
-                    }
+                    socket.emit('registerObject', [{{GameName}},data['currentGame']]);
+                    /* when received update about a Game, just display it */
+                    socket.on('update', function(msg) {
+                       var data = JSON.parse(msg.data);
+                        for(var el in data)
+                        {
+                            if (data.hasOwnProperty(el))
+                                document.getElementById('div_'+el).innerHTML = data[el];
+                        }
+                    });
                 }
                 else {
-                    ws2.close();
                     document.getElementbyId('div_gameheader').innerHTML = 'Not playing...'
                 }
             }
         }
-    };
+    });
 
 </script>
 {% endblock %}
