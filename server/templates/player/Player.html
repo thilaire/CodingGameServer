@@ -6,7 +6,7 @@
     const socket = io();
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        socket.emit('registerObject', ['RegularPlayer',{{ t.name }}]);
+        socket.emit('registerObject', ['RegularPlayer']);
     });
      /* when received update about a Player, just display it */
     socket.on('update', function(msg) {
@@ -23,16 +23,6 @@
                             player2 = data['player2'];
                     document.getElementById('div_gameheader').innerHTML =
                             'Game ' + data['currentGame'] + ' : ' + player1 + ' Vs ' + player2;
-                    socket.emit('registerObject', [{{GameName}},data['currentGame']]);
-                    /* when received update about a Game, just display it */
-                    socket.on('update', function(msg) {
-                       var data = JSON.parse(msg.data);
-                        for(var el in data)
-                        {
-                            if (data.hasOwnProperty(el))
-                                document.getElementById('div_'+el).innerHTML = data[el];
-                        }
-                    });
                 }
                 else {
                     document.getElementbyId('div_gameheader').innerHTML = 'Not playing...'
@@ -52,8 +42,5 @@
     Not playing...
     </div>
 <br/>
-<!-- This is specic to labyrinth. TODO: change name -->
 
-<div id="div_labycontent">
-</div>
 {% endblock %}
