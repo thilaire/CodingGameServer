@@ -1,0 +1,19 @@
+{% macro socketGame(name, prefix) %}
+<script type="text/javascript">
+    const socket = io();
+    /* at connection, register to get update about theses classes */
+    socket.on('connect', function(){
+        socket.emit('registerObject', ["{{GameName}}","{{ name }}"]);
+    });
+     /* when received update about a Game, just display it */
+    socket.on('update', function(msg) {
+        console.log(msg);
+       var data = JSON.parse(msg);
+        for(var el in data)
+        {
+            if (data.hasOwnProperty(el))
+                document.getElementById('{{prefix}}'+el).innerHTML = data[el];
+        }
+    });
+</script>
+{% endmacro %}

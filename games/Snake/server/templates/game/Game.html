@@ -1,29 +1,16 @@
 {% extends "base.html" %}
-
+{% from "game/macroGame.html" import socketGame%}
 
 {% block script %}
-<script type="text/javascript">
-    var ws = new WebSocket( "ws://"+window.location.host+"/websocket/Game/{{ gameName }}" );
-    ws.onmessage = function (evt) {
-        /* the server send a dictionary (JSON) with information about the game */
-        var data = JSON.parse(evt.data);
-        for(var el in data)
-        {
-            if (data.hasOwnProperty(el))
-                document.getElementById('div_'+el).innerHTML = data[el];
-        }
-        ws.send('OK')
-    };
-</script>
+{{ socketGame(gameName,'game_') }}
 {% endblock %}
 
 
 {% block content %}
-<h2>Game {{ gameName }} : <small>{{ player1 }} Vs {{ player2 }}</small></h2>
+Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
 <br/>
-<!-- This is specic to labyrinth. TODO : move to labyrinth folder -->
+    (fichier de <a href="{{ baseurl }}logs/game/{{ gameName }}">log</a>)
+    <br/>
 
-<div id="div_content">
-    no snake data received
-</div>
+<div style="font-family: monospace" id="game_content"></div>
 {% endblock %}
