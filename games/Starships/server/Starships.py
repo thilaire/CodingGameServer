@@ -157,7 +157,7 @@ class Starships(Game):
 		"""Returns an HTML representation of the game"""
 		return "<A href='/game/%s'>%s</A>" % (self.name, self._cutename)
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 		Returns a dictionary for HTML display
 		:return:

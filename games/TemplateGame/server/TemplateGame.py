@@ -64,9 +64,10 @@ class TemplateGame(Game):
 		# this, or something you want...
 		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 		Returns a dictionary for HTML display
+		- firstTime is True when this is called for the 1st time by a websocket
 		:return:
 		"""
 		#

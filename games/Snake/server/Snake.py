@@ -24,7 +24,6 @@ from server.Game import Game
 from colorama import Fore, Style
 from re import compile
 from itertools import product
-
 from ansi2html import Ansi2HTMLConverter
 
 # import here your training players
@@ -55,33 +54,21 @@ class Arena:
 		self._array = [[0 for _ in range(H)] for _ in range(L)]
 		self._walls = []
 		# fill with random walls according to the difficulty
-		if 0 <= difficulty <= 3:
-			nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
-		else:
-			nbWalls = [0, L * H // 5, L * H // 3, L * H][DEFAULT_DIFFICULTY]
+		if not 0 <= difficulty <= 3:
+			difficulty = DEFAULT_DIFFICULTY
+		nbWalls = [0, L*H//5, L*H//3, L*H][difficulty]
 		for i in range(nbWalls):
 			x = randint(1, L-2)
 			y = randint(1, H-2)
 			direction = randint(0, 3)
-			self._setWall(x, y, direction)                              # no need to check if the wall already exists
-			self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
-			self._walls.append((x, y, x + Ddx[direction], y + Ddy[direction]))
-		# remove walls around the start position (just in case)
-		for x, y in [(2, H//2), (L-3, H//2)]:
-			for dx, dy in product(range(-1, 2), range(-1, 2)):
-				self._removeWalls(x+dx, y+dy)
-				self._removeWall(x+dx, y+dy - 1, SOUTH)
-				self._removeWall(x+dx, y+dy + 1, NORTH)
-				self._removeWall(x+dx - 1, y+dy, EAST)
-				self._removeWall(x+dx + 1, y+dy, WEST)
-		tmp_array = []
-		for wall in self._walls:
-			x1, y1, x2, y2 = wall
-			x = max(x1, x2)
-			y = max(y1, y2)
-			if not(((x >= 2-1 and x < 2+2) or (x >= (L-3)-1 and x < (L-3)+2)) and  (y >= H//2 - 1 and y < H//2 + 2)):
-				tmp_array.append(wall)
-		self._walls = tmp_array
+			# check if there is no wall around the start positions
+			if (2-1 <= x <= 2+1 and H//2-1 <= y <= H//2+1) or ( L-3-1 <= x <= L-3+1 and H//2-1 <= y <= H//2+1):
+				# we do not consider that wall
+				pass
+			else:
+				self._setWall(x, y, direction)                              # no need to check if the wall already exists
+				self._setWall(x + Ddx[direction], y + Ddy[direction], (direction+2) % 4)    # wall in the adjacent box
+				self._walls.append((x, y, x + Ddx[direction], y + Ddy[direction]))
 
 		# put walls around the arena to bound it
 		for x in range(L):
@@ -206,8 +193,8 @@ class Snake(Game):
 		self.arena = Arena(self.L, self.H, int(options.get("difficulty", DEFAULT_DIFFICULTY)))
 
 		# players positions (list of positions+direction, first is the head)
-		self.playerPos: List[List[Tuple[int, int, Union[None, int]]]] = \
-			[[(2, self.H // 2, None)], [(self.L - 3, self.H // 2, None)]]
+		# : List[List[Tuple[int, int, Union[None, int]]]]
+		self.playerPos = [[(2, self.H // 2, None)], [(self.L - 3, self.H // 2, None)]]
 
 		self.arena.setPlayer(2, self.H // 2, 0)
 		self.arena.setPlayer(self.L - 3, self.H // 2, 1)
@@ -225,14 +212,14 @@ class Snake(Game):
 		# this, or something you want...
 		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 	    Returns a dictionary for HTML display
 		"""
 		conv = Ansi2HTMLConverter()
 		html = conv.convert(str(self))
 		# TODO: add the right content for the HTML display
-		return {'content': html}
+		return {'content':html}
 
 
 	def __str__(self):
