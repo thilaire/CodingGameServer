@@ -232,7 +232,7 @@ class Labyrinth(Game):
 		"""Returns an HTML representation of a Labyrinth"""
 		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 		Returns a dictionary for HTML display
 		:return:

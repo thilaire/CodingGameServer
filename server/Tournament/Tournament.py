@@ -474,7 +474,7 @@ class Tournament(BaseClass):
 		self.sendUpdateToWebSocket()
 
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 
 		:return:

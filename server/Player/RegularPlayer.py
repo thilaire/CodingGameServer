@@ -115,7 +115,7 @@ class RegularPlayer(Player, BaseClass):
 		self._game = g
 		self.sendUpdateToWebSocket()
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 		Returns a dictionary with all the infos the webPage needs
 		"""

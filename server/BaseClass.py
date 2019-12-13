@@ -133,21 +133,22 @@ class BaseClass:
 			logger.low_debug("send list of %s",cls.__name__)
 			cls.socketio.emit('list'+cls.__name__, js, room=cls.__name__)
 
-	def sendUpdateToWebSocket(self):
+	def sendUpdateToWebSocket(self, firstTime=False):
 		"""
 		Send some informations about self through all the websockets (in the specific room)
 		Called everytime the object (self) is changed
 		"""
-		js = json.dumps(self.getDictInformations())
+		js = json.dumps(self.getDictInformations(firstTime))
 		logger.low_debug("send 'update' to webseocket for room %s",self.__class__.__name__+'/'+self.name)
 		# send to all the websockets or only to one
 		self.socketio.emit('update', js, room=self.__class__.__name__+'/'+self.name)
 
-	def getDictInformations(self):
+	def getDictInformations(self, firstTime=False):
 		"""
 		Send information (a dictionary) about the object
 
 		TO BE OVERLOADED
 
+		- firstTime is True when this is called for the 1st time by a websocket
 		"""
 		return {}
