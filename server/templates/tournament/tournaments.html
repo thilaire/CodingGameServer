@@ -9,7 +9,7 @@
         socket.emit('register', ['Tournament']);
     });
      /* when received update about a Game, just display it */
-    socket.on('updateTournament', function(msg) {
+    socket.on('listTournament', function(msg) {
         var HTML =JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
         document.getElementById('listTournaments').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });

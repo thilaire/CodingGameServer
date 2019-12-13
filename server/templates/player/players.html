@@ -8,7 +8,7 @@
         socket.emit('registerList', ['RegularPlayer']);
     });
      /* when received update about players, just display it */
-    socket.on('updateRegularPlayer', function(msg) {
+    socket.on('listRegularPlayer', function(msg) {
         var HTML = JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
         document.getElementById('listPlayers').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });

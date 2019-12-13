@@ -9,7 +9,7 @@
         socket.emit('registerList', ['{{GameName}}']);
     });
      /* when received update about a Game, just display it */
-    socket.on('update{{GameName}}', function(msg) {
+    socket.on('list{{GameName}}', function(msg) {
         var HTML =JSON.parse(msg).map(p => "<li>" + p + "</li>").join("");
         document.getElementById('listGames').innerHTML = "<ul class='triple'>"+HTML+"</ul>";
     });
