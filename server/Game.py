@@ -131,7 +131,7 @@ class Game(BaseClass):
 		name = ""
 		while not ok:   # we need a loop just in case we are unlucky and two existing games have the same hash
 			fullName = str(int(time())) + player1.name + player2.name
-			name = hex6(seed)[2:] + hex6(crc24(bytes(fullName, 'utf8')))[2:]
+			name = hex6(seed) + hex6(crc24(bytes(fullName, 'utf8')))
 			ok = name not in self.allInstances
 			if not ok:
 				timemod.sleep(1)
