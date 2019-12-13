@@ -130,19 +130,18 @@ class BaseClass:
 			d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
 			js = json.dumps(d)
 			# broadcast to the client in the room)
-			cls.socketio.emit('update'+cls.__name__, js, room=cls.__name__)
+			logger.low_debug("send list of %s",cls.__name__)
+			cls.socketio.emit('list'+cls.__name__, js, room=cls.__name__)
 
 	def sendUpdateToWebSocket(self):
 		"""
-		Send some informations about self through all the websockets (or only one, if wsock is specified)
+		Send some informations about self through all the websockets (in the specific room)
 		Called everytime the object (self) is changed
-		Parameters:
-		- wsock: (websocket) if None, the data is sent to all the websockets, otherwise only to this one
 		"""
 		js = json.dumps(self.getDictInformations())
-		logger.debug("send information to webseocket")
+		logger.low_debug("send 'update' to webseocket for room %s",self.__class__.__name__+'/'+self.name)
 		# send to all the websockets or only to one
-		self.socketio.emit(self.__class__.__name__+'/'+self.name, js, room="toto")
+		self.socketio.emit('update', js, room=self.__class__.__name__+'/'+self.name)
 
 	def getDictInformations(self):
 		"""

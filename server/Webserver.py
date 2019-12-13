@@ -297,7 +297,7 @@ def disconnectPlayer(playerName):
 # the clients just register to have update
 wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament}
 
-@socketio.on('register')
+@socketio.on('registerList')
 def websocket_class(data):
 	"""When a client want to register and have the list of Game, Player, Tournament,..."""
 	if not isinstance(data, list):
@@ -305,11 +305,27 @@ def websocket_class(data):
 	# iter over the class the page want to receive the list of instances
 	for p in data:
 		if p in wsCls:
+			# add it in the appropriate room
 			join_room(room=p)
 			wsCls[p].sendListofInstances()
 		else:
-			flask.logger.debug("Receive (ang ignore) incompatible data on channel 'join': %s", data)
+			flask.logger.debug("Receive (ang ignore) incompatible data on channel 'registerList': %s", data)
 
+
+@socketio.on('registerObject')
+def websocket_tournament(data):
+	clsName, name = data
+	if clsName in wsCls:
+		cls = wsCls[clsName]
+		obj = cls.getFromName(name)
+		if obj:
+			# add it in the appropriate room
+			join_room(room=clsName + '/' + name)
+			obj.sendUpdateToWebSocket()
+		else:
+			flask.logger.info('Receive (and ignore) incompatible data on channel registerObject: Invalid name (%s) for class %s', name, clsName)
+	else:
+		flask.logger.info('Receive (and ignore) incompatible data on channel registerObject: Invalid class %s is not in %s', clsName, wsCls.keys())
 
 
 
