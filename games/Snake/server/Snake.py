@@ -151,6 +151,11 @@ class Arena:
 
 		return c1, c2, c3
 
+	def getBorderHTML(self, x, y):
+		"""Retuns the borders to apply to an HTML cell (for the walls)"""
+		return ('2px' if self._array[x][y]&1 else '0px',	'2px' if self._array[x][y] & 2 else '0px',
+			   '2px' if self._array[x][y] & 4 else '0px', '2px' if self._array[x][y] & 8 else '0px')
+
 
 class Snake(Game):
 	"""
@@ -216,11 +221,24 @@ class Snake(Game):
 		"""
 	    Returns a dictionary for HTML display
 		"""
-		conv = Ansi2HTMLConverter()
-		html = conv.convert(str(self))
-		# TODO: add the right content for the HTML display
-		return {'content':html}
+		d = {}
+		# add the arena (the <table> with walls), for the 1st time
+		if firstTime:
+			lines = []
+			for y in range(self.H):
+				L = []
+				for x in range(self.L):
+					L.append('<td class="arena" id="t_%d_%d" style="border-width: %s %s %s %s">.</td>' % ((x,y)+self.arena.getBorderHTML(x, y)))
+				lines.append("<tr>" + "".join(L) + "</tr>")
 
+			d['arena'] = "<table style='border-collapse:collapse;'>\n"+"\n".join(lines)+"\n</table>\n"
+			d['names'] = [p.name for p in self.players]
+		# add the snakes
+		d['pl0'] = [(x, y) for x, y, d in self.playerPos[0]]
+		d['pl1'] = [(x, y) for x, y, d in self.playerPos[1]]
+		# counters
+		d['counters'] = self.counter
+		return d
 
 	def __str__(self):
 		"""

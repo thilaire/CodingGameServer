@@ -5,15 +5,34 @@
     socket.on('connect', function(){
         socket.emit('registerObject', ["{{GameName}}","{{ name }}"]);
     });
+    let last_pl0 = [0,0];
+    let last_pl1 = [0,0];     /* last position (to draw in white if needed) */
      /* when received update about a Game, just display it */
     socket.on('update', function(msg) {
         console.log(msg);
-       var data = JSON.parse(msg);
-        for(var el in data)
-        {
-            if (data.hasOwnProperty(el))
-                document.getElementById('{{prefix}}'+el).innerHTML = data[el];
+       let data = JSON.parse(msg);
+       /* arena */
+       if (data.hasOwnProperty('arena'))
+           document.getElementById('{{prefix}}arena').innerHTML = data['arena'];
+       if (data.hasOwnProperty('names')){
+           document.getElementById('{{prefix}}name0').innerText = data['names'][0];
+           document.getElementById('{{prefix}}name1').innerText = data['names'][1];
+       }
+        /* snakes */
+        document.getElementById('t_'+last_pl0[0]+'_'+last_pl0[1]).style.backgroundColor="#fff";
+        document.getElementById('t_'+last_pl1[0]+'_'+last_pl1[1]).style.backgroundColor="#fff";
+        for(let p of data['pl0']){
+            document.getElementById('t_'+p[0]+'_'+p[1]).style.backgroundColor="#f00";
         }
+        for(let p of data['pl1']){
+            document.getElementById('t_'+p[0]+'_'+p[1]).style.backgroundColor="#0f0";
+        }
+        /* keep the last */
+        last_pl0 = data['pl0'][data['pl0'].length-1];
+        last_pl1 = data['pl1'][data['pl1'].length-1];
+        /* counter */
+        document.getElementById('{{prefix}}counters0').innerText = data['counters'][0];
+        document.getElementById('{{prefix}}counters1').innerText = data['counters'][1];
     });
 </script>
 {% endmacro %}

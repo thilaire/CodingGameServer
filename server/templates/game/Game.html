@@ -9,8 +9,9 @@
 {% block content %}
 Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
 <br/>
-    (fichier de <a href="{{ baseurl }}logs/game/{{ gameName }}">log</a>)
+    (fichier de <a href="{{baseurl}}/logs/game/{{ gameName }}">log</a>)
     <br/>
 
-<div style="font-family: monospace" id="game_content"></div>
+    <div id="game_content"></div>
+
 {% endblock %}

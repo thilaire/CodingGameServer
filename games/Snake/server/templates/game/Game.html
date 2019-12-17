@@ -5,12 +5,27 @@
 {{ socketGame(gameName,'game_') }}
 {% endblock %}
 
+{% block style %}
+    <style>
+    .arena{
+
+        padding:10px;
+        border: solid #000;
+    }
+    </style>
+{% endblock %}
 
 {% block content %}
 Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
 <br/>
-    (fichier de <a href="{{ baseurl }}logs/game/{{ gameName }}">log</a>)
+    (fichier de <a href="{{ baseurl }}/../logs/game/{{ gameName }}">log</a>)
     <br/>
 
-<div style="font-family: monospace" id="game_content"></div>
+<div id="game_content"></div>
+    <span style="color:#f00">Player 1</span>:&nbsp;</span><span id="game_name0"></span>(<span id="game_counters0"></span>)
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span style="color:#0f0">Player 2</span>:&nbsp;</span><span id="game_name1"></span>(<span id="game_counters1"></span>)
+<div id="game_arena"></div>
+
+
 {% endblock %}
