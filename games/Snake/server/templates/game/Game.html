@@ -3,14 +3,17 @@
 
 {% block script %}
 {{ socketGame(gameName,'game_') }}
+
 {% endblock %}
 
 {% block style %}
     <style>
-    .arena{
-
-        padding:10px;
+    .arena {
+        padding: 0px;
         border: solid #000;
+        width: 22px;
+        height: 22px;
+        background-clip: padding-box;
     }
     </style>
 {% endblock %}
