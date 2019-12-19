@@ -11,7 +11,6 @@
     let pos_tail = [[0,0],[0,0]];     /* last positions (to draw in white if needed) */
      /* when received update about a Game, just display it */
     socket.on('update', function(msg) {
-        console.log(msg);
        let data = JSON.parse(msg);
        /* arena */
        if (data.hasOwnProperty('arena'))
@@ -27,8 +26,6 @@
             /* draw the head, body and tail */
             let snake = data['pl'][pl];
             for (let j=0;j<snake.length; j++) {
-                console.log(j);
-                console.log(snake[j]);
                 if (j == 0)
                     document.getElementById('t_' + snake[j][0] + '_' + snake[j][1]).style.backgroundImage = head[pl][snake[j][2]];
                 else if (j == snake.length - 1)
@@ -41,6 +38,10 @@
             /* counter */
             document.getElementById('{{prefix}}counters'+pl.toString()).innerText = data['counters'][pl];
         }
+        /* comments */
+        let comments = document.getElementById('{{prefix}}comments');
+        comments.innerHTML += data['comments'];
+        comments.scrollTop = comments.scrollHeight;
     });
 
 

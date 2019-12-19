@@ -49,7 +49,7 @@ class CommentQueue:
 		- nPlayer: (int) who send the comment
 		"""
 		# add the new comment
-		comment = Comment(msg, nPlayer, [False, False])  # unread message owned by nPlayer
+		comment = Comment(msg, nPlayer, [False, False, False])  # unread message owned by nPlayer & websocket
 		self._comments.append(comment)
 		self._size[nPlayer] += 1
 
@@ -63,11 +63,11 @@ class CommentQueue:
 
 
 
-	def getString(self, nPlayer, playerNames):
+	def getString(self, nPlayer, playerNames, html=False):
 		"""
 		Get the last comments not yet seen by player nPlayer (at least 2N)
 		Parameters:
-		- nPlayer: (int) number of the player who want the comments
+		- nPlayer: (int) number of the player who want the comments (2 for a websocket)
 		- playerNames: list of the name of the two players
 
 		Returns a string (to send to the client)
@@ -79,7 +79,10 @@ class CommentQueue:
 		for x in self._comments:
 			if not x.read[nPlayer]:
 				x.read[nPlayer] = True
-				comments.append(Fore.WHITE + Style.BRIGHT + "[%s] %s" % (playerNames[x.owner], x.msg) + Fore.RESET + Style.NORMAL)
+				if not html:
+					comments.append(Fore.WHITE + Style.BRIGHT + "[%s] %s" % (playerNames[x.owner], x.msg) + Fore.RESET + Style.NORMAL)
+				else:
+					comments.append("[<span style='color:%s'>%s</span>]:&nbsp;%s<br/>" % ('#f00' if x.owner else '#0f0', playerNames[x.owner], x.msg))
 
 		return "\n".join(comments)
 

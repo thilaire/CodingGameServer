@@ -259,10 +259,9 @@ class Snake(Game):
 					mini, maxi = sorted([self.playerPos[p][i][2], (self.playerPos[p][i + 1][2]+2)%4])
 					ll.append((self.playerPos[p][i][0], self.playerPos[p][i][1], mini, maxi))
 			d['pl'].append(ll)
-		print(self.playerPos)
-		print(d['pl'])
 		# counters
 		d['counters'] = self.counter
+		d['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
 		return d
 
 	def __str__(self):

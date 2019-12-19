@@ -25,10 +25,11 @@ Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
     <br/>
 
 <div id="game_content"></div>
-    <span style="color:#f00">Player 1</span>:&nbsp;</span><span id="game_name0"></span>(<span id="game_counters0"></span>)
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <span style="color:#0f0">Player 2</span>:&nbsp;</span><span id="game_name1"></span>(<span id="game_counters1"></span>)
-<div id="game_arena"></div>
-
+<span style="color:#f00">Player 1</span>:&nbsp;</span><span id="game_name0"></span>(<span id="game_counters0"></span>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:#0f0">Player 2</span>:&nbsp;</span><span id="game_name1"></span>(<span id="game_counters1"></span>)
+<br/><br/>
+    <div id="game_arena"  style="background-color:#fff; float:left;margin-right: 50px;"></div>
+<div style="overflow-y: scroll; height:400px; float:right;" id="game_comments"></div>
 
 {% endblock %}
