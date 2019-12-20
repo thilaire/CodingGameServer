@@ -1,20 +1,27 @@
 {% extends "base.html" %}
-{% from "game/macroGame.html" import socketGame%}
+{% from "game/macroGame.html" import socketGame, styleGame, contentGame %}
 
 {% block script %}
 <script type="text/javascript">
     const socket = io();
-    {{ socketGame(gameName,'game_') }}
+    socket.on('endOfGame', function(msg){
+        document.getElementById('endOfGame').innerHTML = msg;
+    });
 </script>
+{{ socketGame(gameName,'game_') }}
 {% endblock %}
 
+{% block style %}
+    {{ styleGame() }}
+{% endblock %}
 
 {% block content %}
-Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
-<br/>
-    (fichier de <a href="{{baseurl}}/logs/game/{{ gameName }}">log</a>)
+    <h1>Game {{ gameName }}: {{ player1|safe }} Vs {{ player2|safe }} </h1>
+    <span id="endOfGame"></span>
+    <br/>
+    (fichier de <a href="{{ baseurl }}/../logs/game/{{ gameName }}">log</a>)
     <br/>
 
-    <div id="game_content"></div>
+    {{ contentGame() }}
 
 {% endblock %}

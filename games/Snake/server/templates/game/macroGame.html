@@ -1,4 +1,5 @@
 {% macro socketGame(name, prefix) %}
+ <script type="text/javascript">
     /* images in base64 */
     {% include "game/image-snake.js" %}
     /* at connection, register to get update about theses classes */
@@ -40,4 +41,25 @@
         comments.innerHTML += data['comments'];
         comments.scrollTop = comments.scrollHeight;
     });
+ </script>
+{% endmacro %}
+
+{% macro styleGame() %}
+<style>
+    .arena {
+        padding: 0px;
+        border: solid #000;
+        width: 22px;
+        height: 22px;
+        background-clip: padding-box;
+    }
+</style>
+{% endmacro %}
+
+{% macro contentGame() %}
+    <span style="color:#f00">Player 1</span>:&nbsp;</span><span id="game_name0"></span>(<span id="game_counters0"></span>)
+    <span style="color:#0f0">Player 2</span>:&nbsp;</span><span id="game_name1"></span>(<span id="game_counters1"></span>)
+    <br/><br/>
+    <div id="game_arena"  style="background-color:#fff; float:left;margin-right: 50px;"></div>
+    <div style="overflow-y: scroll; height:400px; float:right;" id="game_comments"></div>
 {% endmacro %}

@@ -1,4 +1,5 @@
 {% macro socketGame(name, prefix) %}
+ <script type="text/javascript">
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
         socket.emit('registerObject', ["{{GameName}}","{{ name }}"]);
@@ -13,4 +14,12 @@
                 document.getElementById('{{prefix}}'+el).innerHTML = data[el];
         }
     });
+ </script>
+{% endmacro %}
+
+{% macro styleGame() %}
+{% endmacro %}
+
+{% macro contentGame() %}
+  <div id="game_content"></div>
 {% endmacro %}
