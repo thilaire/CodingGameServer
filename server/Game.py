@@ -257,6 +257,12 @@ class Game(BaseClass):
 		if self._tournament:
 			self._tournament.endOfGame(self._players[whoWins], self._players[1 - whoWins])
 
+		# tell the websockets the game has ended
+		if self.socketio:
+			txt = "%s won against (%s) !!!" % (self._players[whoWins].name, msg)
+			# send to all the websockets or only to one
+			self.socketio.emit('endOfGame', txt, room=self.__class__.__name__ + '/' + self.name)
+
 		# remove from the list of Games
 		Game.removeInstance(self.name)
 

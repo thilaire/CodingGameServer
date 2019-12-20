@@ -2,8 +2,13 @@
 {% from "game/macroGame.html" import socketGame%}
 
 {% block script %}
+    <script type="text/javascript">
+    const socket = io();
 {{ socketGame(gameName,'game_') }}
-
+socket.on('endOfGame', function(msg){
+        document.getElementById('endOfGame').innerHTML = msg;
+    });
+</script>
 {% endblock %}
 
 {% block style %}
@@ -19,7 +24,7 @@
 {% endblock %}
 
 {% block content %}
-Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }}
+    Game {{ gameName }} : {{ player1|safe }} Vs {{ player2|safe }} &nbsp;&nbsp;&nbsp;&nbsp;<span id="endOfGame"></span>
 <br/>
     (fichier de <a href="{{ baseurl }}/../logs/game/{{ gameName }}">log</a>)
     <br/>

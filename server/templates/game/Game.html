@@ -2,7 +2,10 @@
 {% from "game/macroGame.html" import socketGame%}
 
 {% block script %}
-{{ socketGame(gameName,'game_') }}
+<script type="text/javascript">
+    const socket = io();
+    {{ socketGame(gameName,'game_') }}
+</script>
 {% endblock %}
 
 
