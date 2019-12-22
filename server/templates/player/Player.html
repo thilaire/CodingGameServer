@@ -29,7 +29,6 @@
                     socket.off('update{{ GameName }}');
                     /* register to the game */
                     socket.emit('registerObject', ["{{GameName}}", lastGame]);
-                    console.log("registerObject [{{ GameName }},"+lastGame+"]");
                     displayEndOfGame();
                     updateWebSocket();
                 }
