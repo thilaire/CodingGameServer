@@ -1,31 +1,41 @@
 {% extends "base.html" %}
-
+{% from "game/macroGame.html" import socketGame, styleGame, contentGame %}
 
 {% block script %}
+{{ socketGame('game_') }}
 <script type="text/javascript">
     const socket = io();
+    let lastGame = '';  /* name of the previous game */
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        socket.emit('registerObject', ['RegularPlayer']);
+        socket.emit('registerObject', ['RegularPlayer','{{ playerName }}']);
     });
      /* when received update about a Player, just display it */
-    socket.on('update', function(msg) {
-       var data = JSON.parse(msg.data);
+    socket.on('updateRegularPlayer', function(msg) {
+       var data = JSON.parse(msg);
         if (data.hasOwnProperty('currentGame'))
         {
-            if (data['currentGame'] != lastgame)
+            if (data['currentGame'] != lastGame)
             {
-                lastgame = data['currentGame'];
+                lastGame = data['currentGame'];
                 if (data['currentGame'] != '') {
-                    if (data.hasOwnProperty('player1'))
-                            player1 = data['player1'];
-                    if (data.hasOwnProperty('player2'))
-                            player2 = data['player2'];
-                    document.getElementById('div_gameheader').innerHTML =
-                            'Game ' + data['currentGame'] + ' : ' + player1 + ' Vs ' + player2;
+                    document.getElementById('endOfGame').innerHTML = "";
+                    document.getElementById('game').style.visibility='visible';
+                    player1 = data['player1'];
+                    player2 = data['player2'];
+                    document.getElementById('gameheader').innerHTML =
+                        'Game ' + data['currentGame'] + ' : ' + player1 + ' vs ' + player2;
+                    /* unregister the previous game */
+                    socket.off('update{{ GameName }}');
+                    /* register to the game */
+                    socket.emit('registerObject', ["{{GameName}}", lastGame]);
+                    console.log("registerObject [{{ GameName }},"+lastGame+"]");
+                    displayEndOfGame();
+                    updateWebSocket();
                 }
                 else {
-                    document.getElementbyId('div_gameheader').innerHTML = 'Not playing...'
+                    document.getElementById('gameheader').innerHTML = 'Not playing...';
+                    //document.getElementById('game').style.visibility='hidden';
                 }
             }
         }
@@ -35,11 +45,21 @@
 {% endblock %}
 
 
-{% block content %}
-    <h2>Page of player {{ playerName }} </h2>
+{% block style %}
+    {{ styleGame() }}
+{% endblock %}
 
-    <div id="div_gameheader">
-    Not playing...
+
+{% block content %}
+    <h1>Page of player {{ playerName }} </h1>
+
+    <h2 id="gameheader">Not playing...</h2>
+    <div id="game" style="visibility: hidden;">
+        <span id="endOfGame"></span>
+        <br/>
+        (fichier de <a href="{{ baseurl }}/../logs/game/{{ gameName }}">log</a>)
+        <br/>
+        {{ contentGame() }}
     </div>
 <br/>
 

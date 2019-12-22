@@ -142,7 +142,7 @@ class BaseClass:
 			js = json.dumps(self.getDictInformations(firstTime))
 			logger.low_debug("send 'update' to webseocket for room %s",self.__class__.__name__+'/'+self.name)
 			# send to all the websockets or only to one
-			self.socketio.emit('update', js, room=self.__class__.__name__+'/'+self.name)
+			self.socketio.emit('update'+self.__class__.__name__, js, room=self.__class__.__name__+'/'+self.name)
 
 	def getDictInformations(self, firstTime=False):
 		"""
