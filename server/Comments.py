@@ -82,7 +82,7 @@ class CommentQueue:
 				if not html:
 					comments.append(Fore.WHITE + Style.BRIGHT + "[%s] %s" % (playerNames[x.owner], x.msg) + Fore.RESET + Style.NORMAL)
 				else:
-					comments.append("[<span style='color:%s'>%s</span>]:&nbsp;%s<br/>" % ('#f00' if x.owner else '#0f0', playerNames[x.owner], x.msg))
+					comments.append("[<span style='color:%s'>%s</span>]:&nbsp;%s<br/>" % ('#0f0' if x.owner else '#f00', playerNames[x.owner], x.msg))
 
 		return "\n".join(comments)
 

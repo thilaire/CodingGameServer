@@ -14,7 +14,7 @@ src = []
 # do it for the head and the tail
 for pre in ['head', 'tail']:
 	ll = []
-	for p in ['green', 'red']:
+	for p in ['red', 'green']:
 		l = []
 		for d in range(4):
 			l.append("\"url('data:image/png;base64,%s')\"" % str(genJS('%s/%s-%d.png' % (p, pre, d))))
@@ -23,7 +23,7 @@ for pre in ['head', 'tail']:
 
 # and for the body
 lll = []
-for p in ['green', 'red']:
+for p in ['red', 'green']:
 	ll = []
 	for d1 in range(3):
 		l = ["\"\""]*(d1+1)
