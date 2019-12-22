@@ -36,11 +36,6 @@ logger = logging.getLogger("Snake")  # general logger ('root')
 regd = compile(r"(\d+)")  # regex to parse a "%d" string
 
 
-def indexListJS(x,y):
-	"""Returns the index in the list of images"""
-	x, y = min(x, y), max(x, y)
-	return (4 - x) * x + 3 - y
-
 class Arena:
 	"""
 	the arena is an array of integers
