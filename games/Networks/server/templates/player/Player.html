@@ -8,16 +8,16 @@
 <script type="text/javascript">
     var initialized = false;
     var ws = new WebSocket( "ws://"+window.location.host+"/websocket/Player/{{ playerName }}" );
-    var lastgame = '';
+    var lastGame = '';
     var player1 = '';
     var player2 = '';
     ws.onmessage = function (evt) {
         /* the server send a dictionary (JSON) with information about the game */
         var data = JSON.parse(evt.data);
         if (data.hasOwnProperty('currentGame')) {
-            if (data['currentGame'] != lastgame) {
+            if (data['currentGame'] != lastGame) {
 
-                lastgame = data['currentGame'];
+                lastGame = data['currentGame'];
                 if (data['currentGame'] != '') {
                     if (data.hasOwnProperty('player1'))
                             player1 = data['player1'];
