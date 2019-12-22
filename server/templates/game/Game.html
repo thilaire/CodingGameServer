@@ -2,18 +2,24 @@
 {% from "game/macroGame.html" import socketGame, styleGame, contentGame %}
 
 {% block script %}
+{{ socketGame('game_') }}
 <script type="text/javascript">
     const socket = io();
-    socket.on('endOfGame', function(msg){
-        document.getElementById('endOfGame').innerHTML = msg;
+    /* at connection, register to get update about theses classes */
+    socket.on('connect', function () {
+        socket.emit('registerObject', ["{{GameName}}", "{{gameName}}"]);
     });
+    /* register about end of the game */
+    displayEndOfGame();
+    /* register about update */
+    updateWebSocket();
 </script>
-{{ socketGame(gameName,'game_') }}
+
 {% endblock %}
 
-{% block style %}
-    {{ styleGame() }}
-{% endblock %}
+    {% block style %}
+        {{ styleGame() }}
+    {% endblock %}
 
 {% block content %}
     <h1>Game {{ gameName }}: {{ player1|safe }} Vs {{ player2|safe }} </h1>
