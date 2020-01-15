@@ -20,7 +20,7 @@ CGS requires Python3 and the following packages:
 - colorama, colorlog: display color in text (and logs)
 - docopt: parse the documentation and implement it
 - jinja2, flask, flask-socketio, eventlet: webserver (+ websocket)
->> pip install colorama colorlog docopt jinja2 ansi2html flask flask-socketio gevent
+>> pip install colorama colorlog docopt jinja2 ansi2html flask flask-socketio gevent eventlet
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
