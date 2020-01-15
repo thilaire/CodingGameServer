@@ -30,12 +30,12 @@ class PoolKnockout(Tournament):
 	mode = "Two stages (pool + knockout) Tournament"
 	HTMLoptions = """
 	<label>
-		Nb groups: <input name="nbGroups" type="number" value="4" required/>
+		Nb groups: <select name="nbGroups"><option>2</option><option>4</option><option>8</option></select>
 	</label>
 	<br/>
 	<label>
 		Nb of players per group that can pass the first phase:
-		<input name="nbFirst" type="radio" value="2" checked required/> 2
+		<select name="nbFirst"><option>2</option><option>4</option></select>
 	</label>
 	"""
 	HTMLgameoptions = """
