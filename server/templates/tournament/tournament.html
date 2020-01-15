@@ -6,11 +6,11 @@
     const socket = io();
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        socket.emit('registerObject', ['Tournament',{{ t.name }}]);
+        socket.emit('registerObject', ['{{t.__class__.__name__}}','{{ t.name }}']);
     });
      /* when received update about a Tournament, just display it */
-    socket.on('update', function(msg) {
-       var data = JSON.parse(msg.data);
+    socket.on('update{{t.__class__.__name__}}', function(msg) {
+       var data = JSON.parse(msg);
         document.getElementById('div_nbPlayers').innerHTML = data['nbPlayers'];
         document.getElementById('div_phase').innerHTML = data['phase'];
         document.getElementById('div_score').innerHTML = data['score'];
@@ -31,7 +31,7 @@
 
 
 {% block content %}
-    <h1>Tournament {{t.name}}</h1>h1>
+    <h1>Tournament {{t.name}}</h1>
 <hr/>
 Parameters:
 <ul>
@@ -42,9 +42,11 @@ Parameters:
 <!-- websocket-updated data -->
 <hr/>
 
-    <div id="div_nbPlayers"></div> players are registred:
+    <span id="div_nbPlayers"></span> players are registred:
 <div id="list_players"></div>
-
+<br/>
+    <br/>
+    <br/>
 <hr/>
 
 <div id="div_phase"></div><br/>

@@ -6,7 +6,7 @@
     const socket = io();
     /* at connection, register to get update about theses classes */
     socket.on('connect', function(){
-        socket.emit('register', ['Tournament']);
+        socket.emit('registerList', ['Tournament']);
     });
      /* when received update about a Game, just display it */
     socket.on('listTournament', function(msg) {
