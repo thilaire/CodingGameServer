@@ -213,7 +213,7 @@ def create_new_tournament():
 	except ValueError as e:
 		# !TODO: redirect to an error page
 		# TODO: log this
-		return render_template('error.html', 'Error: Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"')
+		return render_template('error.html', error='Error: Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"')
 	else:
 		return redirect('/')
 
@@ -246,6 +246,7 @@ def runTournament(tournamentName):
 	t = Tournament.getFromName(tournamentName)
 	if t:
 		threading.Thread(target=t.runPhase, kwargs=dict(request.form)).start()
+		return ''
 	else:
 		return render_template('error.html', error="The Tournament %s doesn't exist." % (tournamentName,))
 
@@ -286,7 +287,7 @@ def disconnectPlayer(playerName):
 	pl = RegularPlayer.getFromName(playerName)
 	if pl:
 		pl.disconnect()
-		redirect('/')
+		return redirect('/')
 	else:
 		return render_template('error.html', error="The Player %s doesn't exist." % (playerName,))
 
@@ -295,7 +296,8 @@ def disconnectPlayer(playerName):
 # Websockets
 # ==========
 # the clients just register to have update
-wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament}
+#wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament}
+wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament, 'League': Tournament, 'PoolKnockout': Tournament}
 
 @socketio.on('registerList')
 def websocket_class(data):
