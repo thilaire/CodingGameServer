@@ -36,7 +36,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 #define h_addr h_addr_list[0] /* for backward compatibility */
 
 
-#define HEAD_SIZE 4 /*number of bytes to code the size of the message (header)*/
+#define HEAD_SIZE 6 /*number of bytes to code the size of the message (header)*/
 #define MAX_LENGTH 20000 /* maximum size of the buffer expect for print_Game */
 
 /* global variables about the connection

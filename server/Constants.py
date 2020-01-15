@@ -27,7 +27,7 @@ WINNING_MOVE = 1
 LOSING_MOVE = -1
 
 # Formatting string indicating  the length of the message
-SIZE_FMT = "%04d"
+SIZE_FMT = "%06d"
 
 # Maximum number of comments per player
 MAX_COMMENTS = 5
