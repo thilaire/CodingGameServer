@@ -100,12 +100,19 @@ class Tournament(BaseClass):
 		    is randomly determined
 		"""
 		# name of the tournament
-		self._name = sub(r'\W+', '', name)
+		#self._name = sub(r'\W+', '', name)
+		if isinstance(name,list):
+			name=name[0]
+		self._name = name
 		# check if the name is valid (20 characters max, and only in [a-zA-Z0-9_]
 		if name != self._name or len(name) > 20:
 			raise ValueError("The name of the tournament is not valid (must be 20 characters max, and only in [a-zA-Z0-9_]")
 
 		# get maximum number of players
+		if isinstance(nbMaxPlayers,list):
+			nbMaxPlayers=nbMaxPlayers[0]
+		if isinstance(nbRounds4Victory,list):
+			nbRounds4Victory=nbRounds4Victory[0]
 		try:
 			self._nbMaxPlayers = int(nbMaxPlayers)
 		except ValueError:
@@ -132,7 +139,7 @@ class Tournament(BaseClass):
 		self._matchGen = self.MatchsGenerator()
 
 		# and last, call the constructor of BaseClass
-		super().__init__(name)
+		super().__init__(self._name)
 		# and log it
 		self._logger.message("=======================")
 		self._logger.message("The tournament %s is now created (%s)", name, self.__class__.__name__)
@@ -253,6 +260,8 @@ class Tournament(BaseClass):
 		"""
 		# dictionary of all the subclasses (championship, single-elimination, etc.)
 		d = {sc.__name__: sc for sc in cls.__subclasses__()}
+		if isinstance(mode,list):
+			mode=mode[0]
 		if mode in d:
 			return d[mode](**options)
 		else:

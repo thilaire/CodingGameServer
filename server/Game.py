@@ -151,7 +151,7 @@ class Game(BaseClass):
 			self._delay = 0
 		else:
 			try:
-				self._delay = int(options['delay'])
+				self._delay = int(options['delay'][0])
 			except ValueError:
 				self._delay = 0
 				# raise ValueError("The 'delay' value is invalid ('delay=%s')" % options['delay'])
