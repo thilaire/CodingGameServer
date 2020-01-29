@@ -46,6 +46,18 @@ class PoolKnockout(Tournament):
 	# !TODO: this option should be in Tournament (same option for every tournament)
 
 	def __init__(self, name, nbMaxPlayers, nbRounds4Victory, nbGroups, nbFirst, **_):
+		
+		if isinstance(name,list):
+			name=name[0]
+		if isinstance(nbMaxPlayers,list):
+			nbMaxPlayers=nbMaxPlayers[0]
+		if isinstance(nbRounds4Victory,list):
+			nbRounds4Victory=nbRounds4Victory[0]
+		if isinstance(nbGroups,list):
+			nbGroups=nbGroups[0]
+		if isinstance(nbFirst,list):
+			nbFirst=nbFirst[0]
+		
 		# call the super class constructor
 		# (we call it now, because it parses the parameters and we need them)
 		# (the drawback is that we need to remove the instance in case of an error here)
@@ -58,6 +70,8 @@ class PoolKnockout(Tournament):
 
 		# number of groups
 		try:
+			if isinstance(nbGroups,list):
+				nbGroups = nbGroups[0]
 			self._nbGroups = int(nbGroups)
 		except ValueError:
 			super().removeInstance(name)    # need to remove the instance
