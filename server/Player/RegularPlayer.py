@@ -69,6 +69,13 @@ class RegularPlayer(Player, BaseClass):
 		self.logger.info("=================================")
 		self.logger.info(name + " just log in (from " + address + ".")
 
+		self._hasAlreadyPlayed = False      # boolean that indicates if the player has already played or not
+											# use for the 'once' option of the Game
+	@property
+	def hasAlreadyPlayed(self):
+		"""return True if the player has already played"""
+		return self._hasAlreadyPlayed
+
 	@property
 	def tournament(self):
 		"""Returns the tournament the player is involved in"""

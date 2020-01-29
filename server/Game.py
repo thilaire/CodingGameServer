@@ -84,6 +84,7 @@ class Game(BaseClass):
 			- 'seed': seed of the labyrinth (same seed => same labyrinth); used as seed for the random generator
 			- 'timeout': timeout of the game (if not given, the default timeout is used)
 			- 'start': who starts the game (0, 1 or -1); random when not precised or '-1'
+			- 'once': when presents, the player can only play once
 			# TODO: add a delay/pause option (in second)
 		"""
 
@@ -94,6 +95,11 @@ class Game(BaseClass):
 			raise ValueError("Cannot play against himself")
 		if player1.game is not None or player2.game is not None:
 			raise ValueError("Players already play in a game")
+
+		# check if the player can play agan
+		for p in player1, player2:
+			if p.isRegular() and p.hasAlreadyPlayed and 'once' in options:
+				raise ValueError("The player can only play once... STOP")
 
 		# players
 		# we randomly decide the order of the players
