@@ -96,10 +96,13 @@ class Game(BaseClass):
 		if player1.game is not None or player2.game is not None:
 			raise ValueError("Players already play in a game")
 
-		# check if the player can play agan
+		# check if the player can play again
 		for p in player1, player2:
-			if p.isRegular() and p.hasAlreadyPlayed and 'once' in options:
-				raise ValueError("The player can only play once... STOP")
+			if p.isRegular:
+				if p.hasAlreadyPlayed and 'once' in options:
+					p.disconnect()
+					raise ValueError("The player can only play once... STOP")
+				p.hasAlreadyPlayed = True
 
 		# players
 		# we randomly decide the order of the players
