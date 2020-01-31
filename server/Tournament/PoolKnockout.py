@@ -243,8 +243,7 @@ class PoolKnockout(Tournament):
 		"""
 		log the score (into the logger)
 		"""
-		self.logger.message("----------\nScore:")
-		st = ""
+		st = "----------Score:\n"
 		if self._score and self._groups:
 			for i, lplayers in enumerate(self._groups):
 				st += "Pool "+str(i+1)+"\n"
