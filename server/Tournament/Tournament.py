@@ -199,6 +199,9 @@ class Tournament(BaseClass):
 
 	def endPhase(self, newPhase):
 		"""Called to indicate the end of the phase (so we wait for a new phase)"""
+
+		#TODO: log the result !!!!
+
 		self.logger.message("The phase `%s` ends", self._phase)
 		self._state = 2
 		self._phase = newPhase
@@ -206,6 +209,9 @@ class Tournament(BaseClass):
 
 	def endTournament(self):
 		"""Called to indicate the end of the tournament"""
+
+		#TODO: log the final results !!
+
 		self.logger.message("The tournament is now over: %s wins !!", self._winner)
 		self._state = 3
 		Tournament.removeInstance(self.name)
