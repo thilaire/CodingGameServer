@@ -239,3 +239,18 @@ class PoolKnockout(Tournament):
 
 		return HTMLs
 
+	def logScore(self):
+		"""
+		log the score (into the logger)
+		"""
+		self.logger.message("----------\nScore:")
+		st = ""
+		if self._score and self._groups:
+			for i, lplayers in enumerate(self._groups):
+				st += "Pool "+str(i+1)+"\n"
+				# note : the key of sorting is str to have a lexicographic ordering
+				st += "\n".join("  - %s: %d(%+d) points" % (self.playerHTMLrepr(p), score[0], score[1])
+					for p, score in sorted(self._score.items(), key=lambda x: str(x[1][0])+str(x[1][1]), reverse=True)
+					if p in lplayers)
+
+		self.logger.message(st)

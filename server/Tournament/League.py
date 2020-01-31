@@ -90,3 +90,10 @@ class League(Tournament):
 				    ) + "</ul>"
 		else:
 			return ""
+
+	def logScore(self):
+		"""
+		log the score (into the logger)
+		"""
+		self.logger.message("----------\nScore:")
+		self.logger.message("\n".join("  - %s: %d points" % (pName, score) for pName, score in self._score.items()))

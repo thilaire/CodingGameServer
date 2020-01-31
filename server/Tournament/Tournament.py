@@ -199,20 +199,20 @@ class Tournament(BaseClass):
 
 	def endPhase(self, newPhase):
 		"""Called to indicate the end of the phase (so we wait for a new phase)"""
-
-		#TODO: log the result !!!!
-
+		# log the end of the phase
+		self.logScore()
 		self.logger.message("The phase `%s` ends", self._phase)
+		# new phase
 		self._state = 2
 		self._phase = newPhase
 
 
 	def endTournament(self):
 		"""Called to indicate the end of the tournament"""
-
-		#TODO: log the final results !!
-
+		# log the end of the tournament
+		self.logScore()
 		self.logger.message("The tournament is now over: %s wins !!", self._winner)
+		# end the tournament
 		self._state = 3
 		Tournament.removeInstance(self.name)
 		# Disconnect all the players of that tournament
@@ -550,6 +550,14 @@ class Tournament(BaseClass):
 
 		TO BE OVERLOADED
 
+		"""
+		pass
+
+	def logScore(self):
+		"""
+		log the score (into the logger)
+
+		TO BE OVERLOADED
 		"""
 		pass
 
