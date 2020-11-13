@@ -18,7 +18,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 import logging
 import json
-from server.Logger import configureBaseClassLogger
+from CGSserver.Logger import configureBaseClassLogger
 from flask_socketio import SocketIO, send, emit
 from flask import Flask
 

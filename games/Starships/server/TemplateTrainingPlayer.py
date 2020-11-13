@@ -4,7 +4,7 @@ This file is a template for a new training player in your game
 it should be imported by your game, and add in the `type_dict` dictionary
 """
 
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 
 
 class TemplateTrainingPlayer(TrainingPlayer):

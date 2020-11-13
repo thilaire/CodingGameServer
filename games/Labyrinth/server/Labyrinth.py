@@ -21,8 +21,8 @@ from re import compile
 from ansi2html import Ansi2HTMLConverter
 from colorama import Fore
 
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from server.Game import Game
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
+from CGSserver.Game import Game
 from .Constants import ROTATE_LINE_LEFT, ROTATE_LINE_RIGHT, ROTATE_COLUMN_UP, ROTATE_COLUMN_DOWN, MOVE_UP, MOVE_RIGHT, \
 	DO_NOTHING, Ddx, Ddy, INITIAL_ENERGY_FIRST, INITIAL_ENERGY_SECOND, ROTATE_ENERGY
 

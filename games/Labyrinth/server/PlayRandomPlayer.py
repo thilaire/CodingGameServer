@@ -16,7 +16,7 @@ File: playRandomPlayer.py
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 from random import choice, randint
 from .Constants import MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, DO_NOTHING
 from .Constants import ROTATE_COLUMN_DOWN, ROTATE_COLUMN_UP, ROTATE_LINE_LEFT, ROTATE_LINE_RIGHT, ROTATE_ENERGY

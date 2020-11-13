@@ -22,9 +22,9 @@ from random import seed as set_seed, randint, choice
 from threading import Barrier, BrokenBarrierError
 from time import time
 
-from server.Comments import CommentQueue
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE, TIMEOUT_TURN, MAX_COMMENTS
-from server.BaseClass import BaseClass
+from CGSserver.Comments import CommentQueue
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE, TIMEOUT_TURN, MAX_COMMENTS
+from CGSserver.BaseClass import BaseClass
 
 
 def crc24(octets):

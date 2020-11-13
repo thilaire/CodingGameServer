@@ -33,9 +33,9 @@ from socketserver import ThreadingTCPServer  # socket server (with multi-threads
 from colorama import Fore
 from docopt import docopt  # used to parse the command line
 
-from server.Game import Game
-from server.Logger import configureRootLogger
-from server.Player import PlayerSocketHandler  # TCP socket handler for players
+from CGSserver.Game import Game
+from CGSserver.Logger import configureRootLogger
+from CGSserver.Player import PlayerSocketHandler  # TCP socket handler for players
 
 usage = """
 Coding Game Server
@@ -61,8 +61,9 @@ Options:
   --prod                   Production mode (only log infos, warnings and errors and send emails) [default: True]
 """
 
-if __name__ == "__main__":
 
+def runCGS():
+	"""run CGS server"""
 	# parse the command line
 	args = docopt(usage)
 	if (not args['--debug']) and (not args['--dev']) and (not args['--prod']):
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
 	# Run the webserver
 	if not args['--no-webserver']:
-		from server.Webserver import runWebServer  # to run the webserver (Flask)
+		from CGSserver.Webserver import runWebServer  # to run the webserver (Flask)
 		# TODO: do not run it in a separate thread, but use socketio.start_background_task instead
 		# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
 		threading.Thread(
@@ -111,6 +112,10 @@ if __name__ == "__main__":
 	PlayerServer = ThreadingTCPServer((args['--host'], args['--port']), PlayerSocketHandler)
 	logger.message("Run the game server on port %d...", args['--port'])
 	threading.Thread(target=PlayerServer.serve_forever())
+
+
+if __name__ == "__main__":
+	runCGS()
 
 
 # !TODO: add a timeout for the dataReceive (this exists in the BaseRequestHandler class)

@@ -16,7 +16,7 @@ File: SimpleElimination.py
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
-from server.Tournament import Tournament
+from CGSserver.Tournament import Tournament
 
 
 

@@ -17,7 +17,7 @@ Copyright 2019 T. Hilaire, T. Gautier
 """
 
 from random import choice
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 from .Constants import EAST, NORTH, SOUTH, WEST, Ddx, Ddy
 
 

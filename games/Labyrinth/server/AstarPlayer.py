@@ -16,7 +16,7 @@ File: AstarPlayer.py
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 from .Constants import MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, DO_NOTHING
 from .Constants import Ddx, Ddy
 

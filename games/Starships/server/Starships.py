@@ -21,8 +21,8 @@ from re import compile
 from ansi2html import Ansi2HTMLConverter
 from colorama import Fore
 
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from server.Game import Game
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
+from CGSserver.Game import Game
 from .Constants import MOVE_UP, MOVE_DOWN, SHOOT, ASTEROID_PUSH, \
 	DO_NOTHING, Ddy, INITIAL_ENERGY, SHOOT_ENERGY, ASTEROID_PUSH_ENERGY, \
 	ASTEROID_POP_CHANCE

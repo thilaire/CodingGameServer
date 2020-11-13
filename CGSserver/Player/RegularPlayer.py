@@ -18,8 +18,8 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 from _socket import SHUT_RDWR
 from threading import Event
 
-from server.Player import Player
-from server.BaseClass import BaseClass
+from CGSserver.Player import Player
+from CGSserver.BaseClass import BaseClass
 
 
 class RegularPlayer(Player, BaseClass):

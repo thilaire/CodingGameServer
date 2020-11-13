@@ -16,7 +16,7 @@ File: DoNothingPlayer.py
 Copyright 2017 M. Pecheux
 """
 
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 from .Constants import DO_NOTHING
 
 

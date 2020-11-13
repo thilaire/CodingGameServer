@@ -17,7 +17,7 @@ File: WhiteRabbitPlayer.py
 Copyright 2017 M. Pecheux
 """
 
-from server.Player import TrainingPlayer
+from CGSserver.Player import TrainingPlayer
 from .Constants import CAPTURE, DESTROY, LINK_H, LINK_V, DO_NOTHING
 
 boolConv = {'true': True, 'false': False}

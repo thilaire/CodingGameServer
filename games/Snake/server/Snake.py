@@ -17,10 +17,10 @@ Copyright 2019 T. Hilaire, T. Gautier
 """
 from typing import Tuple, Union, List
 from random import randint, seed
-from server.Constants import NORMAL_MOVE, LOSING_MOVE
+from CGSserver.Constants import NORMAL_MOVE, LOSING_MOVE
 from .Constants import NORTH, SOUTH, EAST, WEST, Ddx, Ddy, DRAWING_BOX, HORIZONTAL_BOX, VERTICAL_BOX, BOX, TRIANGLES
 from .Constants import DEFAULT_DIFFICULTY
-from server.Game import Game
+from CGSserver.Game import Game
 from colorama import Fore, Style
 from re import compile
 from itertools import product

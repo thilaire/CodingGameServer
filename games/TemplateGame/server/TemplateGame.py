@@ -14,8 +14,8 @@ Then, you should also fill:
 
 """
 
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from server.Game import Game
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
+from CGSserver.Game import Game
 
 # import here your training players
 from .TemplateTrainingPlayer import TemplateTrainingPlayer

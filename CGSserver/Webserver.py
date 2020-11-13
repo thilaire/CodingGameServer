@@ -23,11 +23,11 @@ from flask_socketio import SocketIO, send, emit, join_room
 import threading
 from glob import glob
 from os.path import isfile, join, basename, splitext
-from server.Game import Game
-from server.Player import RegularPlayer
-from server.Logger import Config
-from server.Tournament import Tournament
-from server.BaseClass import BaseClass
+from CGSserver.Game import Game
+from CGSserver.Player import RegularPlayer
+from CGSserver.Logger import Config
+from CGSserver.Tournament import Tournament
+from CGSserver.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
@@ -36,7 +36,7 @@ socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
-templatePaths = ['games/' + Game.getTheGameName() + '/server/templates/', 'server/templates/']
+templatePaths = ['games/' + Game.getTheGameName() + '/server/templates/', 'CGSserver/templates/']
 
 
 def runWebServer(host, port):

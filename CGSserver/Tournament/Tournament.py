@@ -25,8 +25,8 @@ import time     # do not import sleep from time (but rather use time.sleep()) be
 from queue import Queue
 from re import sub
 
-from server.Game import Game
-from server.BaseClass import BaseClass
+from CGSserver.Game import Game
+from CGSserver.BaseClass import BaseClass
 
 
 def numbering(i):

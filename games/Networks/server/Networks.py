@@ -20,8 +20,8 @@ from random import randint, choice, shuffle
 from re import compile
 from colorama import Fore
 
-from server.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
-from server.Game import Game
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
+from CGSserver.Game import Game
 from .Constants import CAPTURE, DESTROY, LINK_H, LINK_V, DO_NOTHING, \
 	LINK_ENERGY, DESTROY_ENERGY, NODE_CODES_START_ID, NODE_DISPLAY_CODES, \
 	NODE_TYPES, NODE_CODES_LENGTH, MAX_NODES_COUNT, \

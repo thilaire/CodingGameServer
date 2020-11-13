@@ -16,7 +16,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
 
-from server.Tournament import Tournament, numbering
+from CGSserver.Tournament import Tournament, numbering
 import random
 from math import frexp
 

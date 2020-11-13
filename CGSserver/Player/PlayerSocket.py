@@ -21,11 +21,11 @@ import shlex
 from re import sub
 from socketserver import BaseRequestHandler
 
-from server.Constants import LOSING_MOVE
-from server.Constants import SIZE_FMT
-from server.Game import Game
-from server.Player.RegularPlayer import RegularPlayer
-from server.Tournament import Tournament
+from CGSserver.Constants import LOSING_MOVE
+from CGSserver.Constants import SIZE_FMT
+from CGSserver.Game import Game
+from CGSserver.Player.RegularPlayer import RegularPlayer
+from CGSserver.Tournament import Tournament
 
 logger = logging.getLogger()  # general logger ('root')
 
