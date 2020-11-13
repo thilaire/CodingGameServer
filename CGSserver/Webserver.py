@@ -19,7 +19,7 @@ Copyright 2016-2019 T. Hilaire, J. Brajard
 from flask import Flask, render_template, abort, send_from_directory, request, redirect
 from jinja2 import ChoiceLoader, FileSystemLoader
 
-from flask_socketio import SocketIO, send, emit, join_room
+from flask_socketio import SocketIO, join_room
 import threading
 from glob import glob
 from os.path import isfile, join, basename, splitext
@@ -31,7 +31,7 @@ from CGSserver.BaseClass import BaseClass
 
 # flask object
 flask = Flask("webserver")
-#socketio = SocketIO(flask, async_mode='threading')
+# socketio = SocketIO(flask, async_mode='threading')
 socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
@@ -60,9 +60,8 @@ def runWebServer(host, port):
 
 	BaseClass.socketio = socketio
 	# TODO: do not run it in a separate thread, but use socketio.start_background_task instead
-		# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
+	# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
 	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
-
 
 
 # # ================
@@ -119,9 +118,6 @@ def banner():
 	return static_file('banner.png')
 
 
-
-
-
 # =======
 #  Games
 # =======
@@ -129,6 +125,7 @@ def banner():
 def games():
 	"""Web page that display all the (available) players"""
 	return render_template('game/games.html')
+
 
 @flask.route('/new_game.html')
 def new_game():
@@ -157,9 +154,9 @@ def create_new_game():
 		Game.getTheGameClass()(player1, player2)
 
 	except ValueError as e:
-		return render_template('error.html', error=
-							   'Error. Impossible to create a game with ' + str(request.form.get('player1')) +\
-							   ' and ' + str(request.form.get('player2')) + ': "' + str(e) + '"')
+		return render_template('error.html', error='Error. Impossible to create a game with ' +
+		                                           str(request.form.get('player1')) + ' and ' + 
+		                                           str(request.form.get('player2')) + ': "' + str(e) + '"')
 	else:
 		return redirect('/')
 
@@ -177,9 +174,10 @@ def game(gameName):
 			displayName = g.getCutename()
 		except NotImplementedError:
 			displayName = gameName
-		return render_template('game/Game.html', host=Config.host, webPort=Config.webPort,
-							   gameName=gameName, displayName=displayName, player1=g.players[0].HTMLrepr(),
-							   player2=g.players[1].HTMLrepr())
+		return render_template(
+			'game/Game.html', host=Config.host, webPort=Config.webPort, gameName=gameName, displayName=displayName, 
+			player1=g.players[0].HTMLrepr(), player2=g.players[1].HTMLrepr()
+		)
 	else:
 		return render_template('error.html', error="The Game %s doesn't exist." % (gameName,))
 
@@ -213,7 +211,8 @@ def create_new_tournament():
 	except ValueError as e:
 		# !TODO: redirect to an error page
 		# TODO: log this
-		return render_template('error.html', error='Error: Impossible to create a tournament with ' + str(dict(request.form)) + ':"' + str(e) + '"')
+		return render_template('error.html', error='Error: Impossible to create a tournament with ' + str(dict(request.form))
+		                                           + ':"' + str(e) + '"')
 	else:
 		return redirect('/')
 
@@ -296,8 +295,11 @@ def disconnectPlayer(playerName):
 # Websockets
 # ==========
 # the clients just register to have update
-#wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament}
-wsCls = {Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament, 'League': Tournament, 'PoolKnockout': Tournament}
+wsCls = {
+	Game.getTheGameName(): Game.getTheGameClass(), 'RegularPlayer': RegularPlayer, 'Tournament': Tournament, 
+	'League': Tournament, 'PoolKnockout': Tournament
+}
+
 
 @socketio.on('registerList')
 def websocket_class(data):
@@ -316,6 +318,7 @@ def websocket_class(data):
 
 @socketio.on('registerObject')
 def websocket_Object(data):
+	"""Register an object (so it will receive feedback through a websocket"""
 	clsName, name = data
 	if clsName in wsCls:
 		cls = wsCls[clsName]
@@ -325,10 +328,15 @@ def websocket_Object(data):
 			join_room(room=clsName + '/' + name)
 			obj.sendUpdateToWebSocket(firstTime=True)
 		else:
-			flask.logger.info('Receive (and ignore) incompatible data on channel registerObject: Invalid name (%s) for class %s', name, clsName)
+			flask.logger.info(
+				'Receive (and ignore) incompatible data on channel registerObject: Invalid name (%s) for class %s',
+				name, clsName
+			)
 	else:
-		flask.logger.info('Receive (and ignore) incompatible data on channel registerObject: Invalid class %s is not in %s', clsName, wsCls.keys())
-
+		flask.logger.info(
+			'Receive (and ignore) incompatible data on channel registerObject: Invalid class %s is not in %s', 
+			clsName, wsCls.keys()
+		)
 
 
 # ======
@@ -347,7 +355,10 @@ def log_games():
 	# build the list of files in log/games
 	files = glob(join(Config.logPath, "Games/*.log"))
 	# render the page
-	logg = ['<li><a href="/logs/game/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0]) for f in files]
+	logg = [
+		'<li><a href="/logs/game/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0]) 
+		for f in files
+	]
 	return render_template("log/games.html", games_log="\n".join(logg))
 
 
@@ -358,7 +369,10 @@ def log_players():
 	# build the list of files in log/games
 	files = glob(join(Config.logPath, "Players/*.log"))
 	# render the page
-	logg = ['<li><a href="/logs/player/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0]) for f in files]
+	logg = [
+		'<li><a href="/logs/player/%s">%s</a></li>' % (splitext(basename(f))[0], splitext(basename(f))[0])
+		for f in files
+	]
 	return render_template("log/players.html", players_log="\n".join(logg))
 
 
@@ -366,6 +380,7 @@ def log_players():
 def log_activity():
 	"""Returns the activity.log file"""
 	return send_from_directory(Config.logPath, 'activity.log')
+
 
 @flask.route('/logs/errors')
 def log_error():
@@ -428,8 +443,5 @@ def errror500(err):
 	"""
 	# TODO: return a full page ?
 	flask.logger.error(err, exc_info=True)
-	return "We have an unexpected error. It has been reported and logged,"\
-		   " and we will work on it so that it never occurs again !"
-
-
-
+	return "We have an unexpected error. It has been reported and logged," \
+	       " and we will work on it so that it never occurs again !"
