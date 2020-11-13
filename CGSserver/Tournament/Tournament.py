@@ -23,7 +23,6 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 import time     # do not import sleep from time (but rather use time.sleep()) because of the gevent's monkeypatch
 from queue import Queue
-from re import sub
 
 from CGSserver.Game import Game
 from CGSserver.BaseClass import BaseClass
@@ -100,19 +99,19 @@ class Tournament(BaseClass):
 		    is randomly determined
 		"""
 		# name of the tournament
-		#self._name = sub(r'\W+', '', name)
-		if isinstance(name,list):
-			name=name[0]
+		# self._name = sub(r'\W+', '', name)
+		if isinstance(name, list):
+			name = name[0]
 		self._name = name
 		# check if the name is valid (20 characters max, and only in [a-zA-Z0-9_]
 		if name != self._name or len(name) > 20:
 			raise ValueError("The name of the tournament is not valid (must be 20 characters max, and only in [a-zA-Z0-9_]")
 
 		# get maximum number of players
-		if isinstance(nbMaxPlayers,list):
-			nbMaxPlayers=nbMaxPlayers[0]
-		if isinstance(nbRounds4Victory,list):
-			nbRounds4Victory=nbRounds4Victory[0]
+		if isinstance(nbMaxPlayers, list):
+			nbMaxPlayers = nbMaxPlayers[0]
+		if isinstance(nbRounds4Victory, list):
+			nbRounds4Victory = nbRounds4Victory[0]
 		try:
 			self._nbMaxPlayers = int(nbMaxPlayers)
 		except ValueError:
@@ -266,8 +265,8 @@ class Tournament(BaseClass):
 		"""
 		# dictionary of all the subclasses (championship, single-elimination, etc.)
 		d = {sc.__name__: sc for sc in cls.__subclasses__()}
-		if isinstance(mode,list):
-			mode=mode[0]
+		if isinstance(mode, list):
+			mode = mode[0]
 		if mode in d:
 			return d[mode](**options)
 		else:

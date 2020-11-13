@@ -198,11 +198,11 @@ class PlayerSocketHandler(BaseRequestHandler):
 			except UnicodeDecodeError:
 				pass
 		else:
-			# if we don't get which encoding it is, with just ignore non utf-8 characteres
+			# if we don't get which encoding it is, with just ignore non utf-8 chars
 			data = str(rawdata, 'utf-8', 'ignore')
 
 		# check if the client has closed the connection
-		# (don't know why, but when the connection is cloded by the client when the server wait with recv, we cannot
+		# (don't know why, but when the connection is closed by the client when the server wait with recv, we cannot
 		# use the self.server._closed attribute...)
 		if data == '':
 			raise DisconnectionError()

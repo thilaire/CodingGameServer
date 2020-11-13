@@ -47,16 +47,16 @@ class PoolKnockout(Tournament):
 
 	def __init__(self, name, nbMaxPlayers, nbRounds4Victory, nbGroups, nbFirst, **_):
 		
-		if isinstance(name,list):
-			name=name[0]
-		if isinstance(nbMaxPlayers,list):
-			nbMaxPlayers=nbMaxPlayers[0]
-		if isinstance(nbRounds4Victory,list):
-			nbRounds4Victory=nbRounds4Victory[0]
-		if isinstance(nbGroups,list):
-			nbGroups=nbGroups[0]
-		if isinstance(nbFirst,list):
-			nbFirst=nbFirst[0]
+		if isinstance(name, list):
+			name = name[0]
+		if isinstance(nbMaxPlayers, list):
+			nbMaxPlayers = nbMaxPlayers[0]
+		if isinstance(nbRounds4Victory, list):
+			nbRounds4Victory = nbRounds4Victory[0]
+		if isinstance(nbGroups, list):
+			nbGroups = nbGroups[0]
+		if isinstance(nbFirst, list):
+			nbFirst = nbFirst[0]
 		
 		# call the super class constructor
 		# (we call it now, because it parses the parameters and we need them)
@@ -70,7 +70,7 @@ class PoolKnockout(Tournament):
 
 		# number of groups
 		try:
-			if isinstance(nbGroups,list):
+			if isinstance(nbGroups, list):
 				nbGroups = nbGroups[0]
 			self._nbGroups = int(nbGroups)
 		except ValueError:
@@ -142,7 +142,7 @@ class PoolKnockout(Tournament):
 					groups[j] = [rotation[0]] + [rotation[-1]] + rotation[1:-1]
 			yield phase, lmatch
 
-		# Selection of the best players to be in SingleEliminatioTournament
+		# Selection of the best players to be in SingleEliminationTournament
 		# Works only if self._nbFirst == 2
 		self._Draw = [[None for _ in range(self._nbFirst * self._nbGroups)]]
 		self._cycle = 1  # begin of the final phase
@@ -248,8 +248,10 @@ class PoolKnockout(Tournament):
 			for i, lplayers in enumerate(self._groups):
 				st += "Pool "+str(i+1)+"\n"
 				# note : the key of sorting is str to have a lexicographic ordering
-				st += "\n".join("  - %s: %d(%+d) points" % (self.playerHTMLrepr(p), score[0], score[1])
+				st += "\n".join(
+					"  - %s: %d(%+d) points" % (self.playerHTMLrepr(p), score[0], score[1])
 					for p, score in sorted(self._score.items(), key=lambda x: str(x[1][0])+str(x[1][1]), reverse=True)
-					if p in lplayers)
+					if p in lplayers
+				)
 
 		self.logger.message(st)

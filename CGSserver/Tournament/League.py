@@ -95,4 +95,6 @@ class League(Tournament):
 		"""
 		log the score (into the logger)
 		"""
-		self.logger.message("----------Score:" + "\n".join("  - %s: %d points" % (pName, score) for pName, score in self._score.items()))
+		self.logger.message(
+			"----------Score:" + "\n".join("  - %s: %d points" % (pName, score) for pName, score in self._score.items())
+		)

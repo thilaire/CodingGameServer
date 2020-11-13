@@ -19,8 +19,6 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 import logging
 import json
 from CGSserver.Logger import configureBaseClassLogger
-from flask_socketio import SocketIO, send, emit
-from flask import Flask
 
 logger = logging.getLogger()
 
@@ -38,7 +36,7 @@ class BaseClass:
 
 	"""
 	socketio = None
-	allInstances = {}  # unnecessary (will be overwritten by the inherited classe, and unused)
+	allInstances = {}  # unnecessary (will be overwritten by the inherited class, and unused)
 
 	# TODO: we should use weak references here (for the allInstances dictionary) (see
 	#  http://stackoverflow.com/questions/37232884/in-python-how-to-remove-an-object-from-a-list-if-it-is-only
@@ -83,10 +81,10 @@ class BaseClass:
 		"""Returns the logger of the object"""
 		return self._logger
 
-
 	# ========================
 	# Manage list of instances
 	# ========================
+
 	@classmethod
 	def getFromName(cls, name):
 		"""
@@ -130,7 +128,7 @@ class BaseClass:
 			d = [obj.HTMLrepr() for obj in cls.allInstances.values()]
 			js = json.dumps(d)
 			# broadcast to the client in the room)
-			logger.low_debug("send list of %s",cls.__name__)
+			logger.low_debug("send list of %s", cls.__name__)
 			cls.socketio.emit('list'+cls.__name__, js, room=cls.__name__)
 
 	def sendUpdateToWebSocket(self, firstTime=False):

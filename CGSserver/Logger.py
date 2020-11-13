@@ -31,7 +31,7 @@ from jinja2 import Template
 
 
 # Max File Size (in octets)
-MAX_ACTIVITY_SIZE = 1e6     # 1Mo for the activity.log file
+MAX_ACTIVITY_SIZE = 1000000     # 1Mo for the activity.log file
 MAX_BASECLASS_SIZE = {'Game':  10e3, 'Player': 100e3, 'Tournament': 1e6}  # 10ko per game and player, 1Mo per tournament
 MAX_BASECLASS_FOLDER = {'Game':  1e6, 'Player': 5e6, 'Tournament': 1e6}   # 5Mo per game, player and tournament folders
 
@@ -56,7 +56,7 @@ class Config:
 	"""Simple class to store the configuration parameters"""
 	mode = ''       # default mode, set by configureRootLogger
 	logPath = ''    # path where to store the log
-	webPort = ''    # port of the web server
+	webPort = 0    # port of the web server
 	host = ''       # name of the host
 
 
@@ -81,7 +81,7 @@ def configureRootLogger(args):
 
 	Returns the logger
 	"""
-	# store the configuration in Config (datat used elsewhere)
+	# store the configuration in Config (data used elsewhere)
 	gameName = args['<gameName>']
 	Config.mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug'
 	Config.logPath = join('games', gameName, Template(args['--log']).render(hostname=gethostname()))
@@ -203,7 +203,7 @@ def removeOldestFiles(cls, path, maxSize):
 		remove(path+oldest)
 
 	# FIXME: this is not efficient. It should be better to i) build the list of log files that can be removed
-	# and ii) in a loop, remove the oldest while the size of the deleted files is lower than the excedent
+	# and ii) in a loop, remove the oldest while the size of the deleted files is lower than the surplus
 
 
 def removeOldestWithLock(cls, path, maxSize):

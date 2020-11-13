@@ -43,7 +43,7 @@ class Player:
 		# game
 		self._game = None
 		# the name is not stored here: for TrainingPlayer, it is stored locally, and for RegularPlayer, it is stored
-		# in the BaseClas
+		# in the BaseClass
 
 
 	@property
