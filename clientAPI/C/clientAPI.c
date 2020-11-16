@@ -14,7 +14,7 @@ Licence: GPL
 File: clientAPI.c
 	Functions for the Game API (connexion to the Coding Game Server)
 
-Copyright 2016-2017 T. Hilaire, J. Brajard
+Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 
 /* TODO: allows to try to connect to a list of servers? Or just returns 0 if the connection fails */
@@ -38,6 +38,7 @@ Copyright 2016-2017 T. Hilaire, J. Brajard
 
 #define HEAD_SIZE 6 /*number of bytes to code the size of the message (header)*/
 #define MAX_LENGTH 20000 /* maximum size of the buffer expect for print_Game */
+
 
 /* global variables about the connection
  * we use them just to hide all the connection details to the user
@@ -240,22 +241,26 @@ void closeCGSConnection( const char* fct)
  *
  * Parameters:
  * - fct: name of the function that calls waitForGame (used for the logging)
- * - training: string (max 50 characters) type of the training player we want to play with (empty string for regular game)
- * - gameName: string (max 50 characters), corresponds to the game name
- * - data: string (max 128 characters), corresponds to the data
+ * - gameType: string (max 200 characters) type of the game we want to play (empty string for regular game)
+ * - gameName: string (max 50 characters), game name filled by the function
+ * - data: string (max 128 characters), corresponds to the data returns by the server
  *
- * training is a string like "NAME key1=value1 key2=value1 ..."
- * - NAME can be empty. It gives the type of the training player
+ * gameType is a string like "GAME key1=value1 key2=value1 ..."
+ * - GAME can be empty (wait for a game. It gives the type of the game
+ *   it could be "TRAINING xxxx" to play against bot xxxx
+ *   or "TOURNAMENT xxxx" to join the tournament xxxx
  * - key=value pairs are used for options (each training player has its own options)
  *   invalid keys are ignored, invalid values leads to error
- *   the following options are common to every training player (when NAME is not empty):
- *   - timeout: allows an define the timeout when training (in seconds)
+ *   the following options are common to every training player:
+ *     - 'timeout': allows an define the timeout when training (in seconds)
+ *     - 'seed': allows to set the seed of the random generator
+ *     - 'start': allows to set who starts ('0' or '1')
  */
-void waitForGame( const char* fct, char* training, char* gameName, char* data)
+void waitForGame( const char* fct, char* gameType, char* gameName, char* data)
 {
     int r;
-    if (training)
-	    sendString( fct,"WAIT_GAME %s", training);
+    if (gameType)
+	    sendString( fct,"WAIT_GAME %s", gameType);
 	else
 	    sendString( fct,"WAIT_GAME ");
 
@@ -408,7 +413,7 @@ t_return_code sendCGSMove( const char* fct, char* move)
  * Parameters:
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  */
-void printGame( const char* fct)
+void printCGSGame(const char* fct)
 {
   dispDebug( fct,2, "Try to get string to display Game");
 

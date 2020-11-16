@@ -14,7 +14,7 @@ Licence: GPL
 File: clientAPI.h
 	Functions' prototypes for the client API
 
-Copyright 2016-2017 T. Hilaire, J. Brajard
+Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 
 
@@ -145,7 +145,7 @@ t_return_code sendCGSMove( const char* fct, char* move);
  * Parameters:
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  */
-void printGame( const char* fct);
+void printCGSGame(const char* fct);
 
 
 
