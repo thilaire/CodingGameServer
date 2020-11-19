@@ -323,13 +323,15 @@ class PlayerSocketHandler(BaseRequestHandler):
 					trainingPlayerName = ""
 					tournamentName = terms[1]
 					options = dict([token.split('=') for token in terms[2:]])
-				else:
-					trainingPlayerName = terms[0]
+				elif terms[0] == 'TRAINING':
+					trainingPlayerName = terms[1]
 					tournamentName = ""
-					options = dict([token.split('=') for token in terms[1:]])
+					options = dict([token.split('=') for token in terms[2:]])
+				else:
+					raise ValueError
 		except ValueError:
 			strerr = "The string sent with 'WAIT_GAME' is not valid (should be '{options}'," \
-			         " 'NAME {options}' or 'TOURNAMENT NAME {options}', but is '%s' instead)"
+			         " 'TRAINING <NAME> {options}' or 'TOURNAMENT <NAME> {options}', but is '%s' instead)" % data[10:]
 			self.sendData(strerr)
 			raise ProtocolError(strerr)
 
