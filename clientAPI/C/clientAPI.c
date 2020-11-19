@@ -258,8 +258,8 @@ void closeCGSConnection( const char* fct)
  */
 void waitForGame( const char* fct, char* gameType, char* gameName, char* data)
 {
-    int r;
-    if (gameType)
+	int r;
+	if (gameType)
 	    sendString( fct,"WAIT_GAME %s", gameType);
 	else
 	    sendString( fct,"WAIT_GAME ");
