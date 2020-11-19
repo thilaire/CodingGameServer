@@ -10,7 +10,7 @@ Authors: T. Hilaire
 Licence: GPL
 
 File: TicketToRide.py
-	Contains the class T2R
+	Contains the class TicketToRide
 	-> defines the Ticket To Ride game (its rules, moves, etc.)
 
 Copyright 2020 T. Hilaire
@@ -18,14 +18,12 @@ Copyright 2020 T. Hilaire
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
-
-# import here your training players
-from .TemplateTrainingPlayer import TemplateTrainingPlayer
+from .DoNothingPlayer import DoNothingPlayer
 
 
-class T2R(Game):
+class TicketToRide(Game):
 	"""
-	class T2R (Ticket To Ride)
+	class TicketToRide (Ticket To Ride)
 
 	Inherits from Game
 	- _players: tuple of the two players
