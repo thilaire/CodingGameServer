@@ -91,16 +91,16 @@ void closeConnection()
  *     the following bots are available:
  *        - DO_NOTHING (stupid player what withdraw cards)
  *
- * - labyrinthName: char* to get the game Name (should be allocated, max 50 characters),
+ * - gameName: char* to get the game Name (should be allocated, max 50 characters),
  *
  * - nbCities: to get the number of cities
  * - nbTracks: to get the number of tracks between the cities
  */
-void waitForT2RGame( char* gameType, char* labyrinthName, int* nbCities, int* nbTracks)
+void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks)
 {
 	char data[10];
 	/* wait for a game */
-	waitForGame( __FUNCTION__, gameType, labyrinthName, data);
+	waitForGame(__FUNCTION__, gameType, gameName, data);
 
 	/* parse the data */
 	sscanf(data, "%d %d", nbCities, nbTracks);
