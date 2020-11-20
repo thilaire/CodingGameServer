@@ -17,6 +17,8 @@ Copyright 2020 T. Hilaire
 """
 
 
+from colorama import Fore, Back
+
 # colors
 colors = {
 	'None': 0,
@@ -31,4 +33,14 @@ colors = {
 	'Multicolor': 9     # used for the locomotive card (joker) or for a track that can accept any color
 }
 
+PURPLE = 1
+WHITE = 2
+BLUE = 3
+YELLOW = 4
+ORANGE = 5
+BLACK = 6
+RED = 7
+GREEN = 8
+MULTICOLOR = 9
 
+textColors = [Fore.RESET, Fore.MAGENTA, Fore.BLACK, Fore.BLUE, Fore.LIGHTYELLOW_EX, Fore.YELLOW, Fore.WHITE, Fore.RED, Fore.GREEN, Fore.WHITE]
