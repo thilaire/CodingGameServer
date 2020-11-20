@@ -358,6 +358,10 @@ t_return_code getCGSMove( const char* fct, char* move ,size_t nmove)
 	/* extract result */
 	sscanf( buffer, "%d", &result);
 	dispDebug(__FUNCTION__,2,"results=%d",result);
+
+	if (result != NORMAL_MOVE)
+		printf("[%s] %s", __FUNCTION__, buffer);
+
 	return result;
 }
 
@@ -369,10 +373,11 @@ t_return_code getCGSMove( const char* fct, char* move ,size_t nmove)
  * Parameters:
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  * - move: a string representing a move (the caller will parse it to extract the move's values)
+ * - answer: a string representing the answer (should be allocated)
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove( const char* fct, char* move)
+t_return_code sendCGSMove( const char* fct, char* move, char* answer)
 {
 	t_return_code result;
 	sendString( fct, "PLAY_MOVE %s", move);
@@ -389,7 +394,7 @@ t_return_code sendCGSMove( const char* fct, char* move)
 	/* extract result */
 	sscanf( buffer, "%d", &result);
 
-	/* read the associated message */
+	/* read the associated answer */
 	bzero(buffer,MAX_LENGTH);
 	r = read_inbuf(fct,buffer,MAX_LENGTH);
 	if (r>0)
@@ -397,9 +402,10 @@ t_return_code sendCGSMove( const char* fct, char* move)
 
 	dispDebug( fct,1, "Receive that message: %s", buffer);
 
-	
-	/* TODO: that message is not handle or given to the user.. Should we printf it ?
-	 TH: according to me, we need to print it when the result is not NORMAL_MOVE	 */
+	if (result != NORMAL_MOVE)
+		printf("[%s] %s", __FUNCTION__, buffer);
+	else if (answer)
+		strcpy(answer, buffer);
 
 	return result;
 }

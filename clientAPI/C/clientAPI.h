@@ -131,10 +131,11 @@ t_return_code getCGSMove( const char* fct, char* move, size_t nmove );
  * Parameters:
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  * - move: a string representing a move (the caller will parse it to extract the move's values)
+ * - answer: a string representing the answer (should be allocated)
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove( const char* fct, char* move);
+t_return_code sendCGSMove( const char* fct, char* move, char* answer);
 
 
 
