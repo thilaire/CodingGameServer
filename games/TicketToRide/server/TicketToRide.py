@@ -16,10 +16,15 @@ File: TicketToRide.py
 Copyright 2020 T. Hilaire
 """
 
+from colorama import Fore
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .DoNothingPlayer import DoNothingPlayer
 from .Map import Map
+from .Cards import Deck, strCards
+from .Constants import textColors, MULTICOLOR, PURPLE
+
+
 
 
 class TicketToRide(Game):
@@ -59,18 +64,30 @@ class TicketToRide(Game):
 			except KeyError:
 				raise ValueError(
 					"The option `map` is incorrect (%s instead of being in [%s])"
-					% (options['map'],list(self.maps.keys())))
+					% (options['map'], list(self.maps.keys())))
 		else:
 			self._theMap = self.maps['USA']
 
-		#
-		# insert your code here to create your game (its data, etc.)...
-		#
+		# initialize the deck and give 4 cards per player
+		self._deck = Deck()                 # deck of train cards
+		self._cards = [[0]*10, [0]*10]        # self._cards[pl][c] gives how many cards c the player pl has
+		for pl in range(2):
+			for _ in range(4):
+				self._cards[pl][self._deck.drawBlind()] += 1
+
+		# score and wagons
+		self._score = [0, 0]
+		self._nbWagons = [45, 45]
+
+		# objectives
+		self._objectives = [[], []]
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
 
+		self.logger.debug("FaceUp= " + " ".join(str(c) for c in self._deck.faceUp))
+		self.logger.debug("Init cards = " + str(self._cards))
 
 
 	def HTMLrepr(self):
@@ -94,14 +111,19 @@ class TicketToRide(Game):
 		"""
 		Convert a Game into string (to be send to clients, and display)
 		"""
-		# create your display (with datas of your game, players' name, etc.)
-		# the comments are managed by the Game class
+		colors = [Fore.BLUE, Fore.RED]
+		lines = ["Cards: " + " ".join(strCards(c, c) for c in self._deck.faceUp)]
+		for i, pl in enumerate(self._players):
+			br = "[]" if self._whoPlays == i else "  "
+			lines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
+			lines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
+			             (self._score[i], self._nbWagons[i], len(self._objectives[i])))
+			if i == self._whoPlays:
+				lines.append("\t\t Cards: " + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
 
-		#
-		# insert your code here...
-		#
+			lines.append("\n")
 
-		return ""
+		return "\n".join(lines)
 
 
 	def updateGame(self, move):
@@ -140,11 +162,18 @@ class TicketToRide(Game):
 	def getData(self):
 		"""
 		Return the datas of the game (when ask with the GET_GAME_DATA message)
+		ie the map data, the face up cards and the 4 initial cards (for each player)
 		"""
-		# send the cities
-		return self._theMap.data
+		# get the list of the cards
+		pl = self._whoPlays
+		cards = []
+		for i, c in enumerate(self._cards[pl]):
+			if c > 0:
+				for _ in range(c):
+					cards.append(str(i))
+		# send the cities and the deck
 
-
+		return self._theMap.data + " " + " ".join(str(c) for c in self._deck.faceUp) + " " + " ".join(cards)
 
 
 	def getNextPlayer(self):

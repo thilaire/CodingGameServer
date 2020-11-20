@@ -24,6 +24,7 @@ from CGSserver.Game import Game
 
 
 class Track:
+	"""simple class to store a track"""
 	def __init__(self, cities, length, col):
 		self._cities = tuple(cities)
 		self._length = length
@@ -63,7 +64,7 @@ class Map:
 			self._tracks = []
 			for i, track in enumerate(reader(decomment(csvTracks), delimiter=';')):
 				try:
-					# get the cities
+					# get the data
 					cities = (self._invCities[track[0]], self._invCities[track[1]])
 					length = int(track[2])
 					col = (colors[track[3]], colors[track[4]])
@@ -73,6 +74,19 @@ class Map:
 										i, join('maps', name, 'tracks.csv'), ';'.join(track)))
 		data.extend(str(tr) for tr in self._tracks)
 
+		# build the list of objectives
+		with open(join('games', 'TicketToRide', 'maps', name, 'objectives.csv')) as csvObjectives:
+			self._objectives = []
+			for i, track in enumerate(reader(decomment(csvObjectives), delimiter=';')):
+				try:
+					# get the data
+					city1 = self._invCities[track[0]]
+					city2 = self._invCities[track[1]]
+					score = int(track[2])
+					self._objectives.append((city1, city2, score))
+				except KeyError:
+					raise ValueError("The %dth element in %s contains an incorrect item: %s" % (
+						i, join('maps', name, 'objectives.csv'), ';'.join(track)))
 		# build (once) the string to send to each client
 		self._data = "\n".join(data)
 
