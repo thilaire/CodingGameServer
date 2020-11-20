@@ -37,7 +37,7 @@ Copyright 2020 T. Hilaire
 
 /* colors' definitions */
 typedef enum {
-	NONE = 0,       /* used to indicate a track is not double */
+	NONE = 0,       		/* used to indicate a track is not double */
 	PURPLE,
 	WHITE,
 	BLUE,
@@ -46,31 +46,24 @@ typedef enum {
 	BLACK,
 	RED,
 	GREEN,
-	MULTICOLOR /* used for the locomotive card (joker) or for a track that can accept any color */
+	MULTICOLOR 				/* used for the locomotive card (joker) or for a track that can accept any color */
 } t_color;
 
-
-
+/* different possible moves */
 typedef enum
 {
-	toto
+	CLAIM_ROUTE = 1,
+	DRAW_BLIND_CARD = 2,
+	DRAW_CARD = 3,
+	DRAW_OBJECTIVES = 4,
+	CHOOSE_OBJECTIVES = 5
 } t_typeMove;
 
-/*
-A move is a tuple (type,value):
-- type can be ROTATE_LINE_LEFT, ROTATE_LINE_RIGHT, ROTATE_COLUMN_UP,
-ROTATE_COLUMN_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_UP or MOVE_DOWN
-- in case of rotation, the value indicates the number of the line
-(or column) to be rotated
-*/
-typedef struct
-{
-	t_typeMove type; /* type of the move */
-	int value; /* value associated with the type (number of the line or the column to rotate)*/
-} t_move;
-
-
-
+/* an objective card */
+typedef struct{
+	int city1, city2;
+	int score;
+} t_objective;
 
 
 /* -------------------------------------
@@ -122,8 +115,9 @@ void closeConnection();
 void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks);
 
 
-/* -------------------------------------
- * Get the map and tell who starts
+/* ------------------------------------------------------------
+ * Get the map, the decks and initial cards and tell who starts
+ * the three arrays are filled by the function
  *
  * Parameters:
  * - tracks: array of (5 x number of tracks) integers
@@ -133,12 +127,14 @@ void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks
  * 		- (3) length of the track (between 1 and 6)
  * 		- (4) color of the track (MULTICOLOR if any color can be used)
  * 		- (5) color of the 2nd track if the track is double (NONE if the track is not a double track)
+ * 	- faceUp: array of 5 t_color giving the 5 face up cards
+ * 	- cards: array of 4 t_colors with the initial cards in your hand
  *
  *   (the pointers data MUST HAVE allocated with the right size !!)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getMap(int* tracks);
+int getMap(int* tracks, t_color faceUp[5], t_color cards[4]);
 
 
 
@@ -146,32 +142,55 @@ int getMap(int* tracks);
  * Get the opponent move
  *
  * Parameters:
- * - move: a move
+ * - type: type of the opponent's move (see t_typeMove)
+ * - data: (int[5]) data associated to the move
+ * 		CLAIM_ROUTE: city1, city2, color, nb locomotives
+ * 		DRAW_BLIND_CARD: none
+ * 		DRAW_CARD: 5 cards of the deck
+ * 		DRAW_OBJECTIVES: none
+ * 		CHOOSE_OBJECTIVES: nb of taken objectives
  *
- * Returns a return_code
- * NORMAL_MOVE for normal move,
- * WINNING_MOVE for a winning move, -1
- * LOOSING_MOVE for a losing (or illegal) move
- * this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
+ * Returns:
+ * - NORMAL_MOVE for normal move,
+ * - WINNING_MOVE for a winning move, -1
+ * -  LOOSING_MOVE for a losing (or illegal) move
+ * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove( t_move* move );
+t_return_code getMove( t_typeMove* type, int data[5] );
 
 
-
-/* -----------
- * Send a move
+/* play the move "claim a route"
+ * between two cities, using a color (it should correspond to a track between the two cities)
+ * and a certain number of Locomotives
  *
- * Parameters:
- * - move: a move
- *
- * Returns a return_code
- * NORMAL_MOVE for normal move,
- * WINNING_MOVE for a winning move, -1
- * LOOSING_MOVE for a losing (or illegal) move
- * this code is relative to your programm (WINNING_MOVE if YOU win, ...)
+ * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendMove( t_move move );
+t_return_code claimRoute(int city1, int city2, int color, int nbLocomotives);
 
+
+/* play the move "draw a blind card"
+ * the drawn card is put in card
+ *
+ * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ */
+t_return_code drawBlindCard(t_color* card);
+
+
+/* play the move "draw a card in the deck"
+ * - nCard: position of the drawn card in the deck
+ * - deck: array representing the deck (modified by the function)
+ *
+ * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ */
+t_return_code drawCard(int nCard, t_color deck[5]);
+
+
+/* play the move "draw some objective cards"
+ * - objectives: array representing the objective card (modified by the function)
+ *
+ * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ */
+t_return_code objectiveCards(t_objective objectives[3]);
 
 
 /* ----------------------
