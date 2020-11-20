@@ -1,3 +1,6 @@
+# USA map
+# List of tracks
+# city1;city2;length;track1 color;track2 color (None if single track)
 Vancouver;Seattle;1;Multicolor;Multicolor
 Vancouver;Calgary;3;Multicolor;None
 Seattle;Calgary;4;Multicolor;None

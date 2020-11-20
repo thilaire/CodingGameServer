@@ -42,6 +42,26 @@ int nbTr;        /* number of tracks */
 int nbC;		/* number of cities */
 char** cityNames;	/* array of city names */
 
+
+/* -----------------------
+ * Dummy function that does
+ * a string copy (exactly as strcpy)
+ * but replace the '_' by ' ' in the same time
+ * it does the copy
+ */
+void strCpyReplace(char* dest, const char* src)
+{
+	while(*src) {
+		if (*src != '_')
+			*dest++ = *src;
+		else
+			*dest++ = ' ';
+		src++;
+	}
+}
+
+
+
 /* -------------------------------------
  * Initialize connection with the server
  * Quit the program if the connection to the server
@@ -66,6 +86,9 @@ void connectToServer(char* serverName, int port, char* name)
 void closeConnection()
 {
 	/* free the data */
+	char** p = cityNames;
+	for(int i=0; i<nbC; i++)
+		free(*p++);
 	free(cityNames);
 	/* close the connection */
 	closeCGSConnection(__FUNCTION__);
@@ -114,12 +137,19 @@ void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks
  * Get the map and tell who starts
  *
  * Parameters:
- * - tracks: array of t_tracks
+ * - tracks: array of (5 x number of tracks) integers
+ * 		Five integers are used to define a track:
+ * 		- (1) id of the 1st city
+ * 		- (2) id of the 2nd city
+ * 		- (3) length of the track (between 1 and 6)
+ * 		- (4) color of the track (MULTICOLOR if any color can be used)
+ * 		- (5) color of the 2nd track if the track is double (NONE if the track is not a double track)
+ *
  *   (the pointers data MUST HAVE allocated with the right size !!)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getMap(t_track* tracks)
+int getMap(int* tracks)
 {
 	char data[4096];   /* 16 char per track, 256 tracks max */
 	int nbchar;
@@ -136,14 +166,13 @@ int getMap(t_track* tracks)
 		sscanf(p, "%s%n", city, &nbchar);
 		p += nbchar;
 		*name = (char*) malloc(strlen(city)+1);
-		strcpy(*name, city);
-		name++;
+		strCpyReplace(*name++, city);
 	}
 
 	/* copy the data in the tracks array */
 	for(int i=0; i < nbTr; i++){
-		sscanf(p, "%d %d %d %d %d %n", tracks->cities, tracks->cities+1, &tracks->length, tracks->colors, tracks->colors+1, &nbchar);
-		tracks++;
+		sscanf(p, "%d %d %d %d %d %n", tracks, tracks+1, tracks+2, tracks+3, tracks+4, &nbchar);
+		tracks += 5;
 		p += nbchar;
 	}
 
@@ -238,3 +267,4 @@ void sendComment(char* comment)
 void printCity(int city){
 	printf("%s", cityNames[city]);
 }
+

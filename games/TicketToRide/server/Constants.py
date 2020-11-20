@@ -19,9 +19,9 @@ Copyright 2020 T. Hilaire
 
 # colors
 colors = {
-	'None': 0,      # used to indicate the "color" when a track is not double
+	'None': 0,
 	'Purple': 1,
-	'White':2,
+	'White': 2,
 	'Blue': 3,
 	'Yellow': 4,
 	'Orange': 5,

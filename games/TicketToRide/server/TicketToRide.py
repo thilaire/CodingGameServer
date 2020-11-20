@@ -19,6 +19,7 @@ Copyright 2020 T. Hilaire
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .DoNothingPlayer import DoNothingPlayer
+from .Map import Map
 
 
 class TicketToRide(Game):
@@ -40,6 +41,8 @@ class TicketToRide(Game):
 	# dictionary of the possible training Players (name-> class)
 	type_dict = {"DO_NOTHING": DoNothingPlayer}
 
+	# possible maps
+	maps = {m: Map(m) for m in ('USA',)}
 
 
 	def __init__(self, player1, player2, **options):
@@ -49,6 +52,17 @@ class TicketToRide(Game):
 		:param player2: 2nd Player
 		:param options: dictionary of options (the options 'seed' and 'timeout' are managed by the Game class)
 		"""
+		# get the map
+		if 'map' in options:
+			try:
+				self._theMap = self.maps[options['map']]
+			except KeyError:
+				raise ValueError(
+					"The option `map` is incorrect (%s instead of being in [%s])"
+					% (options['map'],list(self.maps.keys())))
+		else:
+			self._theMap = self.maps['USA']
+
 		#
 		# insert your code here to create your game (its data, etc.)...
 		#
@@ -118,10 +132,8 @@ class TicketToRide(Game):
 		Returns the size of the datas send by getData
 		(for example sizes of arrays, so that the arrays could be allocated before calling getData)
 		"""
-		#
-		# insert your code here...
-		#
-		return ""
+		# send the number of cities and the number of tracks
+		return "%d %d" % (self._theMap.nbCities, self._theMap.nbTracks)
 
 
 
@@ -129,10 +141,8 @@ class TicketToRide(Game):
 		"""
 		Return the datas of the game (when ask with the GET_GAME_DATA message)
 		"""
-		#
-		# insert your code here...
-		#
-		return ""
+		# send the cities
+		return self._theMap.data
 
 
 
