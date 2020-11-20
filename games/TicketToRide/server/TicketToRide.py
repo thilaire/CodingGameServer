@@ -112,7 +112,7 @@ class TicketToRide(Game):
 		Convert a Game into string (to be send to clients, and display)
 		"""
 		colors = [Fore.BLUE, Fore.RED]
-		lines = ["Cards: " + " ".join(strCards(c, c) for c in self._deck.faceUp)]
+		lines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp) + "\n"]
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
 			lines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
