@@ -94,9 +94,10 @@ class TemplateGame(Game):
 		"""
 		update the game by playing a move
 		- move: a string
-		Return a tuple (move_code, msg), where
+		Return a tuple (move_code, msg) OR (move_code, msg, msgOppenent), where
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
-		- msg: a message to send to the player, explaining why the game is ending
+		- msg: a message to send to the players, explaining why the game is ending, it may contain data
+		- msgOpponnent: (OPTIONAL) a message sent to the opponent, IF the opponent should not receive the same data
 		"""
 		# parse the move and check if it's in correct form
 		# returns the tuple (LOOSING_MOVE, "The move is not in correct form  !") if not valid
@@ -110,6 +111,7 @@ class TemplateGame(Game):
 
 		# if won, returns the tuple (WINNING_MOVE, "congratulation message!")
 		# otherwise, just returns (NORMAL_MOVE, "")
+		# an optional 3rd parameter is possible (if the message is used to send data)
 		return NORMAL_MOVE, ""
 
 
