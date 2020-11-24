@@ -18,7 +18,7 @@ Copyright 2020 T. Hilaire
 
 from random import choice
 from CGSserver.Player import TrainingPlayer
-
+from .Constants import MULTICOLOR
 
 class DoNothingPlayer(TrainingPlayer):
 	"""
@@ -40,5 +40,7 @@ class DoNothingPlayer(TrainingPlayer):
 		(50% chance to take from the deck, 50% to take a random face up card)
 		Returns the move
 		"""
-		return choice(["2", choice(["3 0", "3 1", "3 2", "3 3", "3 4"])])
+		# face up cards that are not a Locomotive
+		faceUp = ["3 %d" % i for i, c in enumerate(self.game.faceUpCards()) if c != MULTICOLOR]
+		return choice(["2", choice(faceUp)])
 
