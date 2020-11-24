@@ -16,6 +16,7 @@ File: TicketToRide.py
 Copyright 2020 T. Hilaire
 """
 
+from re import compile
 from colorama import Fore
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
@@ -25,6 +26,11 @@ from .Cards import Deck, strCards
 from .Constants import textColors, MULTICOLOR, PURPLE
 
 
+regClaimRoute = compile(r"^\s*1\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")   # regex to parse a "1 %d %d %d %d"
+regDrawBlindCard = compile(r"^\s*2")                                # regex to parse "2"
+regDrawCard = compile(r"^\s*3\s+(\d+)")                             # regex to parse "3 %d"
+regDrawObjectives = compile(r"^\s*4")                               # regex to parse "4"
+regChooseObjectives = compile(r"^\s*5\s+(\d+)\s+(\d+)\s+(\d+)")     # regex to parse "5 %d %d %d"
 
 
 class TicketToRide(Game):
@@ -40,7 +46,12 @@ class TicketToRide(Game):
 	- _lastMove, _last_return_code: string and returning code corresponding to the last move
 
 	Add some properties
-	- ...
+	- _theMap: Map object (only used to build the object or get initial data)
+	- _deck: the train cards deck (a Deck object, with all the methods to get cards, shuffle, etc.)
+	- _cards: cards[pl] is the list of cards of the player pl. _cards[pl][i] gives how many cards of colors i the player pl has
+	- _score, _nbWagons: a 2-element list with the score and number of wagons for each player
+	- _objectivesDeck: list of objectives cards in the deck (an objective card is 3-uplet city1;city2;points)
+	- _objectives: list of objectives of each player (a 2-element list)
 	"""
 
 	# dictionary of the possible training Players (name-> class)
@@ -80,7 +91,11 @@ class TicketToRide(Game):
 		self._nbWagons = [45, 45]
 
 		# objectives
+		self._objectivesDeck = self._theMap.objectives      # get a copy of the list of objectives
 		self._objectives = [[], []]
+		self._objDrawn = []     # list of drawn objectives (3 objectives kept between drawObjective and chooseObjective)
+
+		self._shouldTakeAnotherCard = False      # True if the player has taken a card and MUST take another one
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
@@ -134,19 +149,79 @@ class TicketToRide(Game):
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
 		- msg: a message to send to the player, explaining why the game is ending
 		"""
-		# parse the move and check if it's in correct form
-		# returns the tuple (LOOSING_MOVE, "The move is not in correct form  !") if not valid
+		pl = self._whoPlays
+		# parse for the different moves
+		claimRoute = regClaimRoute.match(move)
+		drawBlindCard = regDrawBlindCard.match(move)
+		drawCard = regDrawCard.match(move)
+		drawObjectives = regDrawObjectives.match(move)
+		chooseObjectives = regChooseObjectives.match(move)
+		# if the last move was drawObjectives, then this move MUST be chooseObjectives
+		if self._objDrawn and not chooseObjectives:
+			return LOSING_MOVE, "a `draw objectives` move must be followed by a `choose objectives` move"
+		# if the last move was drawCard and the card was not a Locomotive, then this move MUST be drawCard or drawBlindCard
+		if self._shouldTakeAnotherCard and not (drawCard or drawBlindCard):
+			return LOSING_MOVE, "a `draw card` or `draw blind card` must be followed by a `draw card` " \
+			                    "or `draw blind card` (except for Locomotive taken face up)"
 
-		# check if the move is possible
-		# returns (LOOSING_MOVE, "explanations....") if not valid (give the full reason why it is not valid)
+		# Claim a route
+		if claimRoute:
+			# TODO:
+			return NORMAL_MOVE, ""
 
-		# move the player
-		# update the intern data
-		# use self._whoPlays to get who plays (0 or 1)
+		# Draw a blind card
+		elif drawBlindCard:
+			# get a card from the deck (end of the game if the deck is empty)
+			try:
+				draw = self._deck.drawBlind()
+				self._cards[pl][draw] += 1
+			except ValueError:
+				return (LOSING_MOVE if len(self._cards[pl]) > len(self._cards[1-pl]) else WINNING_MOVE),\
+					"No more cards in the deck !!"
+			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard     # need/no need to take another card
+			deck = " ".join(str(c) for c in self._deck.faceUp)
+			return NORMAL_MOVE, str(draw) + deck, deck
 
-		# if won, returns the tuple (WINNING_MOVE, "congratulation message!")
-		# otherwise, just returns (NORMAL_MOVE, "")
-		return NORMAL_MOVE, ""
+		# Draw a train card
+		elif drawCard:
+			# get a card from the face up cards (end of the game if the deck is empty)
+			try:
+				nC = int(drawCard.group(1))
+				card = self._deck.drawFaceUpCard(nC)
+				if self._shouldTakeAnotherCard and card == MULTICOLOR:
+					return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
+				self._cards[pl][card] += 1
+			except ValueError:
+				return (LOSING_MOVE if len(self._cards[pl]) > len(self._cards[1 - pl]) else WINNING_MOVE),\
+					"No more cards in the deck !!"
+			# if it's not a Locomotive, the player MUST take another one
+			if card != MULTICOLOR:
+				self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
+			return NORMAL_MOVE, " ".join(str(c) for c in self._deck.faceUp)
+
+		# Draw an objective card
+		elif drawObjectives:
+			if not self._objectivesDeck:
+				return (LOSING_MOVE if len(self._objectives[pl]) > len(self._objectives[1 - pl]) else WINNING_MOVE),\
+					"No more available objective cards !!"
+			self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
+			return NORMAL_MOVE, " ".join("%d %d %d" % c for c in self._objDrawn), ""
+
+		# Choose an objective card
+		elif chooseObjectives:
+			objs = [int(drawCard.group(1)), int(drawCard.group(2)), int(drawCard.group(3))]
+			# put the chosen objectives in the player hand, or back in the objective deck
+			for i in range(3):
+				if objs[i]:
+					self._objectives[pl].append(self._objDrawn[i])
+				else:
+					self._objectivesDeck.append(self._objDrawn[i])
+			self._objDrawn = []
+			return NORMAL_MOVE, len([o for o in objs if o])   # returns the number of chosen objectives
+
+
+		return LOSING_MOVE, "The move is not in correct !"
+
 
 
 	def getDataSize(self):
@@ -171,8 +246,8 @@ class TicketToRide(Game):
 			if c > 0:
 				for _ in range(c):
 					cards.append(str(i))
-		# send the cities and the deck
 
+		# send the cities, the face-up cards and the player cards
 		return self._theMap.data + " " + " ".join(str(c) for c in self._deck.faceUp) + " " + " ".join(cards)
 
 
@@ -182,10 +257,6 @@ class TicketToRide(Game):
 
 		Returns the next player (but do not update self._whoPlays)
 		"""
-		#
-		# insert your code here...
-		#
-		return 1 - self._whoPlays       # in a tour-by-tour game, it's the opponent to play
+		# in case of `draw objective` move, the player replay
 
-
-""
+		return self._whoPlays if (self._shouldTakeAnotherCard or self._objDrawn) else 1 - self._whoPlays

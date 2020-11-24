@@ -109,3 +109,8 @@ class Map:
 	def nbTracks(self):
 		"""Returns the number of tracks"""
 		return len(self._tracks)
+
+	@property
+	def objectives(self):
+		"""Return a copy of the objective list"""
+		return list(self._objectives)
