@@ -229,13 +229,14 @@ t_return_code getMove( t_typeMove* type, int data[5] )
 		p = move + nbchar;
 		if (*type == CLAIM_ROUTE)
 			sscanf(p, "%d %d %d %d", data, data + 1, data + 2, data + 3);
-		else if (*type == DRAW_CARD)
+		else if ((*type == DRAW_CARD) || (*type == DRAW_BLIND_CARD))
 			sscanf(msg, "%d %d %d %d %d", data, data + 1, data + 2, data + 3, data + 4);
 		else if (*type == CHOOSE_OBJECTIVES) {
 			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
 			/* get the number of objectives kept by the opponent*/
 			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
 		}
+		/* nothing to do for DRAW_OBJECTIVES move */
 	}
 
 	return ret;
@@ -259,7 +260,7 @@ t_return_code claimRoute(int city1, int city2, int color, int nbLocomotives){
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
 t_return_code drawBlindCard(t_color* card){
-	char answer[256];
+	char answer[MAX_MESSAGE];
 	/* send message */
 	t_return_code ret = sendCGSMove(__FUNCTION__, "2", answer);
 	/* get card drawn */
@@ -276,8 +277,8 @@ t_return_code drawBlindCard(t_color* card){
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
 t_return_code drawCard(int nCard, t_color deck[5]){
-	char answer[256];
-	char msg[256];
+	char answer[MAX_MESSAGE];
+	char msg[MAX_GET_MOVE];
 	/* send message */
 	sprintf(msg, "3 %d", nCard);
 	t_return_code ret = sendCGSMove(__FUNCTION__, msg, answer);
@@ -295,7 +296,7 @@ t_return_code drawCard(int nCard, t_color deck[5]){
  * -> the move "choose objectives" MUST be play just after !!
  */
 t_return_code drawObjectives(t_objective obj[3]){
-	char answer[256];
+	char answer[MAX_MESSAGE];
 	/* send message */
 	t_return_code ret = sendCGSMove(__FUNCTION__, "4", answer);
 	/* get the new obj */
@@ -315,7 +316,7 @@ t_return_code drawObjectives(t_objective obj[3]){
  * -> MUST be played after "draw objectives
  */
 t_return_code chooseObjectives(int objectiveCards[3]){
-	char msg[256];
+	char msg[MAX_GET_MOVE];
 	/* send message */
 	sprintf(msg, "5 %d %d %d", objectiveCards[0], objectiveCards[1], objectiveCards[2]);
 	t_return_code ret = sendCGSMove(__FUNCTION__, msg, NULL);
