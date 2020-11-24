@@ -22,7 +22,7 @@ from CGSserver.Player import TrainingPlayer
 class DoNothingPlayer(TrainingPlayer):
 	"""
 	This class defines a stupid training player that does... nothing
-	(it plays DO_NOTHING every time)
+	(it get a card from the deck every time)
 	It is used for the first part of the project (players need an opponent that does nothing to check their	code)
 	"""
 
@@ -36,7 +36,7 @@ class DoNothingPlayer(TrainingPlayer):
 	def playMove(self):
 		"""
 		Plays the move -> here DO_NOTHING
-		Returns the move (string %d %d)
+		Returns the move
 		"""
-		return "0"      # TODO: à faire
+		return "2"
 
