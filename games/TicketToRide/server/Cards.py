@@ -23,7 +23,7 @@ from .Constants import MULTICOLOR, PURPLE, textColors
 def strCards(color, amount):
 	"""return a string to display a card (using color)"""
 	if color == MULTICOLOR:
-		return Fore.RESET + "(" + textColors[color] + "%d" % amount + ")" + Fore.RESET
+		return Fore.RESET + " (" + textColors[color] + "%d" % amount + ")" + Fore.RESET
 	else:
 		return textColors[color] + "%2d" % amount + Fore.RESET
 
