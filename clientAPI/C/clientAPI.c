@@ -158,7 +158,7 @@ void sendString(const char* fct, const char* str, ...) {
 	if (rr > 0)
 	  dispError(fct, "Acknowledgement message too long (sending:%s,receive:%s)", str,buffer);
 
-	if (strcmp(buffer, "OK")==0)
+	if (strcmp(buffer, "OK") != 0)
 		dispError(fct, "Error: The server does not acknowledge, but answered:\n%s",buffer);
 
 	dispDebug(fct, 3, "Receive acknowledgment from the server");
@@ -337,6 +337,7 @@ t_return_code getCGSMove( const char* fct, char* move ,char* msg)
 {
 	t_return_code result;
 	sendString( fct, "GET_MOVE");
+	*move = *msg = 0;
 
 	/* read move */
 	size_t r = read_inbuf(fct, move, MAX_GET_MOVE);
@@ -380,6 +381,7 @@ t_return_code sendCGSMove( const char* fct, char* move, char* answer)
 {
 	t_return_code result;
 	sendString( fct, "PLAY_MOVE %s", move);
+	*move = *answer = 0;
 
 	/* read the associated answer */
 	bzero(buffer, MAX_LENGTH);

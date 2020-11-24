@@ -29,7 +29,7 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 #define MAX_MESSAGE 512			/* maximum size of the message move */
 
 
-/* defines a return code */
+/* defines a return code, used for playMove and getMove */
 typedef enum
 {
 	NORMAL_MOVE = 0,

@@ -49,6 +49,7 @@ typedef enum {
 	MULTICOLOR 				/* used for the locomotive card (joker) or for a track that can accept any color */
 } t_color;
 
+
 /* different possible moves */
 typedef enum
 {
@@ -58,6 +59,7 @@ typedef enum
 	DRAW_OBJECTIVES = 4,
 	CHOOSE_OBJECTIVES = 5
 } t_typeMove;
+
 
 /* an objective card */
 typedef struct{

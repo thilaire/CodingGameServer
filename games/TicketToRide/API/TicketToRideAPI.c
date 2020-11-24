@@ -46,8 +46,7 @@ char** cityNames;		/* array of city names (used by printCity) */
 /* -----------------------
  * Dummy function that does
  * a string copy (exactly as strcpy)
- * but replace the '_' by ' ' in the same time
- * it does the copy
+ * but replace the '_' by ' ' in the same time it does the copy
  */
 void strCpyReplace(char* dest, const char* src)
 {
@@ -234,7 +233,8 @@ t_return_code getMove( t_typeMove* type, int data[5] )
 			sscanf(msg, "%d %d %d %d %d", data, data + 1, data + 2, data + 3, data + 4);
 		else if (*type == CHOOSE_OBJECTIVES) {
 			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
-			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);        /* number of objectives */
+			/* get the number of objectives kept by the opponent*/
+			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
 		}
 	}
 
