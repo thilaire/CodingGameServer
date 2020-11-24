@@ -67,7 +67,7 @@ class RegularPlayer(Player, BaseClass):
 		# and last, call the BaseClass constructor
 		BaseClass.__init__(self, name)
 		self.logger.info("=================================")
-		self.logger.info(name + " just log in (from " + address + ".")
+		self.logger.info(name + " just log in (from " + address + ").")
 
 		# boolean that indicates if the player has already played or not use for the 'once' option of the Game
 		self.hasAlreadyPlayed = False
