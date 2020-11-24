@@ -24,8 +24,8 @@ CGS requires Python3 and the following packages:
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
-from gevent import monkey
-monkey.patch_all()
+# from gevent import monkey
+# monkey.patch_all()
 
 import threading  # to run threads
 from importlib import import_module  # to dynamically import modules

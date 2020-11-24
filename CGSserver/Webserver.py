@@ -32,7 +32,7 @@ from CGSserver.BaseClass import BaseClass
 # flask object
 flask = Flask("webserver")
 socketio = SocketIO(flask, async_mode='threading')
-#socketio = SocketIO(flask, async_mode='gevent')
+# socketio = SocketIO(flask, async_mode='gevent')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
