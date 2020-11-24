@@ -16,13 +16,14 @@ File: DoNothingPlayer.py
 Copyright 2020 T. Hilaire
 """
 
+from random import choice
 from CGSserver.Player import TrainingPlayer
 
 
 class DoNothingPlayer(TrainingPlayer):
 	"""
 	This class defines a stupid training player that does... nothing
-	(it get a card from the deck every time)
+	(it get a card from the deck  or the face up card every time)
 	It is used for the first part of the project (players need an opponent that does nothing to check their	code)
 	"""
 
@@ -35,8 +36,9 @@ class DoNothingPlayer(TrainingPlayer):
 
 	def playMove(self):
 		"""
-		Plays the move -> here DO_NOTHING
+		Plays the move -> here take a card
+		(50% chance to take from the deck, 50% to take a random face up card)
 		Returns the move
 		"""
-		return "2"
+		return choice(["2", choice(["3 0", "3 1", "3 2", "3 3", "3 4"])])
 
