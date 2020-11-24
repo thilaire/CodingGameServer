@@ -32,7 +32,7 @@ Copyright 2020 T. Hilaire
 
 #ifndef __API_CLIENT_T2R__
 #define __API_CLIENT_T2R__
-#include "ret_type.h"
+#include "clientAPI.h"
 
 
 /* colors' definitions */
@@ -76,7 +76,7 @@ typedef struct{
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters
  */
-void connectToServer(char* serverName, int port, char* name);
+void connectToServer(char* serverName, unsigned int port, char* name);
 
 
 
@@ -100,10 +100,11 @@ void closeConnection();
  *     gameType can also contains extra data in form "key1=value1 key2=value1 ..."
  *     to provide options (to bots)
  *     invalid keys are ignored, invalid values leads to error
- *     the following options are common to every training player
+ *     the options are:
  *        - 'timeout': allows an define the timeout when training (in seconds)
  *        - 'seed': allows to set the seed of the random generator
- *        - 'start': allows to set who starts ('0' or '1')
+ *        - 'start': allows to set who starts ('0' to begin, '1' otherwise)
+ *        - 'map': allows to choose a map ('USA' for the moment)
  *     the following bots are available:
  *        - DO_NOTHING (stupid player what withdraw cards)
  *
@@ -186,12 +187,21 @@ t_return_code drawCard(int nCard, t_color deck[5]);
 
 
 /* play the move "draw some objective cards"
- * - objectives: array representing the objective card (modified by the function)
+ * - obj: array representing the objective card (modified by the function)
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ * -> the move "choose objectives" MUST be play just after !!
  */
-t_return_code objectiveCards(t_objective objectives[3]);
+t_return_code drawObjectives(t_objective obj[3]);
 
+/* play the move "choose some objective cards"
+ * - objectivesCards: array of boolean indicating which cards are taken
+ * 		(0 -> the objective card is not taken)
+ *
+ * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ * -> MUST be played after "draw objectives
+ */
+t_return_code chooseObjectives(int objectiveCards[3]);
 
 /* ----------------------
  * Display the Game

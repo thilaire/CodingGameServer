@@ -72,7 +72,7 @@ void strCpyReplace(char* dest, const char* src)
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters
  */
-void connectToServer(char* serverName, int port, char* name)
+void connectToServer(char* serverName, unsigned int port, char* name)
 {
 	connectToCGS(__FUNCTION__, serverName, port, name);
 }
@@ -107,10 +107,11 @@ void closeConnection()
  *     gameType can also contains extra data in form "key1=value1 key2=value1 ..."
  *     to provide options (to bots)
  *     invalid keys are ignored, invalid values leads to error
- *     the following options are common to every training player
+ *     the options are:
  *        - 'timeout': allows an define the timeout when training (in seconds)
  *        - 'seed': allows to set the seed of the random generator
- *        - 'start': allows to set who starts ('0' or '1')
+ *        - 'start': allows to set who starts ('0' to begin, '1' otherwise)
+ *        - 'map': allows to choose a map ('USA' for the moment)
  *     the following bots are available:
  *        - DO_NOTHING (stupid player what withdraw cards)
  *
@@ -158,6 +159,10 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
 	int nbchar;
 	char *p, **name;
 	char city[20];
+
+	/* check parameter */
+	if (!tracks)
+		dispError(__FUNCTION__, "The parameter `tracks` is NULL !");
 
 	/* wait for a game */
 	int ret = getGameData( __FUNCTION__, data, 4096);
@@ -210,20 +215,27 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
  */
 t_return_code getMove( t_typeMove* type, int data[5] )
 {
-    char msg[256];
+    char move[MAX_GET_MOVE];
+	char msg[MAX_MESSAGE];
+	int obj[3];
+	char* p;
+	unsigned int nbchar;
 
     /* get the move */
-    int ret = getCGSMove(__FUNCTION__, msg, 256);
+    t_return_code ret = getCGSMove(__FUNCTION__, move, msg);
 
     /* extract result */
 	if (ret == NORMAL_MOVE) {
-		sscanf(msg, "%d", type);
+		sscanf(move, "%d%n", type, &nbchar);
+		p = move + nbchar;
 		if (*type == CLAIM_ROUTE)
-			sscanf(msg, "%d %d %d %d", data, data + 1, data + 2, data + 3);
+			sscanf(p, "%d %d %d %d", data, data + 1, data + 2, data + 3);
 		else if (*type == DRAW_CARD)
 			sscanf(msg, "%d %d %d %d %d", data, data + 1, data + 2, data + 3, data + 4);
-		else if (*type == CHOOSE_OBJECTIVES)
-			sscanf(msg, "%d", data);
+		else if (*type == CHOOSE_OBJECTIVES) {
+			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
+			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);        /* number of objectives */
+		}
 	}
 
 	return ret;
