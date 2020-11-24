@@ -24,7 +24,18 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 
 #include <stdio.h>
 
-#include "ret_type.h"
+
+#define MAX_GET_MOVE 128		/* maximum size of the string representing a move */
+#define MAX_MESSAGE 512			/* maximum size of the message move */
+
+
+/* defines a return code */
+typedef enum
+{
+	NORMAL_MOVE = 0,
+	WINNING_MOVE = 1,
+	LOOSING_MOVE = -1
+} t_return_code;
 
 
 /* Display Error message and exit
@@ -60,7 +71,7 @@ void dispDebug(const char* fct,int level, const char* msg, ...);
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters (checked by the server)
  */
-void connectToCGS( const char* fct, char* serverName, int port, char* name);
+void connectToCGS( const char* fct, char* serverName, unsigned int port, char* name);
 
 
 
@@ -117,11 +128,12 @@ int getGameData( const char* fct, char* data, size_t ndata);
  * Parameters:
  * - fct: name of the function that calls getCGSMove (used for the logging)
  * - move: a string representing a move (the caller will parse it to extract the move's values)
- * - nmove : maximum size of the string representing the move  
+ * - msg: a string with extra data (or message when the move is not a NORMAL_MOVE)
+ *
  * Fill the move and returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move)
  * this code is relative to the opponent (+1 if HE wins, ...)
  */
-t_return_code getCGSMove( const char* fct, char* move, size_t nmove );
+t_return_code getCGSMove( const char* fct, char* move ,char* msg);
 
 
 

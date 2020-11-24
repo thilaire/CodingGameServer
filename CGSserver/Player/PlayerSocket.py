@@ -84,9 +84,10 @@ class PlayerSocketHandler(BaseRequestHandler):
 						if self._player is not self.game.playerWhoPlays:
 							self.sendData("OK")
 							# get the last move
-							move, return_code = self.game.getLastMove()
+							move, msg, return_code = self.game.getLastMove()
 							# send the move and the return code
 							self.sendData(move)
+							self.sendData(msg)
 							self.sendData(str(return_code))
 						else:
 							# we cannot ask for a move, since it's our turn to play
@@ -97,17 +98,16 @@ class PlayerSocketHandler(BaseRequestHandler):
 						if self.game is None:   # the game is already finished due to TIMEOUT
 							# Timeout !
 							self.sendData("OK")
-							return_code, msg = LOSING_MOVE, "Timeout !"
-							self.sendData(str(return_code))
-							self.sendData(msg)
+							self.sendData("Timeout !")
+							self.sendData(str(LOSING_MOVE))
 						# play move
 						elif self._player is self.game.playerWhoPlays:
 							self.sendData("OK")
 							# play that move to see if it's a winning/losing/normal move
 							return_code, msg = self.game.playMove(data[10:])
 							# now, send the result of the move and the associated message
-							self.sendData(str(return_code))
 							self.sendData(msg)
+							self.sendData(str(return_code))
 						else:
 							self.sendData("It's not our turn to play, so we cannot play a move!")
 

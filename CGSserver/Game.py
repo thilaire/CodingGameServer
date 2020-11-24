@@ -53,6 +53,16 @@ def hex6(x):
 	return h[-6:]   # get the 6 last characters
 
 
+def unpack23(x):
+	"""
+	Returns a 3-element tuple from a 2-element tuple (if needed, the last element is repeated)
+	"""
+	if len(x) == 2:
+		return x[0], x[1], x[1]
+	else:
+		return x
+
+
 class Game(BaseClass):
 	"""
 	Game class
@@ -66,6 +76,7 @@ class Game(BaseClass):
 	- _whoPlays: number of the player who should play now (0 or 1)
 	- _waitingPlayer: Event used to wait for the player
 	- _lastMove: string corresponding to the last move
+	- _lastMessage: message associated with the last move (to be sent to the opponent)
 	- _tournament: (Tournament) the tournament the game is involved in (or None no tournament)
 
 	"""
@@ -153,6 +164,7 @@ class Game(BaseClass):
 
 		# last move
 		self._lastMove = ""
+		self._lastMessage = ""
 		self._lastReturn_code = 0
 
 		# set a delay after each move (to let the time to see the party)
@@ -298,13 +310,14 @@ class Game(BaseClass):
 		If it doesn't answer in TIMEOUT_TURN seconds, then he losts the game
 		Returns:
 			- last move: (string) string describing the opponent last move (exactly the string it sends)
+			- msg: (string) extra data (may be empty) or message explaining why the move is WINING/LOSING
 			- last return_code: (int) code (NORMAL_MOVE, WINNING_MOVE or LOSING_MOVE) describing the last move
 		"""
 
 		# check if the opponent doesn't have disconnected
 		if self._players[self._whoPlays].game is None:
 			self.endOfGame(1-self._whoPlays, "Opponent has disconnected")
-			return "", LOSING_MOVE
+			return "", "Opponent has disconnected", LOSING_MOVE
 
 		# wait for the move of the opponent if the opponent is a regular player
 		if self._players[self._whoPlays].isRegular:
@@ -313,12 +326,12 @@ class Game(BaseClass):
 				self._sync.wait()
 				# now the opponent has played, we wait now for self._whoPlays to be updated
 				self._sync.wait()
-				return self._lastMove, self._lastReturn_code
+				return self._lastMove, self._lastMessage, self._lastReturn_code
 			except BrokenBarrierError:
 				# Timeout !!
 				# the opponent has lost the game
 				self.endOfGame(1 - self._whoPlays, "Timeout")
-				return self._lastMove, LOSING_MOVE
+				return self._lastMove, "Timeout", LOSING_MOVE
 
 		else:
 			# the opponent is a training player
@@ -328,14 +341,14 @@ class Game(BaseClass):
 			self._players[1 - self._whoPlays].logger.info("%s plays %s" % (self._players[self._whoPlays].name, move))
 
 			# and update the game
-			return_code, msg = self.updateGame(move)
+			return_code, msg, msgOpponent = unpack23(self.updateGame(move))
 
 			# update who plays next and check for the end of the game
 			self.manageNextTurn(return_code, msg)
 
 			self.sendUpdateToWebSocket()
 
-			return move, return_code
+			return move, msgOpponent, return_code
 
 
 
@@ -349,7 +362,7 @@ class Game(BaseClass):
 		- move: a string corresponding to the move
 		Returns a tuple (move_code, msg), where
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
-		- msg: a message to send to the player, explaining why the game is ending
+		- msg: a message to send back to the player, with extra data or a message explaining why the game is ending
 		"""
 		# check if the opponent doesn't have disconnected
 		if self._players[self._whoPlays].game is None:
@@ -367,8 +380,9 @@ class Game(BaseClass):
 		# if the opponent is a regular player
 		if self._players[1 - self._whoPlays].isRegular:
 			# play that move, update the game and keep the last move
-			return_code, msg = self.updateGame(move)
+			return_code, msg, msgOpponent = unpack23(self.updateGame(move))
 			self._lastMove = move
+			self._lastMessage = msgOpponent
 			self._lastReturn_code = return_code
 
 			try:
@@ -395,8 +409,9 @@ class Game(BaseClass):
 				return LOSING_MOVE, "Timeout !"
 
 			# play that move, update the game and keep the last move
-			return_code, msg = self.updateGame(move)
+			return_code, msg, msgOpponent = unpack23(self.updateGame(move))
 			self._lastMove = move
+			self._lastMessage = msgOpponent
 			self._lastReturn_code = return_code
 
 			#  we store the time (to compute the timeout)
@@ -405,9 +420,7 @@ class Game(BaseClass):
 			# update who plays next and check for the end of the game
 			self.manageNextTurn(return_code, msg)
 
-
-
-		self.sendUpdateToWebSocket()
+			self.sendUpdateToWebSocket()
 		return return_code, msg
 
 
@@ -529,9 +542,10 @@ class Game(BaseClass):
 
 		Play a move and update the game
 		- move: a string
-		Return a tuple (move_code, msg), where
+		Return a tuple (move_code, msg) OR (move_code, msg, msgOppenent), where
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
-		- msg: a message to send to the player, explaining why the game is ending
+		- msg: a message to send to the players, explaining why the game is ending, it may contain data
+		- msgOpponnent: (OPTIONAL) a message sent to the opponent, IF the opponent should not receive the same data
 		"""
 		# play that move
 		return 0, ''

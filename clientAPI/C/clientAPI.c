@@ -29,15 +29,14 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 #include <string.h>
 #include <unistd.h>
 #include <stdarg.h>
-#include <strings.h>
 
 #include "clientAPI.h"
 
 #define h_addr h_addr_list[0] /* for backward compatibility */
 
+#define HEAD_SIZE 6 			/*number of bytes to code the size of the message (header)*/
+#define MAX_LENGTH 20000 		/* maximum size of the buffer expected for print_Game */
 
-#define HEAD_SIZE 6 /*number of bytes to code the size of the message (header)*/
-#define MAX_LENGTH 20000 /* maximum size of the buffer expect for print_Game */
 
 
 /* global variables about the connection
@@ -47,9 +46,7 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 int sockfd = -1;		        /* socket descriptor, equal to -1 when we are not yet connected */
 char buffer[MAX_LENGTH];		/* global buffer used to send message (global so that it is not allocated/desallocated for each message) */
 int debug=0;			        /* debug constant; we do not use here a #DEFINE, since it allows the client to declare 'extern int debug;' set it to 1 to have debug information, without having to re-compile labyrinthAPI.c */
-char stream_size[HEAD_SIZE] ;
 char playerName[20];            /* name of the player, stored to display it in debug */
-
 
 
 /* Display Error message and exit
@@ -102,14 +99,13 @@ void dispDebug(const char* fct, int level, const char* msg, ...)
 * - nbuf : size of the buffer
 *
 * Return the remaining length of the message (0 is the message is completely read)
-* !FIXME: if allocated memory for buf is < MAX_LENGTH, leads to memory fault
 */
-int read_inbuf(const char *fct, char *buf, size_t nbuf){
-	static char stream_size[HEAD_SIZE];/* size of the message to be receivied, static to avoid allocate memory at each call*/
-	int r;
-	static size_t length=0 ; // static because some length has to be read again
+size_t read_inbuf(const char *fct, char *buf, size_t nbuf){
+	static char stream_size[HEAD_SIZE];		/* size of the message to be received, static to avoid allocate memory at each call*/
+	ssize_t r;
+	static size_t length=0 ; 				/* static because some length has to be read again */
 	if (!length)  {
-		bzero(stream_size,HEAD_SIZE);
+		bzero(stream_size, HEAD_SIZE);
 		r = read(sockfd, stream_size, HEAD_SIZE);
 		if (r < 0)
 			dispError (fct, "Cannot read message's length (server has failed?)");
@@ -118,7 +114,7 @@ int read_inbuf(const char *fct, char *buf, size_t nbuf){
 			dispError (fct, "Cannot read message's length (server has failed?)");
 		dispDebug (fct, 3, "prepare to receive a message of length :%lu",length);
 	}
-	int mini = length > nbuf ? nbuf: length;
+	size_t mini = length > nbuf ? nbuf: length;
 	int read_length = 0;
 	bzero(buf, nbuf);
 	do
@@ -152,19 +148,17 @@ void sendString(const char* fct, const char* str, ...) {
 		dispError( fct, "The connection to the server is not established. Call 'connectToServer' before !");
 
 	/* send our message */
-	int r = write(sockfd, buffer, strlen(buffer));
+	ssize_t r = write(sockfd, buffer, strlen(buffer));
 	dispDebug(fct,2, "Send '%s' to the server", buffer);
 	if (r < 0)
 		dispError(fct, "Cannot write to the socket (%s)", buffer);
 
 	/* get acknowledgment */
-	r = read_inbuf(fct, buffer, MAX_LENGTH);
-	//bzero(buffer,1000);
-	//r = read(sockfd, buffer, 255);
-	if (r > 0)
+	size_t rr = read_inbuf(fct, buffer, MAX_LENGTH);
+	if (rr > 0)
 	  dispError(fct, "Acknowledgement message too long (sending:%s,receive:%s)", str,buffer);
 
-	if (strcmp(buffer, "OK"))
+	if (strcmp(buffer, "OK")==0)
 		dispError(fct, "Error: The server does not acknowledge, but answered:\n%s",buffer);
 
 	dispDebug(fct, 3, "Receive acknowledgment from the server");
@@ -182,7 +176,7 @@ void sendString(const char* fct, const char* str, ...) {
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters (checked by the server)
  */
-void connectToCGS( const char* fct, char* serverName, int port, char* name)
+void connectToCGS( const char* fct, char* serverName, unsigned int port, char* name)
 {
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -206,7 +200,7 @@ void connectToCGS( const char* fct, char* serverName, int port, char* name)
 	/* Allocate sockaddr */
 	bzero((char *) &serv_addr, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
-	bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+	bcopy(server->h_addr, &serv_addr.sin_addr.s_addr, server->h_length);
 	serv_addr.sin_port = htons(port);
 
 	/* Now connect to the server */
@@ -258,7 +252,7 @@ void closeCGSConnection( const char* fct)
  */
 void waitForGame( const char* fct, char* gameType, char* gameName, char* data)
 {
-	int r;
+	size_t r;
 	if (gameType)
 	    sendString( fct,"WAIT_GAME %s", gameType);
 	else
@@ -307,7 +301,7 @@ int getGameData(const char* fct, char* data, size_t ndata)
 	sendString(fct, "GET_GAME_DATA");
 
 	/* read game data */
-	int r = read_inbuf(fct, data, ndata);
+	size_t r = read_inbuf(fct, data, ndata);
 	if (r > 0)
 		dispError( fct, "too long answer from 'GET_GAME_DATA' command");
 
@@ -333,34 +327,39 @@ int getGameData(const char* fct, char* data, size_t ndata)
  * Parameters:
  * - fct: name of the function that calls getCGSMove (used for the logging)
  * - move: a string representing a move (the caller will parse it to extract the move's values)
+ * - msg: a string with extra data (or message when the move is not a NORMAL_MOVE), max 256 char.
  *
- * Fill the move and returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move)
+ * move and msg are already allocated, with at least MAX_MOVE and MAX_MESSAGE chars
+ * Fill the move  and string, and returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move)
  * this code is relative to the opponent (+1 if HE wins, ...)
  */
-t_return_code getCGSMove( const char* fct, char* move ,size_t nmove)
+t_return_code getCGSMove( const char* fct, char* move ,char* msg)
 {
 	t_return_code result;
 	sendString( fct, "GET_MOVE");
 
 	/* read move */
-	int r = read_inbuf(fct,move, nmove);
+	size_t r = read_inbuf(fct, move, MAX_GET_MOVE);
 	if (r>0)
 		dispError( fct, "too long answer from 'GET_MOVE' command");
 	dispDebug(__FUNCTION__,1, "Receive that move:%s", move);
 
-	/* read the return code*/
-	bzero(buffer,MAX_LENGTH);
-	r = read_inbuf(fct,buffer, MAX_LENGTH);
+	/* read the message */
+	r = read_inbuf(fct, msg, MAX_MESSAGE);
 	if (r>0)
 		dispError( fct, "Too long answer from 'GET_MOVE' command");
 	dispDebug(__FUNCTION__,2, "Receive that return code:%s", buffer);
 
-	/* extract result */
+	/* read the return code*/
+	bzero(buffer, MAX_LENGTH);
+	r = read_inbuf(fct,buffer, MAX_LENGTH);
+	if (r>0)
+		dispError( fct, "Too long answer from 'GET_MOVE' command");
+	dispDebug(__FUNCTION__,2, "Receive that return code:%s", buffer);
 	sscanf( buffer, "%d", &result);
-	dispDebug(__FUNCTION__,2,"results=%d",result);
 
 	if (result != NORMAL_MOVE)
-		printf("[%s] %s", __FUNCTION__, buffer);
+		printf("[%s] %s", __FUNCTION__, msg);
 
 	return result;
 }
@@ -382,30 +381,26 @@ t_return_code sendCGSMove( const char* fct, char* move, char* answer)
 	t_return_code result;
 	sendString( fct, "PLAY_MOVE %s", move);
 
-
-	/* read return code */
-	bzero(buffer,MAX_LENGTH);
-	int r = read_inbuf(fct,buffer,MAX_LENGTH);
-	if (r>0)
-		dispError( fct, "Too long answer from 'PLAY_MOVE' command");
-
-	dispDebug( fct,2, "Receive that return code: %s", buffer);
-
-	/* extract result */
-	sscanf( buffer, "%d", &result);
-
 	/* read the associated answer */
-	bzero(buffer,MAX_LENGTH);
-	r = read_inbuf(fct,buffer,MAX_LENGTH);
+	bzero(buffer, MAX_LENGTH);
+	size_t r = read_inbuf(fct, buffer, MAX_LENGTH);
 	if (r>0)
 		dispError( fct, "Too long answer from 'PLAY_MOVE' command ");
-
 	dispDebug( fct,1, "Receive that message: %s", buffer);
-
-	if (result != NORMAL_MOVE)
-		printf("[%s] %s", __FUNCTION__, buffer);
-	else if (answer)
+	if (answer)
 		strcpy(answer, buffer);
+
+	/* read return code */
+	bzero(buffer, MAX_LENGTH);
+	r = read_inbuf(fct, buffer, MAX_LENGTH);
+	if (r>0)
+		dispError(fct, "Too long answer from 'PLAY_MOVE' command");
+	dispDebug(fct,2, "Receive that return code: %s", buffer);
+	sscanf(buffer, "%d", &result);
+
+	/* display the message if the move is not a NORMAL_MOVE */
+	if (result != NORMAL_MOVE)
+		printf("[%s] %s", __FUNCTION__, answer);
 
 	return result;
 }
@@ -427,7 +422,7 @@ void printCGSGame(const char* fct)
 	sendString( fct, "DISP_GAME");
 
 	/* get string to print */
-	int r ;
+	size_t r ;
 	do {
 	  r = read_inbuf(fct,buffer,MAX_LENGTH);
 	  printf("%s",buffer);

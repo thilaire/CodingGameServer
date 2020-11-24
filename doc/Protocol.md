@@ -12,13 +12,13 @@ Here are (in that order), the different actions:
    2. Server acknowledges (send `"OK"`) if the name is valid
 
 3) Waiting for a game       (client: `waitForGame`, server: `waitForGame`)
-   1. Client sends `"WAIT_GAME %s"` with the type of the game (an empty string for a regular game, or the name of the type, like `"DO_NOTHING"`)
+   1. Client sends `"WAIT_GAME %s"` with the type of the game and the options (`"TRAINING <BOT_NAME> [options]"` or `"TOURNAMENT <TOURNAMENT_NAME> [options]` or just `"[options]"`)
    2. Server acknowledges (send `"OK"`)
    3. Server waits for the game to start
    4. Every 3 seconds, the server answers "NOT_READY" when the game has not started yet.
  This allows to detect disconnection from the client during that phase (we can only check disconnection when we send or receive something, not when we wait...). This is a *light* polling, since we wait with an Event, *but* with a 3 seconds timeout. 
    4. Finally, when the game starts, the server sends `"%s"` the name of the game
-   5. Server sends `"%s"` the data of the game (the size of the labyrinth, for example)
+   5. Server sends a string `"%s"` with the data of the game (the size of the labyrinth, for example)
 
 4) Get the full datas of the game       (client: `getGameData`, server: `sendGameData`)
    1. Client sends `"GET_GAME_DATA"`
@@ -35,14 +35,17 @@ Now the client can send any of the following command (until the end of the game)
    3. Server waits the opponent's last move (and synchronize the two clients)
    4. Server plays this move
    5. Server sends `"%s"` the move
-   6. Server sends `"%d"` the return_code (0 for move ok, +1 for winning move, -1 for losing move)
+   6. Server sends `"%d"` the move message (extra data or info about the end of the game)
+   7. Server sends `"%d"` the return_code (0 for move ok, +1 for winning move, -1 for losing move)
+   
 
 6) Send its move            (client: `sendCGSMove`, server:`handle`)
    1. Client sends "PLAY_MOVE %s" with its move
    2. Server acknowledge (send `"OK"`) if it's the client's turn to play
    3. Server waits for the `GET_MOVE` of the opponent (and synchronize the two clients)
-   4. Server sends `"%d"` the return_code (0 for move ok, +1 for winning move, -1 for losing move)
-   5. Server sends associated message `"%s"` (should give more indications about the move, to be printed (e.g "move illegal because..."))
+   4. Server sends the move message message `"%s"` (extra data or info about the end of the game to be displayed (e.g "move illegal because..."))
+   5. Server sends `"%d"` the return_code (0 for move ok, +1 for winning move, -1 for losing move)
+   
 
 7) Ask string to display the game       (client: `printGame`, server: `handle`)
    1. Client sends `"DISP_GAME"`
