@@ -176,7 +176,7 @@ class TicketToRide(Game):
 				draw = self._deck.drawBlind()
 				self._cards[pl][draw] += 1
 			except ValueError:
-				return (LOSING_MOVE if len(self._cards[pl]) > len(self._cards[1-pl]) else WINNING_MOVE),\
+				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(self._cards[1-pl]) else WINNING_MOVE),\
 					"No more cards in the deck !!"
 			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard     # need/no need to take another card
 			deck = " ".join(str(c) for c in self._deck.faceUp)
@@ -192,7 +192,7 @@ class TicketToRide(Game):
 					return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
 				self._cards[pl][card] += 1
 			except ValueError:
-				return (LOSING_MOVE if len(self._cards[pl]) > len(self._cards[1 - pl]) else WINNING_MOVE),\
+				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(self._cards[1 - pl]) else WINNING_MOVE),\
 					"No more cards in the deck !!"
 			# if it's not a Locomotive, the player MUST take another one
 			if card != MULTICOLOR:
