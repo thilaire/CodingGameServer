@@ -182,7 +182,10 @@ class TicketToRide(Game):
 					"No more cards in the deck !!"
 			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard     # need/no need to take another card
 			deck = " ".join(str(c) for c in self._deck.faceUp)
-			return NORMAL_MOVE, str(draw) + deck, deck
+			# send:
+			# - to the player: card drawn and the deck
+			# - to the opponent: if the player replay, and the deck
+			return NORMAL_MOVE, str(draw) + " " + deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + deck
 
 		# Draw a train card
 		elif drawCard:
@@ -199,7 +202,11 @@ class TicketToRide(Game):
 			# if it's not a Locomotive, the player MUST take another one
 			if card != MULTICOLOR:
 				self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
-			return NORMAL_MOVE, " ".join(str(c) for c in self._deck.faceUp)
+			deck = " ".join(str(c) for c in self._deck.faceUp)
+			# send:
+			# - to the player: the deck
+			# - to the opponent: if the player replay, the card taken and the deck
+			return NORMAL_MOVE, deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(card) + " " + deck
 
 		# Draw an objective card
 		elif drawObjectives:
@@ -260,5 +267,8 @@ class TicketToRide(Game):
 		Returns the next player (but do not update self._whoPlays)
 		"""
 		# in case of `draw objective` move, the player replay
-
 		return self._whoPlays if (self._shouldTakeAnotherCard or self._objDrawn) else 1 - self._whoPlays
+
+	def faceUpCards(self):
+		"""Return the list of face up cards (for the bots)"""
+		return list(self._deck.faceUp)

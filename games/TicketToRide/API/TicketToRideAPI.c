@@ -199,10 +199,11 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
  *
  * Parameters:
  * - type: type of the opponent's move (see t_typeMove)
- * - data: (int[5]) data associated to the move
+ * - replay: boolean, tells if the play will replay after this move or not
+ * - data: (int[6]) data associated to the move
  * 		CLAIM_ROUTE: city1, city2, color, nb locomotives
  * 		DRAW_BLIND_CARD: none
- * 		DRAW_CARD: 5 cards of the deck
+ * 		DRAW_CARD: t_color of the taken card and the 5 cards of the deck
  * 		DRAW_OBJECTIVES: none
  * 		CHOOSE_OBJECTIVES: nb of taken objectives
  *
@@ -212,7 +213,7 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
  * -  LOOSING_MOVE for a losing (or illegal) move
  * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove( t_typeMove* type, int data[5] )
+t_return_code getMove(t_typeMove* type, int* replay, int data[6])
 {
     char move[MAX_GET_MOVE];
 	char msg[MAX_MESSAGE];
@@ -227,14 +228,21 @@ t_return_code getMove( t_typeMove* type, int data[5] )
 	if (ret == NORMAL_MOVE) {
 		sscanf(move, "%d%n", type, &nbchar);
 		p = move + nbchar;
-		if (*type == CLAIM_ROUTE)
+		if (*type == CLAIM_ROUTE) {
 			sscanf(p, "%d %d %d %d", data, data + 1, data + 2, data + 3);
-		else if ((*type == DRAW_CARD) || (*type == DRAW_BLIND_CARD))
-			sscanf(msg, "%d %d %d %d %d", data, data + 1, data + 2, data + 3, data + 4);
+			*replay = 0;
+		}
+		else if (*type == DRAW_CARD)
+			sscanf(msg, "%d %d %d %d %d %d %d", replay, data, data + 1, data + 2, data + 3, data + 4, data + 5);
+		else if (*type == DRAW_BLIND_CARD)
+			sscanf(msg, "%d %d %d %d %d %d", replay, data, data + 1, data + 2, data + 3, data + 4);
+		else if (*type == DRAW_OBJECTIVES)
+			*replay = 1;
 		else if (*type == CHOOSE_OBJECTIVES) {
 			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
 			/* get the number of objectives kept by the opponent*/
 			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
+			*replay =0;
 		}
 		/* nothing to do for DRAW_OBJECTIVES move */
 	}
