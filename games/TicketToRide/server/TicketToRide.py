@@ -134,7 +134,9 @@ class TicketToRide(Game):
 			lines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
 			             (self._score[i], self._nbWagons[i], len(self._objectives[i])))
 			if i == self._whoPlays:
-				lines.append("\t\t Cards: " + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
+				lines.append("\t\t Cards (%2d): " % sum(self._cards[i]) + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
+			else:
+				lines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
 
 			lines.append("\n")
 
