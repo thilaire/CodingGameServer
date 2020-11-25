@@ -183,22 +183,30 @@ class TicketToRide(Game):
 			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard     # need/no need to take another card
 			deck = " ".join(str(c) for c in self._deck.faceUp)
 			# send:
-			# - to the player: card drawn and the deck
-			# - to the opponent: if the player replay, and the deck
-			return NORMAL_MOVE, str(draw) + " " + deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + deck
+			# - to the player: card drawn
+			# - to the opponent: if the player replay
+			return NORMAL_MOVE, str(draw), ("1 " if self._shouldTakeAnotherCard else "0 ")
 
 		# Draw a train card
 		elif drawCard:
-			# get a card from the face up cards (end of the game if the deck is empty)
+			# get a card from the face up cards (end of the game if the deck is empty, or the card doesn't exist)
+			# get the card position
+			card = int(drawCard.group(1))
 			try:
-				nC = int(drawCard.group(1))
-				card = self._deck.drawFaceUpCard(nC)
-				if self._shouldTakeAnotherCard and card == MULTICOLOR:
-					return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
-				self._cards[pl][card] += 1
+				nC = self._deck.faceUp.index(card)
 			except ValueError:
-				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(self._cards[1 - pl]) else WINNING_MOVE),\
-					"No more cards in the deck !!"
+				return LOSING_MOVE, "The card doesn't exist in the face up cards"
+			# replace it by one in the deck
+			try:
+				self._deck.drawFaceUpCard(nC)
+			except ValueError:
+				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(
+					self._cards[1 - pl]) else WINNING_MOVE), "No more cards in the deck !!"
+			# check if the player can take a Locomotive
+			if self._shouldTakeAnotherCard and card == MULTICOLOR:
+				return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
+			# add it in the hand
+			self._cards[pl][card] += 1
 			# if it's not a Locomotive, the player MUST take another one
 			if card != MULTICOLOR:
 				self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
