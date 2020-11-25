@@ -381,7 +381,6 @@ t_return_code sendCGSMove( const char* fct, char* move, char* answer)
 {
 	t_return_code result;
 	sendString( fct, "PLAY_MOVE %s", move);
-	*answer = 0;
 
 	/* read the associated answer */
 	bzero(buffer, MAX_LENGTH);
