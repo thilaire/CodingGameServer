@@ -41,6 +41,6 @@ class DoNothingPlayer(TrainingPlayer):
 		Returns the move
 		"""
 		# face up cards that are not a Locomotive
-		faceUp = ["3 %d" % i for i, c in enumerate(self.game.faceUpCards()) if c != MULTICOLOR]
+		faceUp = ["3 %d" % c for c in self.game.faceUpCards() if c != MULTICOLOR]
 		return choice(["2", choice(faceUp)])
 
