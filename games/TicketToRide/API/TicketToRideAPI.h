@@ -49,7 +49,6 @@ typedef enum {
 	MULTICOLOR 				/* used for the locomotive card (joker) or for a track that can accept any color */
 } t_color;
 
-
 /* different possible moves */
 typedef enum
 {
@@ -60,12 +59,52 @@ typedef enum
 	CHOOSE_OBJECTIVES = 5
 } t_typeMove;
 
-
 /* an objective card */
 typedef struct{
 	int city1, city2;
 	int score;
 } t_objective;
+
+/* a 'claim a route' move */
+typedef struct{
+	int city1, city2;		/* id of the two cities */
+	t_color color;			/* main color of the track */
+	int nbLocomotives;		/* number of Locomotives used */
+} t_claimRouteMove;
+
+/* a 'draw a card' move */
+typedef struct{
+	t_color card;			/* color of the card taken */
+	t_color faceUp[5];		/* new face up cards */
+} t_drawCard;
+
+/* a 'draw blind card' move */
+typedef struct{
+	t_color card;
+} t_drawBlindCard;
+
+/* a 'draw objectives' move */
+typedef struct{
+	t_objective objectives[3];
+} t_drawObjectives;
+
+/* a 'choose an objective' move */
+typedef struct{
+	int nbObjectives;
+	int chosen[3];
+} t_chooseObjectives;
+
+/* a move */
+typedef struct{
+	t_typeMove type;
+	union{
+		t_claimRouteMove claimRoute;
+		t_drawCard drawCard;
+		t_drawBlindCard drawBlindCard;
+		t_drawObjectives drawObjectives;
+		t_chooseObjectives chooseObjectives;
+	};
+} t_move;
 
 
 /* -------------------------------------
@@ -145,22 +184,16 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4]);
  * Get the opponent move
  *
  * Parameters:
- * - type: type of the opponent's move (see t_typeMove)
- * - replay: boolean, tells if the play will replay after this move or not
- * - data: (int[6]) data associated to the move (depend on the type):
- * 		- CLAIM_ROUTE: city1, city2, color, nb locomotives
- * 		- DRAW_BLIND_CARD: none
- * 		- DRAW_CARD: t_color of the taken card and the 5 cards of the deck
- * 		- DRAW_OBJECTIVES: none
- * 		- CHOOSE_OBJECTIVES: nb of taken objectives
- *
+ * - move: a t_move variable, filled by the function
+ * - replay: boolean, tells if the player must replay after this move or not
+  *
  * Returns:
  * - NORMAL_MOVE for normal move,
  * - WINNING_MOVE for a winning move, -1
  * -  LOOSING_MOVE for a losing (or illegal) move
  * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove(t_typeMove* type, int* replay, int data[6]);
+t_return_code getMove(t_move* move, int* replay);
 
 
 /* play the move "claim a route"
@@ -181,12 +214,12 @@ t_return_code drawBlindCard(t_color* card);
 
 
 /* play the move "draw a card in the deck"
- * - nCard: position of the drawn card in the deck
+ * - card: color of the card chosen in the deck (it MUST exist)
  * - deck: array representing the deck (modified by the function)
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code drawCard(int nCard, t_color deck[5]);
+t_return_code drawCard(t_color card, t_color deck[5]);
 
 
 /* play the move "draw some objective cards"

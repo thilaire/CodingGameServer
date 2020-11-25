@@ -198,53 +198,52 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
  * Get the opponent move
  *
  * Parameters:
- * - type: type of the opponent's move (see t_typeMove)
- * - replay: boolean, tells if the play will replay after this move or not
- * - data: (int[6]) data associated to the move (depend on the type):
- * 		- CLAIM_ROUTE: city1, city2, color, nb locomotives
- * 		- DRAW_BLIND_CARD: none
- * 		- DRAW_CARD: t_color of the taken card and the 5 cards of the deck
- * 		- DRAW_OBJECTIVES: none
- * 		- CHOOSE_OBJECTIVES: nb of taken objectives
- *
+ * - move: a t_move variable, filled by the function
+ * - replay: boolean, tells if the player must replay after this move or not
+  *
  * Returns:
  * - NORMAL_MOVE for normal move,
  * - WINNING_MOVE for a winning move, -1
  * -  LOOSING_MOVE for a losing (or illegal) move
  * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove(t_typeMove* type, int* replay, int data[6])
+t_return_code getMove(t_move* move, int* replay)
 {
-    char move[MAX_GET_MOVE];
+    char moveStr[MAX_GET_MOVE];
 	char msg[MAX_MESSAGE];
 	int obj[3];
 	char* p;
 	unsigned int nbchar;
 
     /* get the move */
-    t_return_code ret = getCGSMove(__FUNCTION__, move, msg);
+    t_return_code ret = getCGSMove(__FUNCTION__, moveStr, msg);
 
     /* extract result */
 	if (ret == NORMAL_MOVE) {
-		sscanf(move, "%d%n", type, &nbchar);
-		p = move + nbchar;
-		if (*type == CLAIM_ROUTE) {
-			sscanf(p, "%d %d %d %d", data, data + 1, data + 2, data + 3);
+		sscanf(moveStr, "%d%n", &move->type, &nbchar);
+		p = moveStr + nbchar;
+		if (move->type == CLAIM_ROUTE) {
+			sscanf(p, "%d %d %d %d", &move->claimRoute.city1, &move->claimRoute.city2, &move->claimRoute.color, &move->claimRoute.nbLocomotives);
 			*replay = 0;
 		}
-		else if (*type == DRAW_CARD)
-			sscanf(msg, "%d %d %d %d %d %d %d", replay, data, data + 1, data + 2, data + 3, data + 4, data + 5);
-		else if (*type == DRAW_BLIND_CARD)
-			sscanf(msg, "%d %d %d %d %d %d", replay, data, data + 1, data + 2, data + 3, data + 4);
-		else if (*type == DRAW_OBJECTIVES)
+		else if (move->type == DRAW_CARD) {
+			sscanf(msg, "%d %d %d %d %d %d %d", replay, &move->drawCard.card, move->drawCard.faceUp,
+				   move->drawCard.faceUp + 1,
+				   move->drawCard.faceUp + 2, move->drawCard.faceUp + 3, move->drawCard.faceUp + 4);
+		}
+		else if (move->type == DRAW_BLIND_CARD){
+			sscanf(msg, "%d", replay);
+			move->drawBlindCard.card = NONE;		/* we don't know which card the opponent has */
+		}
+		else if (move->type == DRAW_OBJECTIVES) {
 			*replay = 1;
-		else if (*type == CHOOSE_OBJECTIVES) {
+		}
+		else if (move->type == CHOOSE_OBJECTIVES) {
 			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
 			/* get the number of objectives kept by the opponent*/
-			data[0] = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
+			move->chooseObjectives.nbObjectives = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
 			*replay =0;
 		}
-		/* nothing to do for DRAW_OBJECTIVES move */
 	}
 
 	return ret;
@@ -279,16 +278,16 @@ t_return_code drawBlindCard(t_color* card){
 
 
 /* play the move "draw a card in the deck"
- * - nCard: position of the drawn card in the deck
+ * - card: color of the card chosen in the deck (it MUST exist)
  * - deck: array representing the deck (modified by the function)
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code drawCard(int nCard, t_color deck[5]){
+t_return_code drawCard(t_color card, t_color deck[5]){
 	char answer[MAX_MESSAGE];
 	char msg[MAX_GET_MOVE];
 	/* send message */
-	sprintf(msg, "3 %d", nCard);
+	sprintf(msg, "3 %d", card);
 	t_return_code ret = sendCGSMove(__FUNCTION__, msg, answer);
 	/* get the new deck */
 	sscanf(answer, "%d %d %d %d %d", deck, deck+1, deck+2, deck+3, deck+4);
