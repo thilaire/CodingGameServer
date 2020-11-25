@@ -136,7 +136,7 @@ class Game(BaseClass):
 			seed = randint(0, 16777215)     # between 0 and 2^24-1
 		else:
 			try:
-				seed = int(options['seed'])
+				seed = int(options['seed'], 0)
 				if not 0 <= seed <= 16777215:
 					raise ValueError("The 'seed' value must be between 0 and 16777215 ('seed=%s'." % options['seed'])
 			except ValueError:
