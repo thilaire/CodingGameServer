@@ -147,12 +147,12 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4]);
  * Parameters:
  * - type: type of the opponent's move (see t_typeMove)
  * - replay: boolean, tells if the play will replay after this move or not
- * - data: (int[6]) data associated to the move
- * 		CLAIM_ROUTE: city1, city2, color, nb locomotives
- * 		DRAW_BLIND_CARD: none
- * 		DRAW_CARD: t_color of the taken card and the 5 cards of the deck
- * 		DRAW_OBJECTIVES: none
- * 		CHOOSE_OBJECTIVES: nb of taken objectives
+ * - data: (int[6]) data associated to the move (depend on the type):
+ * 		- CLAIM_ROUTE: city1, city2, color, nb locomotives
+ * 		- DRAW_BLIND_CARD: none
+ * 		- DRAW_CARD: t_color of the taken card and the 5 cards of the deck
+ * 		- DRAW_OBJECTIVES: none
+ * 		- CHOOSE_OBJECTIVES: nb of taken objectives
  *
  * Returns:
  * - NORMAL_MOVE for normal move,
