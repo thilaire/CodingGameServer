@@ -71,7 +71,7 @@ class Deck:
 			for i in range(5):
 				self.discard(i)
 			# put some new cards
-			self._faceUp = [self._pop for _ in range(5)]
+			self._faceUp = [self._pop() for _ in range(5)]
 			#TODO: send a message/comment to tell that 3 locomotives have ome up
 		return card
 
