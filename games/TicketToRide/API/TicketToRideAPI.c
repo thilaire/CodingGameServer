@@ -173,7 +173,7 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
 		sscanf(p, "%s%n", city, &nbchar);
 		p += nbchar;
 		*name = (char*) malloc(strlen(city)+1);
-		strCpyReplace(*name++, city);
+		strCpyReplace(*(name++), city);
 	}
 
 	/* copy the data in the tracks array */
@@ -257,8 +257,9 @@ t_return_code getMove(t_move* move, int* replay)
  */
 t_return_code claimRoute(int city1, int city2, int color, int nbLocomotives){
 	char msg[256];
+	char answer[MAX_GET_MOVE];
 	sprintf(msg, "1 %d %d %d %d", city1, city2, color, nbLocomotives);
-	return sendCGSMove(__FUNCTION__, msg, NULL);
+	return sendCGSMove(__FUNCTION__, msg, answer);
 }
 
 /* play the move "draw a blind card"
@@ -303,13 +304,16 @@ t_return_code drawCard(t_color card, t_color deck[5]){
  * -> the move "choose objectives" MUST be play just after !!
  */
 t_return_code drawObjectives(t_objective obj[3]){
-	char answer[MAX_MESSAGE];
+	char answer[MAX_MESSAGE], *str = answer;
+	int nbchar;
 	/* send message */
 	t_return_code ret = sendCGSMove(__FUNCTION__, "4", answer);
 	/* get the new obj */
 	t_objective* p = obj;
-	for(int i=0;i<3;i++, p++)
-		sscanf(answer, "%d %d %d", &p->city1, &p->city2, &p->score);
+	for(int i=0;i<3;i++, p++) {
+		sscanf(str, "%d %d %d%n", &p->city1, &p->city2, &p->score, &nbchar);
+		str += nbchar;
+	}
 
 	return ret;
 }
@@ -324,9 +328,10 @@ t_return_code drawObjectives(t_objective obj[3]){
  */
 t_return_code chooseObjectives(int objectiveCards[3]){
 	char msg[MAX_GET_MOVE];
+	char answer[MAX_GET_MOVE];
 	/* send message */
 	sprintf(msg, "5 %d %d %d", objectiveCards[0], objectiveCards[1], objectiveCards[2]);
-	t_return_code ret = sendCGSMove(__FUNCTION__, msg, NULL);
+	t_return_code ret = sendCGSMove(__FUNCTION__, msg, answer);
 
 	return ret;
 }

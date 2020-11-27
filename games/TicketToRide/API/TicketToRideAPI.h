@@ -75,23 +75,23 @@ typedef struct{
 /* a 'draw a card' move */
 typedef struct{
 	t_color card;			/* color of the card taken */
-	t_color faceUp[5];		/* new face up cards */
+	t_color faceUp[5];		/* returned face up cards */
 } t_drawCard;
 
 /* a 'draw blind card' move */
 typedef struct{
-	t_color card;
+	t_color card;			/* returned card */
 } t_drawBlindCard;
 
 /* a 'draw objectives' move */
 typedef struct{
-	t_objective objectives[3];
+	t_objective objectives[3];	/* returned objectives */
 } t_drawObjectives;
 
 /* a 'choose an objective' move */
 typedef struct{
-	int nbObjectives;
-	int chosen[3];
+	int nbObjectives;			/* returned number of objectives */
+	int chosen[3];				/* array of boolean, to tell which objective we choose */
 } t_chooseObjectives;
 
 /* a move */
