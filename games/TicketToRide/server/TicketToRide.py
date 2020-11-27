@@ -204,7 +204,8 @@ class TicketToRide(Game):
 				return LOSING_MOVE, "The card doesn't exist in the face up cards"
 			# replace it by one in the deck
 			try:
-				self._deck.drawFaceUpCard(nC)
+				if self._deck.drawFaceUpCard(nC):
+					self.sendComment(self.playerWhoPlays, "Choo choo, three locomotives... New face up cards !")
 			except ValueError:
 				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(
 					self._cards[1 - pl]) else WINNING_MOVE), "No more cards in the deck !!"
@@ -244,7 +245,7 @@ class TicketToRide(Game):
 				else:
 					self._objectivesDeck.append(self._objDrawn[i])
 			self._objDrawn = []
-			return NORMAL_MOVE, str(len([o for o in objs if o]) )  # returns the number of chosen objectives
+			return NORMAL_MOVE, str(len([o for o in objs if o]))  # returns the number of chosen objectives
 
 
 		return LOSING_MOVE, "The move is not in correct !"

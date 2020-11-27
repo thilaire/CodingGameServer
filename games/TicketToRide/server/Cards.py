@@ -59,21 +59,24 @@ class Deck:
 
 	def drawFaceUpCard(self, pos):
 		"""draw a face-up card
-		pos is an integer between 0 and 4"""
+		pos is an integer between 0 and 4
+		Return True if we had 3 Locomotives"""
+		ThreeLoco = False
 		if not (0 <= pos <= 4):
 			raise ValueError("The position (%s) in the face-up cards is invalide" % (pos,))
 		# get a card from the deck and put it face up
 		card = self._faceUp[pos]
 		self._faceUp[pos] = self._pop()
 		# check for three Locomotives
-		while self._faceUp.count(MULTICOLOR) > 3:
+		while self._faceUp.count(MULTICOLOR) >= 3:
+			ThreeLoco = True
 			# remove the 5 face up cards
 			for i in range(5):
 				self.discard(i)
 			# put some new cards
 			self._faceUp = [self._pop() for _ in range(5)]
 			#TODO: send a message/comment to tell that 3 locomotives have ome up
-		return card
+		return ThreeLoco
 
 
 	def discard(self, card):
