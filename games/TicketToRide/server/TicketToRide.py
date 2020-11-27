@@ -18,6 +18,7 @@ Copyright 2020 T. Hilaire
 
 from re import compile
 from colorama import Fore
+from random import shuffle
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .DoNothingPlayer import DoNothingPlayer
@@ -79,6 +80,9 @@ class TicketToRide(Game):
 		else:
 			self._theMap = self.maps['USA']
 
+		# set the seed
+		self._setseed(options)
+
 		# initialize the deck and give 4 cards per player
 		self._deck = Deck()                 # deck of train cards
 		self._cards = [[0]*10, [0]*10]        # self._cards[pl][c] gives how many cards c the player pl has
@@ -92,6 +96,7 @@ class TicketToRide(Game):
 
 		# objectives
 		self._objectivesDeck = self._theMap.objectives      # get a copy of the list of objectives
+		shuffle(self._objectivesDeck)
 		self._objectives = [[], []]
 		self._objDrawn = []     # list of drawn objectives (3 objectives kept between drawObjective and chooseObjective)
 
@@ -169,6 +174,7 @@ class TicketToRide(Game):
 		# Claim a route
 		if claimRoute:
 			# TODO:
+			# TODO: deal with the end of the game (last turn when one player has < 3 wagons)
 			return NORMAL_MOVE, ""
 
 		# Draw a blind card
@@ -226,7 +232,11 @@ class TicketToRide(Game):
 
 		# Choose an objective card
 		elif chooseObjectives:
-			objs = [int(drawCard.group(1)), int(drawCard.group(2)), int(drawCard.group(3))]
+			objs = [int(chooseObjectives.group(1)), int(chooseObjectives.group(2)), int(chooseObjectives.group(3))]
+			# check if at least one objective is taken
+			if sum([1 if o else 0 for o in objs]) == 0:
+				return LOSING_MOVE, "None objective has been kept"
+			# TODO: check that at least 2 objectives are kept for the 1st move
 			# put the chosen objectives in the player hand, or back in the objective deck
 			for i in range(3):
 				if objs[i]:
@@ -234,7 +244,7 @@ class TicketToRide(Game):
 				else:
 					self._objectivesDeck.append(self._objDrawn[i])
 			self._objDrawn = []
-			return NORMAL_MOVE, len([o for o in objs if o])   # returns the number of chosen objectives
+			return NORMAL_MOVE, str(len([o for o in objs if o]) )  # returns the number of chosen objectives
 
 
 		return LOSING_MOVE, "The move is not in correct !"
