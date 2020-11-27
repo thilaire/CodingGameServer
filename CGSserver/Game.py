@@ -115,6 +115,10 @@ class Game(BaseClass):
 					raise ValueError("The player can only play once... STOP")
 				p.hasAlreadyPlayed = True
 
+
+		# get a seed if the seed is not given; seed the random numbers generator
+		seed = self._setseed(options)
+
 		# players
 		# we randomly decide the order of the players
 		if 'start' not in options:
@@ -127,21 +131,6 @@ class Game(BaseClass):
 			except ValueError:
 				raise ValueError("The 'start' option must be '0', '1' or '-1'")
 		self._players = (player1, player2) if pl == 0 else (player2, player1)
-
-
-
-		# get a seed if the seed is not given; seed the random numbers generator
-		if 'seed' not in options:
-			set_seed(None)  # (from doc):  If seed is omitted or None, current system time is used
-			seed = randint(0, 16777215)     # between 0 and 2^24-1
-		else:
-			try:
-				seed = int(options['seed'], 0)
-				if not 0 <= seed <= 16777215:
-					raise ValueError("The 'seed' value must be between 0 and 16777215 ('seed=%s'." % options['seed'])
-			except ValueError:
-				raise ValueError("The 'seed' value is invalid ('seed=%s')" % options['seed'])
-		set_seed(seed)
 
 
 		# (unique) name composed by
@@ -211,6 +200,24 @@ class Game(BaseClass):
 		self.logger.debug("The delay is set to %ds" % self._delay)
 		self.logger.debug("The timeout is set to %ds" % self._timeout)
 
+
+	@staticmethod
+	def _setseed(options):
+		"""get a seed if the seed is not given
+		 set the seed for the random numbers generator"""
+		if 'seed' not in options:
+			set_seed(None)  # (from doc):  If seed is omitted or None, current system time is used
+			seed = randint(0, 16777215)  # between 0 and 2^24-1
+		else:
+			try:
+				seed = int(options['seed'], 0)
+				if not 0 <= seed <= 16777215:
+					raise ValueError(
+						"The 'seed' value must be between 0 and 16777215 ('seed=%s'." % options['seed'])
+			except ValueError:
+				raise ValueError("The 'seed' value is invalid ('seed=%s')" % options['seed'])
+		set_seed(seed)
+		return seed
 
 
 	def partialEndOfGame(self, whoLooses):
