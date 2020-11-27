@@ -360,7 +360,7 @@ t_return_code getCGSMove( const char* fct, char* move ,char* msg)
 	sscanf( buffer, "%d", &result);
 
 	if (result != NORMAL_MOVE)
-		printf("[%s] %s", __FUNCTION__, msg);
+		printf("[%s] %s\n", __FUNCTION__, msg);
 
 	return result;
 }
@@ -401,7 +401,7 @@ t_return_code sendCGSMove( const char* fct, char* move, char* answer)
 
 	/* display the message if the move is not a NORMAL_MOVE */
 	if (result != NORMAL_MOVE)
-		printf("[%s] %s", __FUNCTION__, answer);
+		printf("[%s] %s\n", __FUNCTION__, answer);
 
 	return result;
 }
