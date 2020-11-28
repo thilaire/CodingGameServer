@@ -18,9 +18,8 @@ Copyright 2020 T. Hilaire
 
 from os.path import join
 from csv import reader
-from collections import namedtuple
 from .Constants import colors
-from CGSserver.Game import Game
+
 
 
 class Track:
@@ -55,7 +54,8 @@ class Map:
 		"""create the object from the files"""
 		# build the list of cities
 		with open(join('games', 'TicketToRide', 'maps', name, 'cities.csv')) as csvCities:
-			self._cities = list(x[0] for x in reader(decomment(csvCities), delimiter=';'))
+			cities = list(x for x in reader(decomment(csvCities), delimiter=';'))
+		self._cities = [c[1] for c in cities]
 		self._invCities = {c: i for i, c in enumerate(self._cities)}
 		data = [c.replace(' ', '_') for c in self._cities]
 

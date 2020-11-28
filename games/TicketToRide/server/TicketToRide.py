@@ -58,7 +58,7 @@ class TicketToRide(Game):
 	# dictionary of the possible training Players (name-> class)
 	type_dict = {"DO_NOTHING": DoNothingPlayer}
 
-	# possible maps
+	# create all the maps (each game will have a reference to its map)
 	maps = {m: Map(m) for m in ('USA',)}
 
 

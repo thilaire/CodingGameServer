@@ -1,39 +1,39 @@
 # USA map
-# List of cities
-# city;
-Vancouver
-Seattle
-Portland
-San Francisco
-Los Angeles
-Phoenix
-Las Vegas
-Salt Lake City
-Calgary
-Helena
-Winnipeg
-Denver
-Santa Fe
-El Paso
-Houston
-Dallas
-Oklahoma City
-Kansas City
-Omaha
-Duluth
-Sault St. Marie
-Chicago
-Saint Louis
-Little Rock
-New Orleans
-Atlanta
-Nashville
-Pittsburgh
-Toronto
-Montréal
-Boston
-New York
-Washington
-Raleigh
-Charleston
-Miami
+# List of cities *ordered!*
+# numver;city
+0;Vancouver
+1;Seattle
+2;Portland
+3;San Francisco
+4;Los Angeles
+5;Phoenix
+6;Las Vegas
+7;Salt Lake City
+8;Calgary
+9;Helena
+10;Winnipeg
+11;Denver
+12;Santa Fe
+13;El Paso
+14;Houston
+15;Dallas
+16;Oklahoma City
+17;Kansas City
+18;Omaha
+19;Duluth
+20;Sault St. Marie
+21;Chicago
+22;Saint Louis
+23;Little Rock
+24;New Orleans
+25;Atlanta
+26;Nashville
+27;Pittsburgh
+28;Toronto
+29;Montréal
+30;Boston
+31;New York
+32;Washington
+33;Raleigh
+34;Charleston
+35;Miami
