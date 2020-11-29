@@ -19,6 +19,7 @@ Copyright 2020 T. Hilaire
 from re import compile
 from colorama import Fore
 from random import shuffle
+from itertools import zip_longest
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .DoNothingPlayer import DoNothingPlayer
@@ -79,6 +80,7 @@ class TicketToRide(Game):
 					% (options['map'], list(self.maps.keys())))
 		else:
 			self._theMap = self.maps['USA']
+		self._mapTxt = self._theMap.rawtxt
 
 		# set the seed
 		self._setseed(options)
@@ -132,20 +134,27 @@ class TicketToRide(Game):
 		Convert a Game into string (to be send to clients, and display)
 		"""
 		colors = [Fore.BLUE, Fore.RED]
-		lines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp) + "\n"]
+		# map lines
+		mapLines = ["".join(l) for l in self._mapTxt]
+
+		# score lines
+		scoreLines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp), '', '']
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
-			lines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
-			lines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
+			scoreLines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
+			scoreLines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
 			             (self._score[i], self._nbWagons[i], len(self._objectives[i])))
 			if i == self._whoPlays:
-				lines.append("\t\t Cards (%2d): " % sum(self._cards[i]) + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
+				scoreLines.append("\t\t Cards (%2d): " % sum(self._cards[i]) + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
 			else:
-				lines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
+				scoreLines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
 
-			lines.append("\n")
+			scoreLines.append("")
 
-		return "\n".join(lines)
+		# assembly
+		res = list(mapLines[:5])
+		res.extend([l1+l2 for l1, l2 in zip_longest(mapLines[5:], scoreLines, fillvalue='')])
+		return "\n".join(res)
 
 
 	def updateGame(self, move):

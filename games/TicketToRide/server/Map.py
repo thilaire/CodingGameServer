@@ -13,6 +13,15 @@ File: Map.py
 	Contains the class Map for the TicketToRide game
 	-> defines a map
 
+
+To create a new map,
+a) add its name in the definition of TicketToRide.map (see TicketToRide.py linee 62)
+b) create a folder (with the same name as the map) in games/TicketToRide/maps/
+c) with the following files
+  - cities.csv:     list of cities (number;cityName)
+  - tracks.csv:     list of tracks (city1;city2;length;track1 color;track2 color)
+  - map.txt:        raw text for the map
+
 Copyright 2020 T. Hilaire
 """
 
@@ -58,6 +67,10 @@ class Map:
 		self._cities = [c[1] for c in cities]
 		self._invCities = {c: i for i, c in enumerate(self._cities)}
 		data = [c.replace(' ', '_') for c in self._cities]
+
+		# open the text map and store it in a 2D array (list of lists)
+		with open(join('games', 'TicketToRide', 'maps', name, 'map.txt')) as txtMap:
+			self._rawtxt = [list(line[:-1]) for line in txtMap]
 
 		# build the list of tracks
 		with open(join('games', 'TicketToRide', 'maps', name, 'tracks.csv')) as csvTracks:
@@ -114,3 +127,9 @@ class Map:
 	def objectives(self):
 		"""Return a copy of the objective list"""
 		return list(self._objectives)
+
+	@property
+	def rawtxt(self):
+		"""Return the raw text"""
+		# copy the list of list
+		return [list(t) for t in self._rawtxt]
