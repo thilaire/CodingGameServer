@@ -36,8 +36,16 @@ class Deck:
 		# 12 cards of Purple, White, Blue, Yellow, Orange, Black, Red, Green and 14 Multicolor
 		self._cards = list(range(PURPLE, MULTICOLOR))*12 + [MULTICOLOR]*14
 		shuffle(self._cards)
-		self._faceUp = [self._cards.pop() for _ in range(5)]    # Five 1st cards face up
 		self._discarded = []
+		# distribute 5 cards face up (and prevent having more than 2 Locomotives)
+		self._faceUp = [self._cards.pop() for _ in range(5)]    # Five 1st cards face up
+		while self._faceUp.count(MULTICOLOR) >= 3:
+			# remove the 5 face up cards
+			for i in range(5):
+				self.discard(i)
+			# put some new cards
+			self._faceUp = [self._pop() for _ in range(5)]
+
 
 	def _pop(self):
 		"""drawn a card in the deck"""
@@ -75,7 +83,6 @@ class Deck:
 				self.discard(i)
 			# put some new cards
 			self._faceUp = [self._pop() for _ in range(5)]
-			#TODO: send a message/comment to tell that 3 locomotives have ome up
 		return ThreeLoco
 
 
