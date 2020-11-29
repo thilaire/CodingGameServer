@@ -27,19 +27,13 @@ Copyright 2020 T. Hilaire
 
 from os.path import join
 from csv import reader
+from copy import copy
 from .Constants import colors
+from .Tracks import Track
+from .Objective import Objective
 
 
 
-class Track:
-	"""simple class to store a track"""
-	def __init__(self, cities, length, col):
-		self._cities = tuple(cities)
-		self._length = length
-		self._colors = tuple(col)
-
-	def __str__(self):
-		return "%d %d %d %d %d" % (self._cities[0], self._cities[1], self._length, self._colors[0], self._colors[1])
 
 
 def decomment(csvfile):
@@ -96,7 +90,7 @@ class Map:
 					city1 = self._invCities[track[0]]
 					city2 = self._invCities[track[1]]
 					score = int(track[2])
-					self._objectives.append((city1, city2, score))
+					self._objectives.append(Objective(city1, city2, score))
 				except KeyError:
 					raise ValueError("The %dth element in %s contains an incorrect item: %s" % (
 						i, join('maps', name, 'objectives.csv'), ';'.join(track)))
@@ -117,6 +111,9 @@ class Map:
 		"""Returns the number of cities"""
 		return len(self._cities)
 
+	def getCityName(self, city):
+		"""Return the name of a city"""
+		return self._cities[city]
 
 	@property
 	def nbTracks(self):
@@ -125,11 +122,17 @@ class Map:
 
 	@property
 	def objectives(self):
-		"""Return a copy of the objective list"""
-		return list(self._objectives)
+		"""Return a list of copied objectives"""
+		return [copy(o) for o in self._objectives]
 
 	@property
 	def rawtxt(self):
 		"""Return the raw text"""
 		# copy the list of list
 		return [list(t) for t in self._rawtxt]
+
+	@property
+	def tracks(self):
+		"""Return the tracks, a dictionary of the copy of the tracks"""
+		# build the dictionary of tracks
+		return {t.cities: copy(t) for t in self._tracks}
