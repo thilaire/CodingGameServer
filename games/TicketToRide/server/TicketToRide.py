@@ -104,6 +104,9 @@ class TicketToRide(Game):
 
 		self._shouldTakeAnotherCard = False      # True if the player has taken a card and MUST take another one
 
+		# tracks
+		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (cities)->Track
+
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
@@ -144,7 +147,7 @@ class TicketToRide(Game):
 			scoreLines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
 			scoreLines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
 			             (self._score[i], self._nbWagons[i], len(self._objectives[i])))
-			if i == self._whoPlays:
+			if self._players[i].isRegular and not self._players[1-i].isRegular:
 				scoreLines.append("\t\t Cards (%2d): " % sum(self._cards[i]) + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
 			else:
 				scoreLines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
@@ -182,7 +185,27 @@ class TicketToRide(Game):
 
 		# Claim a route
 		if claimRoute:
-			# TODO:
+			# get the values
+			city1 = min(int(claimRoute.group(1)), int(claimRoute.group(2)))
+			city2 = max(int(claimRoute.group(1)), int(claimRoute.group(2)))
+			card = int(claimRoute.group(3))
+			nbLoco = int(claimRoute.group(4))
+			if not ((0 <= city1 < self._theMap.nbCities) and (0 <= city2 < self._theMap.nbCities) and (PURPLE <= card <= MULTICOLOR) and (0 <= nbLoco)):
+				return LOSING_MOVE, "The data given to claim a city are incorrect (%s)" % move
+			msg = "he track between %s (%d) and %s (%d)" % (self._theMap.getCityName(city1), city1, self._theMap.getCityName(city2), city2)
+			# check if the road exists
+			if (city1, city2) not in self._tracks:
+				return LOSING_MOVE, "T" + msg + " doesn't exist"
+			tr = self._tracks[(city1, city2)]
+			# check if the player can claim it
+			if tr.isTaken:
+				return LOSING_MOVE, "T" + msg + " is already taken"
+			if not tr.checkCards(card, self._cards[self._whoPlays][card], nbLoco):
+				return LOSING_MOVE, "The cards given for t" + msg + " are incorrect"
+			# remove the cards
+			self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
+			self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
+			tr.claims(self._whoPlays)
 			# TODO: deal with the end of the game (last turn when one player has < 3 wagons)
 			return NORMAL_MOVE, ""
 
@@ -238,10 +261,12 @@ class TicketToRide(Game):
 				return (LOSING_MOVE if len(self._objectives[pl]) > len(self._objectives[1 - pl]) else WINNING_MOVE),\
 					"No more available objective cards !!"
 			self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
-			return NORMAL_MOVE, " ".join("%d %d %d" % c for c in self._objDrawn), ""
+			return NORMAL_MOVE, " ".join(str(c) for c in self._objDrawn), ""
 
 		# Choose an objective card
 		elif chooseObjectives:
+			if not self._objDrawn:
+				return LOSING_MOVE, "`Choose Objectives` is not preceded by `Draw Objectives`"
 			objs = [int(chooseObjectives.group(1)), int(chooseObjectives.group(2)), int(chooseObjectives.group(3))]
 			# check if at least one objective is taken
 			if sum([1 if o else 0 for o in objs]) == 0:
@@ -271,13 +296,13 @@ class TicketToRide(Game):
 
 
 
-	def getData(self):
+	def getData(self, player):
 		"""
-		Return the datas of the game (when ask with the GET_GAME_DATA message)
+		Return the datas of the game (when ask with the GET_GAME_DATA message) asked by player `player`
 		ie the map data, the face up cards and the 4 initial cards (for each player)
 		"""
 		# get the list of the cards
-		pl = self._whoPlays
+		pl = 0 if player == self._players[0] else 1     # index of the player
 		cards = []
 		for i, c in enumerate(self._cards[pl]):
 			if c > 0:
