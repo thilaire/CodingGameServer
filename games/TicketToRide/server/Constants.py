@@ -33,6 +33,7 @@ colors = {
 	'Multicolor': 9     # used for the locomotive card (joker) or for a track that can accept any color
 }
 
+NONE = 0
 PURPLE = 1
 WHITE = 2
 BLUE = 3
