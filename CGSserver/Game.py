@@ -579,6 +579,16 @@ class Game(BaseClass):
 
 
 
+	def getCutename(self):
+		"""
+		Returns the cutename of the game (to display in html views)
 
+		TO BE OVERLOADED BY THE CHILD CLASS
+
+		"""
+		if hasattr(self, '_cutename'):
+			return self._cutename
+		else:
+			return None
 
 
