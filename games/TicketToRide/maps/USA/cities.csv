@@ -1,39 +1,39 @@
 # USA map
 # List of cities *ordered!*
-# numver;city
-0;Vancouver
-1;Seattle
-2;Portland
-3;San Francisco
-4;Los Angeles
-5;Phoenix
-6;Las Vegas
-7;Salt Lake City
-8;Calgary
-9;Helena
-10;Winnipeg
-11;Denver
-12;Santa Fe
-13;El Paso
-14;Houston
-15;Dallas
-16;Oklahoma City
-17;Kansas City
-18;Omaha
-19;Duluth
-20;Sault St. Marie
-21;Chicago
-22;Saint Louis
-23;Little Rock
-24;New Orleans
-25;Atlanta
-26;Nashville
-27;Pittsburgh
-28;Toronto
-29;Montréal
-30;Boston
-31;New York
-32;Washington
-33;Raleigh
-34;Charleston
-35;Miami
+# numver;city;text pos x; text pos y; text length
+0;Vancouver;3;2;2
+1;Seattle;3;6;2
+2;Portland;0;10;2
+3;San Francisco;0;16;2
+4;Los Angeles;3;20;2
+5;Phoenix;8;20;2
+6;Las Vegas;5;16;2
+7;Salt Lake City;7;12;2
+8;Calgary;7;2;2
+9;Helena;10;8;3
+10;Winnipeg;11;0;2
+11;Denver;13;12;3
+12;Santa Fe;14;18;2
+13;El Paso;15;22;2
+14;Houston;23;26;2
+15;Dallas;23;22;2
+16;Oklahoma City;23;18;2
+17;Kansas City;23;14;2
+18;Omaha;22;10;2
+19;Duluth;23;4;2
+20;Sault St. Marie;31;0;2
+21;Chicago;30;10;2
+22;Saint Louis;30;14;2
+23;Little Rock;30;18;2
+24;New Orleans;31;26;2
+25;Atlanta;40;22;2
+26;Nashville;39;18;2
+27;Pittsburgh;39;10;3
+28;Toronto;38;4;2
+29;Montréal;39;0;2
+30;Boston;47;0;2
+31;New York;46;4;2
+32;Washington;47;8;2
+33;Raleigh;47;14;2
+34;Charleston;47;24;2
+35;Miami;40;26;2
