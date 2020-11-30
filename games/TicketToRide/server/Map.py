@@ -29,7 +29,7 @@ from os.path import join
 from csv import reader
 from copy import copy
 from .Constants import colors
-from .Tracks import Track
+from .Track import Track
 from .Objective import Objective
 
 
@@ -65,6 +65,8 @@ class Map:
 		# open the text map and store it in a 2D array (list of lists)
 		with open(join('games', 'TicketToRide', 'maps', name, 'map.txt')) as txtMap:
 			self._rawtxt = [list(line[:-1]) for line in txtMap]
+
+		#self._rawtxt[2][2] = Fore.
 
 		# build the list of tracks
 		with open(join('games', 'TicketToRide', 'maps', name, 'tracks.csv')) as csvTracks:
