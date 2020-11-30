@@ -66,7 +66,10 @@ class PlayerSocketHandler(BaseRequestHandler):
 			# get the name from the client and create the player
 			self._player = None
 			name = self.getPlayerName()
-			self._player = RegularPlayer(name, self.client_address[0], self)
+			try:
+				self._player = RegularPlayer(name, self.client_address[0], self)
+			except ValueError as err:
+				raise ProtocolError(str(err))
 
 			while True:
 				# then, wait for a (new) game
