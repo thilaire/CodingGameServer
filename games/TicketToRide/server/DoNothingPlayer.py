@@ -20,6 +20,7 @@ from random import choice
 from CGSserver.Player import TrainingPlayer
 from .Constants import MULTICOLOR
 
+
 class DoNothingPlayer(TrainingPlayer):
 	"""
 	This class defines a stupid training player that does... nothing

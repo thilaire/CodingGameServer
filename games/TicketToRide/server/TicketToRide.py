@@ -51,7 +51,8 @@ class TicketToRide(Game):
 	Add some properties
 	- _theMap: Map object (only used to build the object or get initial data)
 	- _deck: the train cards deck (a Deck object, with all the methods to get cards, shuffle, etc.)
-	- _cards: cards[pl] is the list of cards of the player pl. _cards[pl][i] gives how many cards of colors i the player pl has
+	- _cards: cards[pl] is the list of cards of the player pl.
+	            _cards[pl][i] gives how many cards of colors i the player pl has
 	- _score, _nbWagons: a 2-element list with the score and number of wagons for each player
 	- _objectivesDeck: list of objectives cards in the deck (an objective card is 3-uplet city1;city2;points)
 	- _objectives: list of objectives of each player (a 2-element list)
@@ -139,17 +140,22 @@ class TicketToRide(Game):
 		"""
 		colors = [Fore.BLUE, Fore.RED]
 		# map lines
-		mapLines = ["".join(l) for l in self._mapTxt]
+		mapLines = ["".join(line) for line in self._mapTxt]
 
 		# score lines
 		scoreLines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp), '', '']
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
 			scoreLines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
-			scoreLines.append("\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
-			             (self._score[i], self._nbWagons[i], len(self._objectives[i])))
+			scoreLines.append(
+				"\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
+				(self._score[i], self._nbWagons[i], len(self._objectives[i]))
+			)
 			if self._players[i].isRegular and not self._players[1-i].isRegular:
-				scoreLines.append("\t\t Cards (%2d): " % sum(self._cards[i]) + " ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1)))
+				scoreLines.append(
+					"\t\t Cards (%2d): " % sum(self._cards[i]) +
+					" ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1))
+				)
 			else:
 				scoreLines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
 
@@ -191,9 +197,11 @@ class TicketToRide(Game):
 			city2 = max(int(claimRoute.group(1)), int(claimRoute.group(2)))
 			card = int(claimRoute.group(3))
 			nbLoco = int(claimRoute.group(4))
-			if not ((0 <= city1 < self._theMap.nbCities) and (0 <= city2 < self._theMap.nbCities) and (PURPLE <= card <= MULTICOLOR) and (0 <= nbLoco)):
+			if not ((0 <= city1 < self._theMap.nbCities) and (0 <= city2 < self._theMap.nbCities)
+			        and (PURPLE <= card <= MULTICOLOR) and (0 <= nbLoco)):
 				return LOSING_MOVE, "The data given to claim a city are incorrect (%s)" % move
-			msg = "he track between %s (%d) and %s (%d)" % (self._theMap.getCityName(city1), city1, self._theMap.getCityName(city2), city2)
+			msg = "he track between %s (%d) and %s (%d)" % \
+			      (self._theMap.getCityName(city1), city1, self._theMap.getCityName(city2), city2)
 			# check if the road exists
 			if (city1, city2) not in self._tracks:
 				return LOSING_MOVE, "T" + msg + " doesn't exist"

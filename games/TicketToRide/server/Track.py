@@ -19,6 +19,7 @@ Copyright 2020 T. Hilaire
 
 from .Constants import NONE, MULTICOLOR
 
+
 class Track:
 	"""simple class to store a track"""
 	def __init__(self, cities, length, col):

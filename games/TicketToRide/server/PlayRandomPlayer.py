@@ -71,7 +71,7 @@ class PlayRandomPlayer(TrainingPlayer):
 				for t in tr:
 					for color in t.iterColors:
 						nbCards = self.game._cards[us][color] if color != MULTICOLOR else max(self.game._cards[us])
-						if t.length >= (tr[0].length - 1)  and nbCards >= t.length:
+						if nbCards >= t.length >= (tr[0].length - 1):
 							self._cities.add(t.cities[0])
 							self._cities.add(t.cities[1])
 							if color == MULTICOLOR:

@@ -47,8 +47,10 @@ setup(
 	author_email='thibault.hilaire@lip6.fr',
 	license='GPL',
 	packages=['CGSserver'],
-	install_requires=['colorama', 'colorlog', 'docopt', 'flask', 'jinja2', 'ansi2html',
-					'flask-socketio', 'gevent', 'eventlet', 'gevent-websocket'],
+	install_requires=[
+		'colorama', 'colorlog', 'docopt', 'flask', 'jinja2', 'ansi2html',
+		'flask-socketio', 'gevent', 'eventlet', 'gevent-websocket'
+	],
 	include_package_data=True,
 	zip_safe=False,
 	entry_points={'console_scripts': ['runCGS=CGSserver.runCGS:runCGS']},
