@@ -321,10 +321,16 @@ class PlayerSocketHandler(BaseRequestHandler):
 					options = dict([token.split('=') for token in terms])
 				elif terms[0] == 'TOURNAMENT':
 					trainingPlayerName = ""
-					tournamentName = terms[1]
+					try:
+						tournamentName = terms[1]
+					except IndexError:
+						raise ValueError
 					options = dict([token.split('=') for token in terms[2:]])
 				elif terms[0] == 'TRAINING':
-					trainingPlayerName = terms[1]
+					try:
+						trainingPlayerName = terms[1]
+					except IndexError:
+						raise ValueError
 					tournamentName = ""
 					options = dict([token.split('=') for token in terms[2:]])
 				else:
