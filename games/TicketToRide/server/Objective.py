@@ -29,3 +29,11 @@ class Objective:
 	def __str__(self):
 		"""return a string usued for communication with client"""
 		return "%d %d %d" % (self._city1, self._city2, self._score)
+
+	@property
+	def city1(self):
+		return self._city1
+
+	@property
+	def city2(self):
+		return self._city2

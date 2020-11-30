@@ -63,3 +63,12 @@ class Track:
 		"""Claim the track as taken by the player"""
 		self._taken = True
 		self._player = player
+
+	@property
+	def iterColors(self):
+		"""return the color(s)
+		generator that returns 1 or 2 colors"""
+		yield self._colors[0]
+		if self._colors[1] != NONE:
+			yield self._colors[1]
+
