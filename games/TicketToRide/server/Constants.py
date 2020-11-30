@@ -45,3 +45,6 @@ GREEN = 8
 MULTICOLOR = 9
 
 textColors = [Fore.RESET, Fore.MAGENTA, Fore.BLACK, Fore.BLUE, Fore.LIGHTYELLOW_EX, Fore.YELLOW, Fore.WHITE, Fore.RED, Fore.GREEN, Fore.WHITE]
+
+# score for the tracks
+Scores = [0, 1, 2, 4, 7, 10, 15]

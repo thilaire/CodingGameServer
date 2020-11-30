@@ -23,9 +23,10 @@ from itertools import zip_longest
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .DoNothingPlayer import DoNothingPlayer
+from .PlayRandomPlayer import PlayRandomPlayer
 from .Map import Map
 from .Cards import Deck, strCards
-from .Constants import textColors, MULTICOLOR, PURPLE
+from .Constants import textColors, MULTICOLOR, PURPLE, Scores
 
 
 regClaimRoute = compile(r"^\s*1\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")   # regex to parse a "1 %d %d %d %d"
@@ -57,7 +58,7 @@ class TicketToRide(Game):
 	"""
 
 	# dictionary of the possible training Players (name-> class)
-	type_dict = {"DO_NOTHING": DoNothingPlayer}
+	type_dict = {"DO_NOTHING": DoNothingPlayer, "PLAY_RANDOM": PlayRandomPlayer}
 
 	# create all the maps (each game will have a reference to its map)
 	maps = {m: Map(m) for m in ('USA',)}
@@ -206,6 +207,7 @@ class TicketToRide(Game):
 			self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
 			self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
 			tr.claims(self._whoPlays)
+			self._score[self._whoPlays] += Scores[tr.length]
 			# TODO: deal with the end of the game (last turn when one player has < 3 wagons)
 			return NORMAL_MOVE, ""
 
