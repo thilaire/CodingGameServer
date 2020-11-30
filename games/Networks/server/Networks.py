@@ -615,7 +615,7 @@ class Networks(Game):
 			return None
 
 
-	def getData(self):
+	def getData(self, player):
 		"""
 		Return the data of the game (when ask with the GET_GAME_DATA message)
 		Only takes into account the view window (not the entire board)

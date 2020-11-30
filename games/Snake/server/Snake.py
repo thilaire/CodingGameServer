@@ -384,7 +384,7 @@ class Snake(Game):
 
 
 
-	def getData(self):
+	def getData(self, player):
 		"""
 		Return the datas of the game (when ask with the GET_GAME_DATA message)
 		ie the list of positions of walls

@@ -127,7 +127,7 @@ class TemplateGame(Game):
 
 
 
-	def getData(self):
+	def getData(self, player):
 		"""
 		Return the datas of the game (when ask with the GET_GAME_DATA message)
 		"""
@@ -149,6 +149,3 @@ class TemplateGame(Game):
 		# insert your code here...
 		#
 		return 1 - self._whoPlays       # in a tour-by-tour game, it's the opponent to play
-
-
-""

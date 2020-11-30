@@ -388,7 +388,7 @@ class Labyrinth(Game):
 		return LOSING_MOVE, "Rotation not yet implemented"
 
 
-	def getData(self):
+	def getData(self, player):
 		"""
 		Return the datas of the labyrinth (when ask with the GET_GAME_DATA message)
 		"""
