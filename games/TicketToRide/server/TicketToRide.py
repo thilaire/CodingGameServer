@@ -152,10 +152,9 @@ class TicketToRide(Game):
 				(self._score[i], self._nbWagons[i], len(self._objectives[i]))
 			)
 			if self._players[i].isRegular and not self._players[1-i].isRegular:
-				scoreLines.append(
-					"\t\t Cards (%2d): " % sum(self._cards[i]) +
-					" ".join(strCards(c, self._cards[i][c]) for c in range(1, MULTICOLOR+1))
-				)
+				scoreLines.append("\t\t Cards (%2d): " % sum(self._cards[i]))
+				for c, (name, color) in enumerate(textColors[1:]):
+					scoreLines.append("\t\t\t - (%d) %6s:%s" % (c+1, name, strCards(c+1, self._cards[i][c+1])))
 			else:
 				scoreLines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
 

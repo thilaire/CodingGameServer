@@ -69,7 +69,7 @@ class Map:
 		for c in cities:
 			x, y, size = [int(t) for t in c[2:5]]
 			for dx in range(size):
-				self._rawtxt[y][x+dx] = Fore.LIGHTWHITE_EX + Back.LIGHTYELLOW_EX + \
+				self._rawtxt[y][x+dx] = Fore.LIGHTWHITE_EX + Back.BLACK + \
 			                        self._rawtxt[y][x+dx] + Fore.RESET + Back.RESET
 
 		# build the list of tracks

@@ -16,8 +16,8 @@ File: Constants.py
 Copyright 2020 T. Hilaire
 """
 
-
-from colorama import Fore, Back
+from _collections import OrderedDict
+from colorama import Fore, Back, Style
 
 # colors
 colors = {
@@ -45,9 +45,18 @@ GREEN = 8
 MULTICOLOR = 9
 
 textColors = [
-	Fore.RESET, Fore.MAGENTA, Fore.BLACK, Fore.BLUE, Fore.LIGHTYELLOW_EX,
-	Fore.YELLOW, Fore.WHITE, Fore.RED, Fore.GREEN, Fore.WHITE
+	('', Fore.RESET),
+	('Purple', Style.BRIGHT + Fore.MAGENTA),            # PURPLE
+	('White', Style.BRIGHT + Fore.LIGHTWHITE_EX),      # White
+	('Blue', Fore.BLUE),                              # Blue
+	('Yellow', Style.BRIGHT + Fore.YELLOW),             # Yellow
+	('Orange', Style.BRIGHT + Fore.LIGHTYELLOW_EX),     # Orange
+	('Black', Style.BRIGHT + Fore.BLACK),              # Black
+	('Red', Style.BRIGHT + Fore.LIGHTRED_EX),        # Red
+	('Green', Style.BRIGHT + Fore.GREEN),              # Green
+	('Multi', Fore.LIGHTBLUE_EX)                       # Multi
 ]
+
 
 # score for the tracks
 Scores = [0, 1, 2, 4, 7, 10, 15]
