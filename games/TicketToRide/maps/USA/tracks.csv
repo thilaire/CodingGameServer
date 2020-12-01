@@ -1,81 +1,81 @@
 # USA map
 # List of tracks
 # city1;city2;length;track1 color;track2 color (None if single track)
-Vancouver;Seattle;1;Multicolor;Multicolor
-Vancouver;Calgary;3;Multicolor;None
-Seattle;Calgary;4;Multicolor;None
-Calgary;Winnipeg;6;White;None
-Calgary;Helena;4;Multicolor;None
-Seattle;Helena;6;Yellow;None
-Seattle;Portland;1;Multicolor;Multicolor
-Portland;San Francisco;5;Green;Purple
-Portland;Salt Lake City;6;Blue;None
-San Francisco;Los Angeles;3;Yellow;Purple
-San Francisco;Salt Lake City;5;Orange;White
-Los Angeles;Las Vegas;2;Multicolor;None
-Los Angeles;Phoenix;3;Multicolor;None
-Los Angeles;El Paso;6;Black;None
-Helena;Winnipeg;4;Blue;None
-Helena;Duluth;6;Orange;None
-Helena;Omaha;5;Red;None
-Helena;Denver;4;Green;None
-Helena;Salt Lake City;3;Purple;None
-Salt Lake City;Denver;3;Red;Yellow
-Salt Lake City;Las Vegas;3;Orange;None
-Phoenix;Denver;5;White;None
-Phoenix;Santa Fe;3;Multicolor;None
-Phoenix;El Paso;3;Multicolor;None
-Winnipeg;Sault St. Marie;6;Multicolor;None
-Winnipeg;Duluth;4;Black;None
-Denver;Omaha;4;Purple;None
-Denver;Kansas City;4;Black;Orange
-Denver;Oklahoma City;4;Red;None
-Denver;Santa Fe;2;Multicolor;None
-Santa Fe;Oklahoma City;3;Blue;None
-Santa Fe;El Paso;2;Multicolor;None
-El Paso;Oklahoma City;5;Yellow;None
-El Paso;Dallas;4;Red;None
-El Paso;Houston;6;Green;None
-Duluth;Sault St. Marie;3;Multicolor;None
-Duluth;Toronto;6;Purple;None
-Duluth;Chicago;6;Red;None
-Duluth;Omaha;2;Multicolor;Multicolor
-Omaha;Chicago;4;Blue;None
-Omaha;Kansas City;1;Multicolor;Multicolor
-Kansas City;Saint Louis;2;Blue;Purple
-Kansas City;Oklahoma City;2;Multicolor;Multicolor
-Oklahoma City;Little Rock;2;Multicolor;None
-Oklahoma City;Dallas;2;Multicolor;Multicolor
-Dallas;Little Rock;2;Multicolor;None
-Dallas;Houston;1;Multicolor;Multicolor
-Houston;New Orleans;2;Multicolor;None
-Sault St. Marie;Montréal;5;Black;None
-Sault St. Marie;Toronto;2;Multicolor;None
-Chicago;Toronto;4;White;None
-Chicago;Pittsburgh;3;Black;Orange
-Chicago;Saint Louis;2;White;Green
-Saint Louis;Pittsburgh;5;Green;None
-Saint Louis;Nashville;2;Multicolor;None
-Saint Louis;Little Rock;2;Multicolor;None
-Little Rock;Nashville;3;White;None
-Little Rock;New Orleans;3;Green;None
-Montréal;Boston;2;Multicolor;Multicolor
-Montréal;New York;3;Blue;None
-Montréal;Toronto;3;Multicolor;None
-New York;Boston;2;Yellow;Red
-New York;Washington;2;Orange;Black
-New York;Pittsburgh;2;White;Green
-Pittsburgh;Toronto;2;Multicolor;None
-Pittsburgh;Washington;2;Multicolor;None
-Pittsburgh;Raleigh;2;Multicolor;None
-Pittsburgh;Nashville;4;Yellow;None
-Raleigh;Washington;2;Multicolor;Multicolor
-Raleigh;Charleston;2;Multicolor;None
-Raleigh;Atlanta;2;Multicolor;Multicolor
-Raleigh;Nashville;3;Black;None
-Atlanta;Charleston;2;Multicolor;None
-Atlanta;Miami;5;Blue;None
-Atlanta;New Orleans;4;Yellow;Orange
-Atlanta;Nashville;1;Multicolor;None
-Miami;New Orleans;6;Red;None
-Miami;Charleston;4;Purple;None
+Vancouver;Seattle;1;Multicolor;Multicolor;2;3;SSS
+Vancouver;Calgary;3;Multicolor;None;2;3;EEEEE
+Seattle;Calgary;4;Multicolor;None;6;4;NNEEEEEN
+Calgary;Winnipeg;6;White;None;2;10;EEEEEE
+Calgary;Helena;4;Multicolor;None;2;10;SSEEEEEES
+Seattle;Helena;6;Yellow;None;6;4;EEEEEEEEEEE
+Seattle;Portland;1;Multicolor;Multicolor;6;3;SS
+Portland;San Francisco;5;Green;Purple;9;3;SSSSSS
+Portland;Salt Lake City;6;Blue;None;9;3;EEEEEEEESS
+San Francisco;Los Angeles;3;Yellow;Purple;16;3;SSSSEEE
+San Francisco;Salt Lake City;5;Orange;White;16;3;EEEENNNNEEE
+Los Angeles;Las Vegas;2;Multicolor;None;20;8;NN
+Los Angeles;Phoenix;3;Multicolor;None;20;8;EENNEE
+Los Angeles;El Paso;6;Black;None;20;8;SSSEEEEEEEEEEEEEN
+Helena;Winnipeg;4;Blue;None;6;17;NNN
+Helena;Duluth;6;Orange;None;6;18;EEEEEEEEEEE
+Helena;Omaha;5;Red;None;6;18;SSEEEEEEEEEEES
+Helena;Denver;4;Green;None;6;17;SSSEESS
+Helena;Salt Lake City;3;Purple;None;6;16;SSSWWWWSS
+Salt Lake City;Denver;3;Red;Yellow;12;12;EEEEEE
+Salt Lake City;Las Vegas;3;Orange;None;12;12;SSWWWWSS
+Phoenix;Denver;5;White;None;18;14;NNNEEEEENN
+Phoenix;Santa Fe;3;Multicolor;None;18;14;EEEEE
+Phoenix;El Paso;3;Multicolor;None;18;14;SSSEEEEE
+Winnipeg;Sault St. Marie;6;Multicolor;None;2;18;EEEEEEEEEEEEEEEEEE
+Winnipeg;Duluth;4;Black;None;2;18;SSEEEEEEEEEEEES
+Denver;Omaha;4;Purple;None;12;20;NNEEEEEEEE
+Denver;Kansas City;4;Black;Orange;12;21;EEEESEEE
+Denver;Oklahoma City;4;Red;None;12;21;SSEEEEEEEESS
+Denver;Santa Fe;2;Multicolor;None;12;20;SSSSS
+Santa Fe;Oklahoma City;3;Blue;None;18;21;EEEENEEE
+Santa Fe;El Paso;2;Multicolor;None;18;21;SS
+El Paso;Oklahoma City;5;Yellow;None;21;22;NNEEEEEEEN
+El Paso;Dallas;4;Red;None;21;22;EEEEEEEEE
+El Paso;Houston;6;Green;None;21;22;SSSEEEEEEEEE
+Duluth;Sault St. Marie;3;Multicolor;None;6;31;NNEEEEEEN
+Duluth;Toronto;6;Purple;None;6;31;EEEEEEEEEEEE
+Duluth;Chicago;6;Red;None;6;31;SSEEEEEES
+Duluth;Omaha;2;Multicolor;Multicolor;6;30;SSS
+Omaha;Chicago;4;Blue;None;10;30;EEEEEE
+Omaha;Kansas City;1;Multicolor;Multicolor;10;30;SS
+Kansas City;Saint Louis;2;Blue;Purple;13;30;EEESEEE
+Kansas City;Oklahoma City;2;Multicolor;Multicolor;13;30;SSS
+Oklahoma City;Little Rock;2;Multicolor;None;17;30;EEESEEE
+Oklahoma City;Dallas;2;Multicolor;Multicolor;17;30;SSEEES
+Dallas;Little Rock;2;Multicolor;None;21;33;EEEENN
+Dallas;Houston;1;Multicolor;Multicolor;21;33;SS
+Houston;New Orleans;2;Multicolor;None;24;33;EEEE
+Sault St. Marie;Montréal;5;Black;None;2;38;EEEEEE
+Sault St. Marie;Toronto;2;Multicolor;None;2;38;SSEEEEEES
+Chicago;Toronto;4;White;None;10;38;NNEEEEEEN
+Chicago;Pittsburgh;3;Black;Orange;10;38;EEEEEE
+Chicago;Saint Louis;2;White;Green;10;37;SSS
+Saint Louis;Pittsburgh;5;Green;None;14;38;NNEEEEEEEN
+Saint Louis;Nashville;2;Multicolor;None;14;38;EEEEEEES
+Saint Louis;Little Rock;2;Multicolor;None;14;37;SSS
+Little Rock;Nashville;3;White;None;18;38;EEENNEEE
+Little Rock;New Orleans;3;Green;None;18;38;SSSSS
+Montréal;Boston;2;Multicolor;Multicolor;2;46;EEESSEEE
+Montréal;New York;3;Blue;None;2;46;SSSEEEEEEESS
+Montréal;Toronto;3;Multicolor;None;2;45;SSS
+New York;Boston;2;Yellow;Red;4;54;SSS
+New York;Washington;2;Orange;Black;8;54;SS
+New York;Pittsburgh;2;White;Green;10;46;NNEEEEEE
+Pittsburgh;Toronto;2;Multicolor;None;10;45;NNN
+Pittsburgh;Washington;2;Multicolor;None;10;47;EEESEE
+Pittsburgh;Raleigh;2;Multicolor;None;10;47;SSSEEEESS
+Pittsburgh;Nashville;4;Yellow;None;10;46;SSSSS
+Raleigh;Washington;2;Multicolor;Multicolor;16;52;NNNEEN
+Raleigh;Charleston;2;Multicolor;None;16;52;SSEES
+Raleigh;Atlanta;2;Multicolor;Multicolor;16;51;SSWWWWS
+Raleigh;Nashville;3;Black;None;16;46;EEEE
+Atlanta;Charleston;2;Multicolor;None;20;47;EEEEE
+Atlanta;Miami;5;Blue;None;20;47;SSEEEEEES
+Atlanta;New Orleans;4;Yellow;Orange;24;39;NNNNEEEEEE
+Atlanta;Nashville;1;Multicolor;None;16;46;SSS
+Miami;New Orleans;6;Red;None;24;39;EEEEEEEEEEEEE
+Miami;Charleston;4;Purple;None;20;54;SSS
