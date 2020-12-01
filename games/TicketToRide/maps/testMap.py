@@ -88,15 +88,18 @@ with open(tracksFile) as csvTracks:
 	for i, track in enumerate(reader(decomment(csvTracks), delimiter=';')):
 		try:
 			# draw the track
-			co = textColors[colors[track[3]]][1]
-			#co = Fore.RED
+			co1 = textColors[colors[track[3]]][1]
+			co2 = textColors[colors[track[4]]][1] if track[4] != "None" else co1
 			lin = int(track[5])
 			col = int(track[6])
 			path = track[7]
+			i = 0
 			for cour, suiv in zip_longest(path, path[1:], fillvalue=''):
+				co = co1 if i%2 else co2
 				lin += dlin[cour]
 				col += dcol[cour]
 				rawtxt[lin-1][col-1] = co + Block[(cour, suiv)] + Fore.RESET
+				i += 1
 		except IndexError:
 			pass
 		except ValueError:
