@@ -1,0 +1,50 @@
+{% macro socketGame(prefix) %}
+<script type="text/javascript">
+    {% include "game/maps_images.js" %}
+
+
+    var canvas = document.getElementById('game_canvas');
+    canvas.setAttribute("width", 1200);
+    canvas.setAttribute("height", 800);
+
+    var ctx = canvas.getContext('2d');
+
+    /* function run by Game.html and Player.html */
+    function updateWebSocket(){
+        /* when received update about a Game, just display it */
+        socket.on('update{{ GameName }}', function (msg) {
+            var data = JSON.parse(msg);
+            console.log(data);
+
+            // load image only first time
+            if (data.hasOwnProperty('map_name')) {
+                let map_bg = new Image();
+                map_bg.onload = function () {
+                    ctx.drawImage(map_bg, 0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+                }
+                map_bg.src = maps[data['map_name']];
+            }
+            /*for (let el in data) {
+                if (data.hasOwnProperty(el))
+                    document.getElementById('{{prefix}}' + el).innerHTML = data[el];
+            }*/
+        });
+    }
+    /* register to endOfGame and display it when received*/
+    function displayEndOfGame(){
+        socket.on('endOfGame', function(msg){
+            document.getElementById('endOfGame').innerHTML = msg;
+        });
+    }
+</script>
+{% endmacro %}
+
+{% macro styleGame() %}
+{% endmacro %}
+
+{% macro contentGame() %}
+<div id="game_content">
+    <canvas style="display:block; margin: 25px auto; width: 75%;" id="game_canvas">
+    </canvas>
+</div>
+{% endmacro %}

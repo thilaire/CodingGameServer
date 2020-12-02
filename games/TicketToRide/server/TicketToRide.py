@@ -131,8 +131,12 @@ class TicketToRide(Game):
 		#
 		# insert your code here...
 		#
+		data = {}
 
-		return {}
+		if firstTime:
+			data["map_name"] = self._theMap.name
+
+		return data
 
 	def __str__(self):
 		"""
