@@ -17,16 +17,20 @@ File: Map.py
 Copyright 2020 T. Hilaire
 """
 
-from .Constants import NONE, MULTICOLOR
+from itertools import zip_longest
+from colorama import Fore, Back, Style
+from .Constants import NONE, MULTICOLOR, dcol, dlin, BlockWg, BlockTr, BLOCK, playerColors, tracksColors
 
 
 class Track:
 	"""simple class to store a track"""
-	def __init__(self, cities, length, col):
+	def __init__(self, cities, length, colors, pos, path):
 		"""a track contains the two cities, the length and the colors"""
 		self._cities = (min(cities), max(cities))
 		self._length = length
-		self._colors = tuple(col)
+		self._colors = tuple(colors)
+		self._pos = tuple(pos)
+		self._path = path
 		self._taken = False      # True if taken by a player
 		self._player = 0        # if taken, it gives the number of the player who have it
 
@@ -73,3 +77,18 @@ class Track:
 		if self._colors[1] != NONE:
 			yield self._colors[1]
 
+	def draw(self, rawtxt):
+		"""Draw the path in the raw text"""
+		color1 = tracksColors[self._colors[0]]
+		color2 = tracksColors[self._colors[1]] if self._colors[1] != 0 else color1
+		line, column = self._pos
+		i = 0
+		for cour, suiv in zip_longest(self._path, self._path[1:], fillvalue=''):
+			color = playerColors[self._player] if self._taken else (color1 if i % 2 else color2)
+			line += dlin[cour]
+			column += dcol[cour]
+			rail = BlockWg[(cour, suiv)] if self._taken else BlockTr[(cour, suiv)]
+			middle = BLOCK if self._taken else str(self._length)
+			ch = rail if i != int(len(self._path) / 2) else middle      # char to display
+			rawtxt[line - 1][column - 1] = color + ch + Fore.RESET + Style.NORMAL
+			i += 1

@@ -11,7 +11,7 @@ Licence: GPL
 
 File: Constants.py
 	Contains the constants of the game Ticket To Ride
-	-> defines the constants used for the client communication
+	-> defines the constants used for the client communication, the colors and text display
 
 Copyright 2020 T. Hilaire
 """
@@ -19,20 +19,11 @@ Copyright 2020 T. Hilaire
 from _collections import OrderedDict
 from colorama import Fore, Back, Style
 
-# colors
-colors = {
-	'None': 0,
-	'Purple': 1,
-	'White': 2,
-	'Blue': 3,
-	'Yellow': 4,
-	'Orange': 5,
-	'Black': 6,
-	'Red': 7,
-	'Green': 8,
-	'Multicolor': 9     # used for the locomotive card (joker) or for a track that can accept any color
-}
+# definitions of colors
+# list of colors
+colorNames = ['None', 'Purple', 'White', 'Blue', 'Yellow', 'Orange', 'Black', 'Red', 'Green', 'Multicolor']
 
+# constants
 NONE = 0
 PURPLE = 1
 WHITE = 2
@@ -44,19 +35,57 @@ RED = 7
 GREEN = 8
 MULTICOLOR = 9
 
-textColors = [
-	('', Fore.RESET),
-	('Purple', Style.BRIGHT + Fore.MAGENTA),            # PURPLE
-	('White', Style.BRIGHT + Fore.LIGHTWHITE_EX),      # White
-	('Blue', Fore.BLUE),                              # Blue
-	('Yellow', Style.BRIGHT + Fore.YELLOW),             # Yellow
-	('Orange', Style.BRIGHT + Fore.LIGHTYELLOW_EX),     # Orange
-	('Black', Style.BRIGHT + Fore.BLACK),              # Black
-	('Red', Style.BRIGHT + Fore.LIGHTRED_EX),        # Red
-	('Green', Style.BRIGHT + Fore.GREEN),              # Green
-	('Multi', Fore.LIGHTBLUE_EX)                       # Multi
+# wagons color
+tracksColors = [
+	Fore.RESET,
+	Fore.MAGENTA,                   # PURPLE
+	Fore.LIGHTWHITE_EX,             # White
+	Fore.BLUE,                      # Blue
+	Fore.LIGHTYELLOW_EX,             # Yellow
+	Fore.YELLOW,                    # Orange
+	Fore.BLACK,                     # Black
+	Fore.LIGHTRED_EX,               # Red
+	Fore.GREEN,                     # Green
+	Fore.WHITE                      # Multi
 ]
 
+playerColors = [Style.BRIGHT + Fore.LIGHTBLUE_EX, Style.BRIGHT + Fore.LIGHTRED_EX]
+
+# define the blocks (Simple and double)
+BLOCK_S_NS = '\U00002502'     # '┃'
+BLOCK_S_EW = '\U00002500'     # '━'
+BLOCK_S_NE = '\U00002514'     # '┗'
+BLOCK_S_NW = '\U00002518'     # '┛'
+BLOCK_S_SE = '\U0000250C'     # '┏'
+BLOCK_S_SW = '\U00002510'     # '┓'
+
+BLOCK_D_NS = '\U00002551'     # '║'
+BLOCK_D_EW = '\U00002550'     # '═'
+BLOCK_D_NE = '\U0000255A'     # '╚'
+BLOCK_D_NW = '\U0000255D'     # '╝'
+BLOCK_D_SE = '\U00002554'     # '╔'
+BLOCK_D_SW = '\U00002557'     # '╗'
+
+BLOCK = '\U00002588'
+
+dcol = {'N':  0, 'S': 0, 'E': 1, 'W': -1}
+dlin = {'N': -1, 'S': 1, 'E': 0, 'W':  0}
+
+# define the block to display in fonction of the current and next direction ('N', 'E', 'S' or 'W')
+# for the track
+BlockTr = {
+	('N', ''): BLOCK_S_NS, ('S', ''): BLOCK_S_NS, ('E', ''): BLOCK_S_EW, ('W', ''): BLOCK_S_EW,
+	('N', 'N'): BLOCK_S_NS, ('S', 'S'): BLOCK_S_NS, ('E', 'E'): BLOCK_S_EW, ('W', 'W'): BLOCK_S_EW,
+	('N', 'E'): BLOCK_S_SE, ('N', 'W'): BLOCK_S_SW, ('S', 'E'): BLOCK_S_NE, ('S', 'W'): BLOCK_S_NW,
+	('E', 'S'): BLOCK_S_SW, ('E', 'N'): BLOCK_S_NW, ('W', 'N'): BLOCK_S_NE, ('W', 'S'): BLOCK_S_SE
+}
+# for the wagons
+BlockWg = {
+	('N', ''): BLOCK_D_NS, ('S', ''): BLOCK_D_NS, ('E', ''): BLOCK_D_EW, ('W', ''): BLOCK_D_EW,
+	('N', 'N'): BLOCK_D_NS, ('S', 'S'): BLOCK_D_NS, ('E', 'E'): BLOCK_D_EW, ('W', 'W'): BLOCK_D_EW,
+	('N', 'E'): BLOCK_D_SE, ('N', 'W'): BLOCK_D_SW, ('S', 'E'): BLOCK_D_NE, ('S', 'W'): BLOCK_D_NW,
+	('E', 'S'): BLOCK_D_SW, ('E', 'N'): BLOCK_D_NW, ('W', 'N'): BLOCK_D_NE, ('W', 'S'): BLOCK_D_SE
+}
 
 # score for the tracks
 Scores = [0, 1, 2, 4, 7, 10, 15]

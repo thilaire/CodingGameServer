@@ -17,7 +17,7 @@ Copyright 2020 T. Hilaire
 """
 
 from re import compile
-from colorama import Fore
+from colorama import Fore, Style
 from random import shuffle
 from itertools import zip_longest
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
@@ -26,7 +26,7 @@ from .DoNothingPlayer import DoNothingPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
 from .Map import Map
 from .Cards import Deck, strCards
-from .Constants import textColors, MULTICOLOR, PURPLE, Scores
+from .Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors
 
 
 regClaimRoute = compile(r"^\s*1\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")   # regex to parse a "1 %d %d %d %d"
@@ -138,7 +138,6 @@ class TicketToRide(Game):
 		"""
 		Convert a Game into string (to be send to clients, and display)
 		"""
-		colors = [Fore.BLUE, Fore.RED]
 		# map lines
 		mapLines = ["".join(line) for line in self._mapTxt]
 
@@ -146,15 +145,15 @@ class TicketToRide(Game):
 		scoreLines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp), '', '']
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
-			scoreLines.append("\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1])
+			scoreLines.append("\t\t" + br[0] + playerColors[i] + "Player " + str(i + 1) + ": " + pl.name + Style.RESET_ALL + br[1])
 			scoreLines.append(
 				"\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
 				(self._score[i], self._nbWagons[i], len(self._objectives[i]))
 			)
 			if self._players[i].isRegular and not self._players[1-i].isRegular:
 				scoreLines.append("\t\t Cards (%2d): " % sum(self._cards[i]))
-				for c, (name, color) in enumerate(textColors[1:]):
-					scoreLines.append("\t\t\t - (%d) %6s:%s" % (c+1, name, strCards(c+1, self._cards[i][c+1])))
+				for c, (name, color) in enumerate(zip(colorNames[1:], tracksColors[1:])):
+					scoreLines.append("\t\t\t - (%d) %10s:%s" % (c+1, name, strCards(c+1, self._cards[i][c+1])))
 			else:
 				scoreLines.append("\t\t Cards (%2d)" % sum(self._cards[i]))
 
@@ -215,6 +214,8 @@ class TicketToRide(Game):
 			self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
 			tr.claims(self._whoPlays)
 			self._score[self._whoPlays] += Scores[tr.length]
+			self._nbWagons[self._whoPlays] -= tr.length
+			tr.draw(self._mapTxt)
 			# TODO: deal with the end of the game (last turn when one player has < 3 wagons)
 			return NORMAL_MOVE, ""
 

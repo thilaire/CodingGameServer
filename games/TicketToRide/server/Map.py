@@ -25,15 +25,14 @@ c) with the following files
 Copyright 2020 T. Hilaire
 """
 
+from itertools import zip_longest
 from os.path import join
 from csv import reader
 from copy import copy
 from colorama import Fore, Back
-from .Constants import colors
+from .Constants import colorNames
 from .Track import Track
 from .Objective import Objective
-
-
 
 
 
@@ -66,11 +65,14 @@ class Map:
 		# open the text map and store it in a 2D array (list of lists)
 		with open(join('games', 'TicketToRide', 'maps', name, 'map.txt')) as txtMap:
 			self._rawtxt = [list(line[:-1]) for line in txtMap]
+
+		# highlight the cities
 		for c in cities:
-			x, y, size = [int(t) for t in c[2:5]]
-			for dx in range(size):
-				self._rawtxt[y][x+dx] = Fore.LIGHTWHITE_EX + Back.BLACK + \
-			                        self._rawtxt[y][x+dx] + Fore.RESET + Back.RESET
+			lin, col, size = [int(t) for t in c[2:5]]
+			for dc in range(size):
+				self._rawtxt[lin-1][col + dc-1] = Back.LIGHTWHITE_EX + Fore.BLACK + self._rawtxt[lin-1][col + dc-1]\
+				                                  + Fore.RESET + Back.RESET
+
 
 		# build the list of tracks
 		with open(join('games', 'TicketToRide', 'maps', name, 'tracks.csv')) as csvTracks:
@@ -80,8 +82,13 @@ class Map:
 					# get the data
 					cities = (self._invCities[track[0]], self._invCities[track[1]])
 					length = int(track[2])
-					col = (colors[track[3]], colors[track[4]])
-					self._tracks.append(Track(cities, length, col))
+					col = (colorNames.index(track[3]), colorNames.index(track[4]))
+					pos = (int(track[5]), int(track[6]))
+					path = track[7]
+					# build the track, and plot it (in rawtxt)
+					tr = Track(cities, length, col, pos, path)
+					self._tracks.append(tr)
+					tr.draw(self._rawtxt)
 				except KeyError:
 					raise ValueError("The %dth element in %s contains an incorrect item: %s" % (
 										i, join('maps', name, 'tracks.csv'), ';'.join(track)))
