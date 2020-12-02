@@ -32,8 +32,7 @@
         });
     </script>
 
-    <!-- block `script` and `style` -->
-    {% block script %}{% endblock %}
+    <!-- block `style` -->
     {% block style %}{% endblock %}
 </head>
 <body>
@@ -70,7 +69,9 @@
 
 <!-- content -->
 <div id="content">
-{% block content%}{% endblock%}
+    {% block content%}{% endblock%}
+
+    {% block script %}{% endblock %}
 </div>
 
 <!-- footer -->
