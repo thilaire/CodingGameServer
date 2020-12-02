@@ -1,6 +1,6 @@
 # USA map
 # List of tracks
-# city1;city2;length;track1 color;track2 color (None if single track)
+# city1;city2;length;track1 color;track2 color (None if single track); text line; text column; text path
 Vancouver;Seattle;1;Multicolor;Multicolor;2;3;SSS
 Vancouver;Calgary;3;Multicolor;None;2;3;EEEEE
 Seattle;Calgary;4;Multicolor;None;6;4;NNEEEEEN
