@@ -17,15 +17,15 @@ Copyright 2020 T. Hilaire
 
 from colorama import Fore, Back
 from random import shuffle
-from .Constants import MULTICOLOR, PURPLE, textColors
+from .Constants import MULTICOLOR, PURPLE, tracksColors
 
 
 def strCards(color, amount):
 	"""return a string to display a card (using color)"""
 	if color == MULTICOLOR:
-		return textColors[color][1] + " (%d)" % amount + Fore.RESET + Back.RESET
+		return tracksColors[color] + " (%d)" % amount + Fore.RESET + Back.RESET
 	else:
-		return textColors[color][1] + " %2d" % amount + Fore.RESET + Back.RESET
+		return tracksColors[color] + " %2d" % amount + Fore.RESET + Back.RESET
 
 
 
