@@ -41,24 +41,55 @@ textColors = [
 	('Multi', Fore.WHITE)                       # Multi
 ]
 
+textColors = [
+	('', Fore.RESET),
+	('Purple', Fore.MAGENTA),            # PURPLE
+	('White',  Fore.LIGHTWHITE_EX),      # White
+	('Blue', Fore.BLUE),                              # Blue
+	('Yellow', Fore.LIGHTYELLOW_EX),             # Yellow
+	('Orange', Fore.YELLOW),     # Orange
+	('Black', Fore.BLACK),              # Black
+	('Red', Fore.LIGHTRED_EX),        # Red
+	('Green', Fore.GREEN),              # Green
+	('Multi', Fore.WHITE)                       # Multi
+]
 
-BLOCK_NS = '\U00002503'     # '┃'
-BLOCK_EW = '\U00002501'     # '━'
-BLOCK_NE = '\U00002517'     # '┗'
-BLOCK_NW = '\U0000251B'     # '┛'
-BLOCK_SE = '\U0000250F'     # '┏'
-BLOCK_SW = '\U00002513'     # '┓'
+
+
+BLOCK_S_NS = '\U00002502'     # '┃'
+BLOCK_S_EW = '\U00002500'     # '━'
+BLOCK_S_NE = '\U00002514'     # '┗'
+BLOCK_S_NW = '\U00002518'     # '┛'
+BLOCK_S_SE = '\U0000250C'     # '┏'
+BLOCK_S_SW = '\U00002510'     # '┓'
+
+BLOCK_D_NS = '\U00002551'     # '║'
+BLOCK_D_EW = '\U00002550'     # '═'
+BLOCK_D_NE = '\U0000255A'     # '╚'
+BLOCK_D_NW = '\U0000255D'     # '╝'
+BLOCK_D_SE = '\U00002554'     # '╔'
+BLOCK_D_SW = '\U00002557'     # '╗'
+
 
 dcol = {'N':  0, 'S': 0, 'E': 1, 'W': -1}
 dlin = {'N': -1, 'S': 1, 'E': 0, 'W':  0}
 
-Block = {
-	('N', ''): BLOCK_NS, ('S', ''): BLOCK_NS, ('E', ''): BLOCK_EW, ('W', ''): BLOCK_EW,
-	('N', 'N'): BLOCK_NS, ('S', 'S'): BLOCK_NS, ('E', 'E'): BLOCK_EW, ('W', 'W'): BLOCK_EW,
-	('N', 'E'): BLOCK_SE, ('N', 'W'): BLOCK_SW, ('S', 'E'): BLOCK_NE, ('S', 'W'): BLOCK_NW,
-	('E', 'S'): BLOCK_SW, ('E', 'N'): BLOCK_NW, ('W', 'N'): BLOCK_NE, ('W', 'S'): BLOCK_SE
+BlockTr = {
+	('N', ''): BLOCK_S_NS, ('S', ''): BLOCK_S_NS, ('E', ''): BLOCK_S_EW, ('W', ''): BLOCK_S_EW,
+	('N', 'N'): BLOCK_S_NS, ('S', 'S'): BLOCK_S_NS, ('E', 'E'): BLOCK_S_EW, ('W', 'W'): BLOCK_S_EW,
+	('N', 'E'): BLOCK_S_SE, ('N', 'W'): BLOCK_S_SW, ('S', 'E'): BLOCK_S_NE, ('S', 'W'): BLOCK_S_NW,
+	('E', 'S'): BLOCK_S_SW, ('E', 'N'): BLOCK_S_NW, ('W', 'N'): BLOCK_S_NE, ('W', 'S'): BLOCK_S_SE
 }
 
+BlockWg = {
+	('N', ''): BLOCK_D_NS, ('S', ''): BLOCK_D_NS, ('E', ''): BLOCK_D_EW, ('W', ''): BLOCK_D_EW,
+	('N', 'N'): BLOCK_D_NS, ('S', 'S'): BLOCK_D_NS, ('E', 'E'): BLOCK_D_EW, ('W', 'W'): BLOCK_D_EW,
+	('N', 'E'): BLOCK_D_SE, ('N', 'W'): BLOCK_D_SW, ('S', 'E'): BLOCK_D_NE, ('S', 'W'): BLOCK_D_NW,
+	('E', 'S'): BLOCK_D_SW, ('E', 'N'): BLOCK_D_NW, ('W', 'N'): BLOCK_D_NE, ('W', 'S'): BLOCK_D_SE
+}
+
+
+BLOCK = '\U00002588'
 
 mapFile = 'USA/map.txt'
 citiesFile = 'USA/cities.csv'
@@ -79,7 +110,7 @@ with open(mapFile) as txtMap:
 for c in cities:
 	lin, col, size = [int(t) for t in c[2:5]]
 	for dc in range(size):
-		rawtxt[lin-1][col + dc-1] = Fore.LIGHTWHITE_EX + Back.BLACK + rawtxt[lin-1][col + dc-1] + Fore.RESET + Back.RESET
+		rawtxt[lin-1][col + dc-1] = Back.LIGHTWHITE_EX + Fore.BLACK + rawtxt[lin-1][col + dc-1] + Fore.RESET + Back.RESET
 
 
 # build the list of tracks
@@ -98,7 +129,14 @@ with open(tracksFile) as csvTracks:
 				co = co1 if i%2 else co2
 				lin += dlin[cour]
 				col += dcol[cour]
-				rawtxt[lin-1][col-1] = co + Block[(cour, suiv)] + Fore.RESET
+				ch = BlockTr[(cour, suiv)] if i != int(len(path) / 2) else track[2]
+				if track[1] == 'New York' and track[0] == 'Montréal':
+					co = Style.BRIGHT + co
+					ch = BlockWg[(cour, suiv)] if i != int(len(path) / 2) else BLOCK
+					ch = Fore.LIGHTRED_EX + Style.BRIGHT + ch
+				else:
+					co = Style.NORMAL + co
+				rawtxt[lin-1][col-1] = co + ch + Fore.RESET + Style.NORMAL
 				i += 1
 		except IndexError:
 			pass
