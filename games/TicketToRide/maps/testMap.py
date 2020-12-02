@@ -1,8 +1,11 @@
 # just to test the map
 
 from csv import reader
-from colorama import Fore, Back, Style
-from itertools import zip_longest
+from colorama import Fore, Back
+from random import choice
+
+from games.TicketToRide.server.Track import Track
+from games.TicketToRide.server.Constants import colorNames
 
 
 def decomment(csvfile):
@@ -15,81 +18,7 @@ def decomment(csvfile):
 		if raw:
 			yield raw
 
-colors = {
-	'None': 0,
-	'Purple': 1,
-	'White': 2,
-	'Blue': 3,
-	'Yellow': 4,
-	'Orange': 5,
-	'Black': 6,
-	'Red': 7,
-	'Green': 8,
-	'Multicolor': 9     # used for the locomotive card (joker) or for a track that can accept any color
-}
 
-textColors = [
-	('', Fore.RESET),
-	('Purple', Style.BRIGHT + Fore.MAGENTA),            # PURPLE
-	('White', Style.BRIGHT + Fore.LIGHTWHITE_EX),      # White
-	('Blue', Fore.BLUE),                              # Blue
-	('Yellow', Style.BRIGHT + Fore.LIGHTYELLOW_EX),             # Yellow
-	('Orange', Style.BRIGHT + Fore.YELLOW),     # Orange
-	('Black', Style.BRIGHT + Fore.BLACK),              # Black
-	('Red', Style.BRIGHT + Fore.LIGHTRED_EX),        # Red
-	('Green', Style.BRIGHT + Fore.GREEN),              # Green
-	('Multi', Fore.WHITE)                       # Multi
-]
-
-textColors = [
-	('', Fore.RESET),
-	('Purple', Fore.MAGENTA),            # PURPLE
-	('White',  Fore.LIGHTWHITE_EX),      # White
-	('Blue', Fore.BLUE),                              # Blue
-	('Yellow', Fore.LIGHTYELLOW_EX),             # Yellow
-	('Orange', Fore.YELLOW),     # Orange
-	('Black', Fore.BLACK),              # Black
-	('Red', Fore.LIGHTRED_EX),        # Red
-	('Green', Fore.GREEN),              # Green
-	('Multi', Fore.WHITE)                       # Multi
-]
-
-
-
-BLOCK_S_NS = '\U00002502'     # '┃'
-BLOCK_S_EW = '\U00002500'     # '━'
-BLOCK_S_NE = '\U00002514'     # '┗'
-BLOCK_S_NW = '\U00002518'     # '┛'
-BLOCK_S_SE = '\U0000250C'     # '┏'
-BLOCK_S_SW = '\U00002510'     # '┓'
-
-BLOCK_D_NS = '\U00002551'     # '║'
-BLOCK_D_EW = '\U00002550'     # '═'
-BLOCK_D_NE = '\U0000255A'     # '╚'
-BLOCK_D_NW = '\U0000255D'     # '╝'
-BLOCK_D_SE = '\U00002554'     # '╔'
-BLOCK_D_SW = '\U00002557'     # '╗'
-
-
-dcol = {'N':  0, 'S': 0, 'E': 1, 'W': -1}
-dlin = {'N': -1, 'S': 1, 'E': 0, 'W':  0}
-
-BlockTr = {
-	('N', ''): BLOCK_S_NS, ('S', ''): BLOCK_S_NS, ('E', ''): BLOCK_S_EW, ('W', ''): BLOCK_S_EW,
-	('N', 'N'): BLOCK_S_NS, ('S', 'S'): BLOCK_S_NS, ('E', 'E'): BLOCK_S_EW, ('W', 'W'): BLOCK_S_EW,
-	('N', 'E'): BLOCK_S_SE, ('N', 'W'): BLOCK_S_SW, ('S', 'E'): BLOCK_S_NE, ('S', 'W'): BLOCK_S_NW,
-	('E', 'S'): BLOCK_S_SW, ('E', 'N'): BLOCK_S_NW, ('W', 'N'): BLOCK_S_NE, ('W', 'S'): BLOCK_S_SE
-}
-
-BlockWg = {
-	('N', ''): BLOCK_D_NS, ('S', ''): BLOCK_D_NS, ('E', ''): BLOCK_D_EW, ('W', ''): BLOCK_D_EW,
-	('N', 'N'): BLOCK_D_NS, ('S', 'S'): BLOCK_D_NS, ('E', 'E'): BLOCK_D_EW, ('W', 'W'): BLOCK_D_EW,
-	('N', 'E'): BLOCK_D_SE, ('N', 'W'): BLOCK_D_SW, ('S', 'E'): BLOCK_D_NE, ('S', 'W'): BLOCK_D_NW,
-	('E', 'S'): BLOCK_D_SW, ('E', 'N'): BLOCK_D_NW, ('W', 'N'): BLOCK_D_NE, ('W', 'S'): BLOCK_D_SE
-}
-
-
-BLOCK = '\U00002588'
 
 mapFile = 'USA/map.txt'
 citiesFile = 'USA/cities.csv'
@@ -118,26 +47,17 @@ with open(tracksFile) as csvTracks:
 	tracks = []
 	for i, track in enumerate(reader(decomment(csvTracks), delimiter=';')):
 		try:
-			# draw the track
-			co1 = textColors[colors[track[3]]][1]
-			co2 = textColors[colors[track[4]]][1] if track[4] != "None" else co1
-			lin = int(track[5])
-			col = int(track[6])
+			# build the track and draw it
+			cities = (invCities[track[0]], invCities[track[1]])
+			length = int(track[2])
+			col = (colorNames.index(track[3]), colorNames.index(track[4]))
+			pos = (int(track[5]), int(track[6]))
 			path = track[7]
-			i = 0
-			for cour, suiv in zip_longest(path, path[1:], fillvalue=''):
-				co = co1 if i%2 else co2
-				lin += dlin[cour]
-				col += dcol[cour]
-				ch = BlockTr[(cour, suiv)] if i != int(len(path) / 2) else track[2]
-				if track[1] == 'New York' and track[0] == 'Montréal':
-					co = Style.BRIGHT + co
-					ch = BlockWg[(cour, suiv)] if i != int(len(path) / 2) else BLOCK
-					ch = Fore.LIGHTRED_EX + Style.BRIGHT + ch
-				else:
-					co = Style.NORMAL + co
-				rawtxt[lin-1][col-1] = co + ch + Fore.RESET + Style.NORMAL
-				i += 1
+			# build the track, and plot it (in rawtxt)
+			tr = Track(cities, length, col, pos, path)
+			tr._taken = choice([False]*10+[True])
+			tr._player = choice([0,1])
+			tr.draw(rawtxt)
 		except IndexError:
 			pass
 		except ValueError:
