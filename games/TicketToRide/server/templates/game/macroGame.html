@@ -19,17 +19,14 @@
         ctx.restore();
     }
 
-
     function onImageLoad() {
-        drawRectangle([241, 166], 45, "red");
-        drawRectangle([160, 185], 90, "blue");
     }
+
     /* function run by Game.html and Player.html */
     function updateWebSocket(){
         /* when received update about a Game, just display it */
         socket.on('update{{ GameName }}', function (msg) {
             var data = JSON.parse(msg);
-            console.log(data);
 
             // load image only first time
             if (data.hasOwnProperty('map_name')) {
@@ -38,14 +35,21 @@
                     canvas.setAttribute("width", maps[data['map_name']].width);
                     canvas.setAttribute("height", maps[data['map_name']].height);
                     ctx.drawImage(map_bg, 0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+
+                    // draw all rectangles (only for testing)
+                    for (let key in data.coordinates.tracks) {
+                        if (data.coordinates.tracks.hasOwnProperty(key)) {
+                            let rect_list = data.coordinates.tracks[key];
+                            for (let i = 0; i < rect_list.length; i++) {
+                                let rect = rect_list[i];
+                                drawRectangle(rect[0], rect[1], "blue");
+                            }
+                        }
+                    }
                     onImageLoad();
                 }
                 map_bg.src = maps[data['map_name']].data;
             }
-            /*for (let el in data) {
-                if (data.hasOwnProperty(el))
-                    document.getElementById('{{prefix}}' + el).innerHTML = data[el];
-            }*/
         });
     }
     /* register to endOfGame and display it when received*/

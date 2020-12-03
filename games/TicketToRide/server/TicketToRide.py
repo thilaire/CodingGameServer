@@ -135,6 +135,7 @@ class TicketToRide(Game):
 
 		if firstTime:
 			data["map_name"] = self._theMap.name
+			data["coordinates"] = self._theMap.imageCoordinates
 
 		return data
 
