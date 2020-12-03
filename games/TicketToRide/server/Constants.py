@@ -89,3 +89,5 @@ BlockWg = {
 
 # score for the tracks
 Scores = [0, 1, 2, 4, 7, 10, 15]
+
+checkChar = {True: Fore.LIGHTGREEN_EX + '\U00002714' + Fore.RESET, False: Fore.LIGHTRED_EX + '\U00002718' + Fore.RESET}
