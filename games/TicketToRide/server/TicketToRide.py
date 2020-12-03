@@ -17,8 +17,8 @@ Copyright 2020 T. Hilaire
 """
 
 from re import compile
-from colorama import Fore, Style
-from random import shuffle
+from colorama import Style
+from random import shuffle, choice
 from itertools import zip_longest
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
@@ -26,7 +26,7 @@ from .DoNothingPlayer import DoNothingPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
 from .Map import Map
 from .Cards import Deck, strCards
-from .Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors
+from .Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors, checkChar
 
 
 regClaimRoute = compile(r"^\s*1\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")   # regex to parse a "1 %d %d %d %d"
@@ -62,8 +62,8 @@ class TicketToRide(Game):
 	type_dict = {"DO_NOTHING": DoNothingPlayer, "PLAY_RANDOM": PlayRandomPlayer}
 
 	# create all the maps (each game will have a reference to its map)
-	maps = {m: Map(m) for m in ('USA',)}
-
+	maps = {m: Map(m) for m in ('USA', 'small')}
+	nbInitCards = {'USA': 45, 'small': 15}
 
 	def __init__(self, player1, player2, **options):
 		"""
@@ -73,15 +73,14 @@ class TicketToRide(Game):
 		:param options: dictionary of options (the options 'seed' and 'timeout' are managed by the Game class)
 		"""
 		# get the map
-		if 'map' in options:
-			try:
-				self._theMap = self.maps[options['map']]
-			except KeyError:
-				raise ValueError(
-					"The option `map` is incorrect (%s instead of being in [%s])"
-					% (options['map'], list(self.maps.keys())))
-		else:
-			self._theMap = self.maps['USA']
+		if 'map' not in options:
+			options['map'] = 'USA'
+		try:
+			self._theMap = self.maps[options['map']]
+		except KeyError:
+			raise ValueError(
+				"The option `map` is incorrect (%s instead of being in [%s])"
+				% (options['map'], list(self.maps.keys())))
 		self._mapTxt = self._theMap.rawtxt
 
 		# set the seed
@@ -96,7 +95,7 @@ class TicketToRide(Game):
 
 		# score and wagons
 		self._score = [0, 0]
-		self._nbWagons = [45, 45]
+		self._nbWagons = [self.nbInitCards[options['map']], self.nbInitCards[options['map']]]
 
 		# objectives
 		self._objectivesDeck = self._theMap.objectives      # get a copy of the list of objectives
@@ -108,6 +107,9 @@ class TicketToRide(Game):
 
 		# tracks
 		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (cities)->Track
+
+		# manage the last turn
+		self._lastTurn = 3      # == 0 for the very last move
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
@@ -145,7 +147,9 @@ class TicketToRide(Game):
 		scoreLines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp), '', '']
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
-			scoreLines.append("\t\t" + br[0] + playerColors[i] + "Player " + str(i + 1) + ": " + pl.name + Style.RESET_ALL + br[1])
+			scoreLines.append(
+				"\t\t" + br[0] + playerColors[i] + "Player " + str(i + 1) + ": " + pl.name + Style.RESET_ALL + br[1]
+			)
 			scoreLines.append(
 				"\t\t Score: %3d \t Wagons: %2d \t Objectives: %d" %
 				(self._score[i], self._nbWagons[i], len(self._objectives[i]))
@@ -161,7 +165,9 @@ class TicketToRide(Game):
 
 		# assembly
 		res = list(mapLines[:5])
-		res.extend([l1+l2 for l1, l2 in zip_longest(mapLines[5:], scoreLines, fillvalue='')])
+		res.extend([l1+l2 for l1, l2 in zip_longest(
+			mapLines[5:], scoreLines, fillvalue=' '*len(res[0]) if len(scoreLines) > len(mapLines) else ''
+		)])
 		return "\n".join(res)
 
 
@@ -173,7 +179,6 @@ class TicketToRide(Game):
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
 		- msg: a message to send to the player, explaining why the game is ending
 		"""
-		pl = self._whoPlays
 		# parse for the different moves
 		claimRoute = regClaimRoute.match(move)
 		drawBlindCard = regDrawBlindCard.match(move)
@@ -187,114 +192,33 @@ class TicketToRide(Game):
 		if self._shouldTakeAnotherCard and not (drawCard or drawBlindCard):
 			return LOSING_MOVE, "a `draw card` or `draw blind card` must be followed by a `draw card` " \
 			                    "or `draw blind card` (except for Locomotive taken face up)"
-
 		# Claim a route
 		if claimRoute:
-			# get the values
-			city1 = min(int(claimRoute.group(1)), int(claimRoute.group(2)))
-			city2 = max(int(claimRoute.group(1)), int(claimRoute.group(2)))
-			card = int(claimRoute.group(3))
-			nbLoco = int(claimRoute.group(4))
-			if not ((0 <= city1 < self._theMap.nbCities) and (0 <= city2 < self._theMap.nbCities)
-			        and (PURPLE <= card <= MULTICOLOR) and (0 <= nbLoco)):
-				return LOSING_MOVE, "The data given to claim a city are incorrect (%s)" % move
-			msg = "he track between %s (%d) and %s (%d)" % \
-			      (self._theMap.getCityName(city1), city1, self._theMap.getCityName(city2), city2)
-			# check if the road exists
-			if (city1, city2) not in self._tracks:
-				return LOSING_MOVE, "T" + msg + " doesn't exist"
-			tr = self._tracks[(city1, city2)]
-			# check if the player can claim it
-			if tr.isTaken:
-				return LOSING_MOVE, "T" + msg + " is already taken"
-			if not tr.checkCards(card, self._cards[self._whoPlays][card], nbLoco):
-				return LOSING_MOVE, "The cards given for t" + msg + " are incorrect"
-			# remove the cards
-			self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
-			self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
-			tr.claims(self._whoPlays)
-			self._score[self._whoPlays] += Scores[tr.length]
-			self._nbWagons[self._whoPlays] -= tr.length
-			tr.draw(self._mapTxt)
-			# TODO: deal with the end of the game (last turn when one player has < 3 wagons)
-			return NORMAL_MOVE, ""
-
+			answer = self._claimRoute(claimRoute)
 		# Draw a blind card
 		elif drawBlindCard:
-			# get a card from the deck (end of the game if the deck is empty)
-			try:
-				draw = self._deck.drawBlind()
-				self._cards[pl][draw] += 1
-			except ValueError:
-				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(self._cards[1-pl]) else WINNING_MOVE),\
-					"No more cards in the deck !!"
-			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard     # need/no need to take another card
-			deck = " ".join(str(c) for c in self._deck.faceUp)
-			# send:
-			# - to the player: card drawn
-			# - to the opponent: if the player replay
-			return NORMAL_MOVE, str(draw), ("1 " if self._shouldTakeAnotherCard else "0 ")
-
+			answer = self._drawBlindCard()
 		# Draw a train card
 		elif drawCard:
-			# get a card from the face up cards (end of the game if the deck is empty, or the card doesn't exist)
-			# get the card position
-			card = int(drawCard.group(1))
-			try:
-				nC = self._deck.faceUp.index(card)
-			except ValueError:
-				return LOSING_MOVE, "The card doesn't exist in the face up cards"
-			# replace it by one in the deck
-			try:
-				if self._deck.drawFaceUpCard(nC):
-					self.sendComment(self.playerWhoPlays, "Choo choo, three locomotives... New face up cards !")
-			except ValueError:
-				return (LOSING_MOVE if sum(self._cards[pl]) >= sum(
-					self._cards[1 - pl]) else WINNING_MOVE), "No more cards in the deck !!"
-			# check if the player can take a Locomotive
-			if self._shouldTakeAnotherCard and card == MULTICOLOR:
-				return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
-			# add it in the hand
-			self._cards[pl][card] += 1
-			# if it's not a Locomotive, the player MUST take another one
-			if card != MULTICOLOR:
-				self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
-			deck = " ".join(str(c) for c in self._deck.faceUp)
-			# send:
-			# - to the player: the deck
-			# - to the opponent: if the player replay, the card taken and the deck
-			return NORMAL_MOVE, deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(card) + " " + deck
-
+			answer = self._drawCard(drawCard)
 		# Draw an objective card
 		elif drawObjectives:
-			if not self._objectivesDeck:
-				return (LOSING_MOVE if len(self._objectives[pl]) > len(self._objectives[1 - pl]) else WINNING_MOVE),\
-					"No more available objective cards !!"
-			self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
-			return NORMAL_MOVE, " ".join(str(c) for c in self._objDrawn), ""
-
+			answer = self._drawObjectives()
 		# Choose an objective card
 		elif chooseObjectives:
-			if not self._objDrawn:
-				return LOSING_MOVE, "`Choose Objectives` is not preceded by `Draw Objectives`"
-			objs = [int(chooseObjectives.group(1)), int(chooseObjectives.group(2)), int(chooseObjectives.group(3))]
-			# check if at least one objective is taken
-			if sum([1 if o else 0 for o in objs]) == 0:
-				return LOSING_MOVE, "None objective has been kept"
-			# TODO: check that at least 2 objectives are kept for the 1st move
-			# put the chosen objectives in the player hand, or back in the objective deck
-			for i in range(3):
-				if objs[i]:
-					self._objectives[pl].append(self._objDrawn[i])
-				else:
-					self._objectivesDeck.append(self._objDrawn[i])
-			self._objDrawn = []
-			return NORMAL_MOVE, str(len([o for o in objs if o]))  # returns the number of chosen objectives
+			answer = self._chooseObjectives(chooseObjectives)
+		# otherwise, an incorrect move
+		else:
+			return LOSING_MOVE, "The move is not in correct !"
 
+		# check the end of the game
+		if self._lastTurn < 3:
+			self._lastTurn -= 1
+		if self._lastTurn < 0:
+			# check how has won !
+			return self.whoWins()
 
-		return LOSING_MOVE, "The move is not in correct !"
-
-
+		return answer
 
 	def getDataSize(self):
 		"""
@@ -335,3 +259,195 @@ class TicketToRide(Game):
 	def faceUpCards(self):
 		"""Return the list of face up cards (for the bots)"""
 		return list(self._deck.faceUp)
+
+	def whoWins(self):
+		"""called at the end of the game
+		Determines who wins, and returns the information required by updateGame
+		- counts the objectives
+		- counts the longest path"""
+		msg = ['']
+		# count the objectives for every player
+		for pl in [0, 1]:
+			for obj in self._objectives[pl]:
+				done = obj.check(self._tracks, pl)
+				self._score[pl] += +obj.score if done else -obj.score
+				msg.append(checkChar[done] + "Objective %s (%d) \U00002192 %s (%d) : %s%d points" % (
+					self._theMap.getCityName(obj.city1), obj.city1,
+					self._theMap.getCityName(obj.city2), obj.city2,
+					'+' if done else '-',
+					obj.score
+				))
+
+		# TODO: longest path (10 points)
+
+		msg.append("Total score: \t%s: %dpts\t%s: %dpts" %
+		           (self._players[0].name, self._score[0], self._players[1].name, self._score[1]))
+		msg.append("")
+		if self._score[self._whoPlays] > self._score[1-self._whoPlays]:
+			return WINNING_MOVE, "\n".join(msg)
+		elif self._score[self._whoPlays] < self._score[1-self._whoPlays]:
+			return LOSING_MOVE, "\n".join(msg)
+		else:
+			# TODO: check first who has the longest path (-> he/she wins)
+
+			# equality, check the number of objectives
+			if len(self._objectives[self._whoPlays]) > len(self._objectives[1-self._whoPlays]):
+				msg.append("Equality, but %s has more objectives card than %s" %
+				           (self._players[self._whoPlays].name, self._players[1-self._whoPlays].name))
+				return WINNING_MOVE, "\n".join(msg)
+			elif len(self._objectives[self._whoPlays]) < len(self._objectives[1-self._whoPlays]):
+				msg.append("Equality, but %s has more objectives card than %s" %
+				           (self._players[1-self._whoPlays].name, self._players[self._whoPlays].name))
+				return LOSING_MOVE, "\n".join(msg)
+			else:
+				msg.append("Same number of objective cards")
+				# equality, check the number of cards
+				if sum(self._cards[self._whoPlays]) < sum(self._cards[1 - self._whoPlays]):
+					msg.append("Equality, but %s has less wagon cards than %s" %
+					           (self._players[self._whoPlays].name, self._players[1 - self._whoPlays].name))
+					return WINNING_MOVE, "\n".join(msg)
+				elif sum(self._cards[self._whoPlays]) > sum(self._cards[1 - self._whoPlays]):
+					msg.append("Equality, but %s has less wagon cards than %s" %
+					           (self._players[1 - self._whoPlays].name, self._players[self._whoPlays].name))
+					return LOSING_MOVE, "\n".join(msg)
+				else:
+					# flip a coin
+					msg.append("Same number of wagon cards")
+					winner = choice([0, 1])
+					if winner == self._whoPlays:
+						msg.append("Coin tossing: %s wins" % self._players[self._whoPlays].name)
+						return WINNING_MOVE, "\n".join(msg)
+					else:
+						msg.append("Coin tossing: %s wins" % self._players[1-self._whoPlays].name)
+						return LOSING_MOVE, "\n".join(msg)
+
+
+
+
+	def _chooseObjectives(self, move):
+		"""play a `choose objectives` move
+		called by updateGame"""
+		if not self._objDrawn:
+			return LOSING_MOVE, "`Choose Objectives` is not preceded by `Draw Objectives`"
+		objs = [int(move.group(1)), int(move.group(2)), int(move.group(3))]
+		# check if at least one objective is taken
+		if sum([1 if o else 0 for o in objs]) == 0:
+			return LOSING_MOVE, "None objective has been kept"
+		# TODO: check that at least 2 objectives are kept for the 1st move
+		# put the chosen objectives in the player hand, or back in the objective deck
+		for i in range(3):
+			if objs[i]:
+				self._objectives[self._whoPlays].append(self._objDrawn[i])
+			else:
+				self._objectivesDeck.append(self._objDrawn[i])
+		self._objDrawn = []
+		# returns the number of chosen objectives
+		return NORMAL_MOVE, str(len([o for o in objs if o]))
+
+
+	def _drawObjectives(self):
+		"""play a `draw objective` move
+		called by updateGame"""
+		# check if there are some objectives left
+		if not self._objectivesDeck:
+			if len(self._objectives[self._whoPlays]) > len(self._objectives[1 - self._whoPlays]):
+				return LOSING_MOVE, "No more available objective cards !!"
+			else:
+				return WINNING_MOVE, "No more available objective cards !!"
+		# get the 3 objective cards
+		self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
+		return NORMAL_MOVE, " ".join(str(c) for c in self._objDrawn), ""
+
+
+	def _drawCard(self, move):
+		"""play a `draw Card` move
+		called by updateGame"""
+		# get a card from the face up cards (end of the game if the deck is empty, or the card doesn't exist)
+		# get the card position
+		card = int(move.group(1))
+		try:
+			nC = self._deck.faceUp.index(card)
+		except ValueError:
+			return LOSING_MOVE, "The card doesn't exist in the face up cards"
+		# replace it by one in the deck
+		try:
+			if self._deck.drawFaceUpCard(nC):
+				self.sendComment(self.playerWhoPlays, "Choo choo, three locomotives... New face up cards !")
+		except ValueError:
+			return (LOSING_MOVE if sum(self._cards[self._whoPlays]) >= sum(
+				self._cards[1 - self._whoPlays]) else WINNING_MOVE), "No more cards in the deck !!"
+		# check if the player can take a Locomotive
+		if self._shouldTakeAnotherCard and card == MULTICOLOR:
+			return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
+		# add it in the hand
+		self._cards[self._whoPlays][card] += 1
+		# if it's not a Locomotive, the player MUST take another one
+		if card != MULTICOLOR:
+			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
+		deck = " ".join(str(c) for c in self._deck.faceUp)
+		# send:
+		# - to the player: the deck
+		# - to the opponent: if the player replay, the card taken and the deck
+		return NORMAL_MOVE, deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(card) + " " + deck
+
+
+	def _drawBlindCard(self):
+		"""Play a `draw blind card` move
+		called by upgradeGame"""
+		pl = self._whoPlays
+		# get a card from the deck (end of the game if the deck is empty)
+		try:
+			draw = self._deck.drawBlind()
+			self._cards[pl][draw] += 1
+		except ValueError:
+			if sum(self._cards[pl]) >= sum(self._cards[1 - pl]):
+				return LOSING_MOVE,  "No more cards in the deck !!"
+			else:
+				return WINNING_MOVE, "No more cards in the deck !!"
+		self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard  # need/no need to take another card
+		# send:
+		# - to the player: card drawn
+		# - to the opponent: if the player replay
+		return NORMAL_MOVE, str(draw), ("1 " if self._shouldTakeAnotherCard else "0 ")
+
+
+	def _claimRoute(self, move):
+		"""play a `claim a route` move
+		called by upgradeGame"""
+		# get the values
+		city1 = min(int(move.group(1)), int(move.group(2)))
+		city2 = max(int(move.group(1)), int(move.group(2)))
+		card = int(move.group(3))
+		nbLoco = int(move.group(4))
+		if not ((0 <= city1 < self._theMap.nbCities) and (0 <= city2 < self._theMap.nbCities)
+		        and (PURPLE <= card <= MULTICOLOR) and (0 <= nbLoco)):
+			return LOSING_MOVE, "The data given to claim a city are incorrect (%s)" % move.string
+		msg = "he track between %s (%d) and %s (%d)" % \
+		      (self._theMap.getCityName(city1), city1, self._theMap.getCityName(city2), city2)
+		# check if the road exists
+		if (city1, city2) not in self._tracks:
+			return LOSING_MOVE, "T" + msg + " doesn't exist"
+		tr = self._tracks[(city1, city2)]
+		# check if the player can claim it
+		if tr.isTaken:
+			return LOSING_MOVE, "T" + msg + " is already taken"
+		if self._cards[self._whoPlays][MULTICOLOR] < nbLoco:
+			return LOSING_MOVE, "The players doesn't have enough Locomotives (%d required, %d in the hand)" % \
+			                    (nbLoco, self._cards[self._whoPlays][MULTICOLOR])
+		if not tr.checkCards(card, self._cards[self._whoPlays][card], nbLoco):
+			return LOSING_MOVE, "The cards given for t" + msg + " are incorrect"
+		# check the number of wagons
+		if self._nbWagons[self._whoPlays] < tr.length:
+			return LOSING_MOVE, "You don't have enough wagons left!"
+		# remove the cards
+		self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
+		self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
+		tr.claims(self._whoPlays)
+		self._score[self._whoPlays] += Scores[tr.length]
+		self._nbWagons[self._whoPlays] -= tr.length
+		tr.draw(self._mapTxt)
+		# check for the last turn
+		if self._nbWagons[self._whoPlays] < 3:
+			self._lastTurn = 2
+
+		return NORMAL_MOVE, ""
