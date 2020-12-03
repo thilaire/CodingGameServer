@@ -5,6 +5,25 @@
     var canvas = document.getElementById('game_canvas');
     var ctx = canvas.getContext('2d');
 
+    /**
+     * Draw a <color> rectangle centered on <pos>, and rotated <angle> degrees.
+     **/
+    function drawRectangle(pos, angle, color) {
+        ctx.save();
+
+        ctx.fillStyle = color;
+        ctx.translate(pos[0], pos[1]);
+        ctx.rotate(angle * Math.PI / 180);
+        ctx.fillRect(-7, -20, 13, 40);
+
+        ctx.restore();
+    }
+
+
+    function onImageLoad() {
+        drawRectangle([241, 166], 45, "red");
+        drawRectangle([160, 185], 90, "blue");
+    }
     /* function run by Game.html and Player.html */
     function updateWebSocket(){
         /* when received update about a Game, just display it */
@@ -19,6 +38,7 @@
                     canvas.setAttribute("width", maps[data['map_name']].width);
                     canvas.setAttribute("height", maps[data['map_name']].height);
                     ctx.drawImage(map_bg, 0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+                    onImageLoad();
                 }
                 map_bg.src = maps[data['map_name']].data;
             }
