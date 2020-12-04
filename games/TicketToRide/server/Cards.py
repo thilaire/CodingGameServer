@@ -80,7 +80,7 @@ class Deck:
 			ThreeLoco = True
 			# remove the 5 face up cards
 			for i in range(5):
-				self.discard(i)
+				self.discard(self._faceUp[i])
 			# put some new cards
 			self._faceUp = [self._pop() for _ in range(5)]
 		return ThreeLoco
