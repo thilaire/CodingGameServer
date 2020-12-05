@@ -442,9 +442,16 @@ class TicketToRide(Game):
 		# remove the cards
 		self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
 		self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
+		for i in range(nbLoco):
+			self._deck.discard(MULTICOLOR)
+		for i in range(tr.length - nbLoco):
+			self._deck.discard(card)
+		# take the track
 		tr.claims(self._whoPlays)
+		# update the score
 		self._score[self._whoPlays] += Scores[tr.length]
 		self._nbWagons[self._whoPlays] -= tr.length
+		# update the txt map
 		tr.draw(self._mapTxt)
 		# check for the last turn
 		if self._nbWagons[self._whoPlays] < 3:
