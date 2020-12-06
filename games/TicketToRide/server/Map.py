@@ -58,9 +58,13 @@ class Map:
 		# build the list of cities
 		self._name = name
 
+		self._coordinates = {}
 		# import image coordinates, stored in python dict rather than json, no one likes parsing
-		coo = import_module('games.TicketToRide.maps.' + name + '.coordinates')
-		self._coordinates = coo.COORDINATES
+		try:
+			coo = import_module('games.TicketToRide.maps.' + name + '.coordinates')
+			self._coordinates = coo.COORDINATES
+		except:
+			print("No coordinates data for Map "+name)
 
 		with open(join('games', 'TicketToRide', 'maps', name, 'cities.csv')) as csvCities:
 			cities = list(x for x in reader(decomment(csvCities), delimiter=';'))
