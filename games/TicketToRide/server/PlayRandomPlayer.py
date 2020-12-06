@@ -65,7 +65,7 @@ class PlayRandomPlayer(TrainingPlayer):
 			# other try to claim a route that starts from one of its cities
 			else:
 				# list of tracks that goes from the cities (sorted by length)
-				tr = [t for c in self._cities for t in self._tr if c in t.cities and not t.isTaken]
+				tr = [t for c in self._cities for t in self._tr if not t.isTaken and t.length<= self.game._nbWagons[us]]
 				tr.sort(key=lambda x: x.length, reverse=True)
 				# try to take one that has the same length as the longest
 				for t in tr:

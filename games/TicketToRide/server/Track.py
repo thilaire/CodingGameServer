@@ -47,6 +47,10 @@ class Track:
 		"""returns if the track is already taken"""
 		return self._taken
 
+	def isTakenBy(self, player):
+		"""Returns True if the track is taken by player"""
+		return self._taken and self._player == player
+
 	@property
 	def length(self):
 		"""Returns the length of the track"""

@@ -19,10 +19,10 @@ def decomment(csvfile):
 			yield raw
 
 
-
-mapFile = 'USA/map.txt'
-citiesFile = 'USA/cities.csv'
-tracksFile = 'USA/tracks.csv'
+map = 'small'
+mapFile = map+'/map.txt'
+citiesFile = map+'/cities.csv'
+tracksFile = map+'/tracks.csv'
 
 
 # build the list of cities
@@ -55,7 +55,7 @@ with open(tracksFile) as csvTracks:
 			path = track[7]
 			# build the track, and plot it (in rawtxt)
 			tr = Track(cities, length, col, pos, path)
-			tr._taken = choice([False]*10+[True])
+			tr._taken = True    # choice([False]*10+[True])
 			tr._player = choice([0,1])
 			tr.draw(rawtxt)
 		except IndexError:
