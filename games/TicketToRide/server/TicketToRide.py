@@ -268,10 +268,11 @@ class TicketToRide(Game):
 		msg = ['']
 		# count the objectives for every player
 		for pl in [0, 1]:
+			msg.append(self._players[pl].name + ":")
 			for obj in self._objectives[pl]:
 				done = obj.check(self._tracks, pl)
 				self._score[pl] += +obj.score if done else -obj.score
-				msg.append(checkChar[done] + "Objective %s (%d) \U00002192 %s (%d) : %s%d points" % (
+				msg.append("\t" + checkChar[done] + "Objective %s (%d) \U00002192 %s (%d) : %s%d points" % (
 					self._theMap.getCityName(obj.city1), obj.city1,
 					self._theMap.getCityName(obj.city2), obj.city2,
 					'+' if done else '-',
