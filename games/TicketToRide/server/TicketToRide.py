@@ -22,11 +22,13 @@ from random import shuffle, choice
 from itertools import zip_longest
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
-from .DoNothingPlayer import DoNothingPlayer
-from .PlayRandomPlayer import PlayRandomPlayer
-from .Map import Map
-from .Cards import Deck, strCards
-from .Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors, checkChar
+from games.TicketToRide.server.DoNothingPlayer import DoNothingPlayer
+from games.TicketToRide.server.PlayRandomPlayer import PlayRandomPlayer
+from games.TicketToRide.server.NiceBot import NiceBot
+from games.TicketToRide.server.Map import Map
+from games.TicketToRide.server.Cards import Deck, strCards
+from games.TicketToRide.server.Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors, \
+	checkChar
 
 
 regClaimRoute = compile(r"^\s*1\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")   # regex to parse a "1 %d %d %d %d"
@@ -59,7 +61,7 @@ class TicketToRide(Game):
 	"""
 
 	# dictionary of the possible training Players (name-> class)
-	type_dict = {"DO_NOTHING": DoNothingPlayer, "PLAY_RANDOM": PlayRandomPlayer}
+	type_dict = {"DO_NOTHING": DoNothingPlayer, "PLAY_RANDOM": PlayRandomPlayer, 'NICE_BOT': NiceBot}
 
 	# create all the maps (each game will have a reference to its map)
 	maps = {m: Map(m) for m in ('USA', 'small')}
@@ -72,6 +74,9 @@ class TicketToRide(Game):
 		:param player2: 2nd Player
 		:param options: dictionary of options (the options 'seed' and 'timeout' are managed by the Game class)
 		"""
+		# set the seed
+		self._seed = self._setseed(options)
+
 		# get the map
 		if 'map' not in options:
 			options['map'] = 'USA'
@@ -82,9 +87,6 @@ class TicketToRide(Game):
 				"The option `map` is incorrect (%s instead of being in [%s])"
 				% (options['map'], list(self.maps.keys())))
 		self._mapTxt = self._theMap.rawtxt
-
-		# set the seed
-		self._setseed(options)
 
 		# initialize the deck and give 4 cards per player
 		self._deck = Deck()                 # deck of train cards
@@ -106,7 +108,7 @@ class TicketToRide(Game):
 		self._shouldTakeAnotherCard = False      # True if the player has taken a card and MUST take another one
 
 		# tracks
-		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (cities)->Track
+		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (city1, city2): Track
 
 		# manage the last turn
 		self._lastTurn = 3      # == 0 for the very last move
@@ -350,7 +352,7 @@ class TicketToRide(Game):
 		"""play a `draw objective` move
 		called by updateGame"""
 		# check if there are some objectives left
-		if not self._objectivesDeck:
+		if len(self._objectivesDeck) < 3:
 			if len(self._objectives[self._whoPlays]) > len(self._objectives[1 - self._whoPlays]):
 				return LOSING_MOVE, "No more available objective cards !!"
 			else:
