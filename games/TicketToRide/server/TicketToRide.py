@@ -140,24 +140,22 @@ class TicketToRide(Game):
 
 		if firstTime:
 			data["map_name"] = self._theMap.name
-			data["coordinates"] = self._theMap.imageCoordinates
 			data["p1"] = {
 				"name": self._players[0].name,
-				"wagons": self._nbWagons[0]
+				"wagons": self._nbWagons[0],
+				# lists comprehension ftw
+				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 0]]
 			}
 			data["p2"] = {
 				"name": self._players[1].name,
-				"wagons": self._nbWagons[1]
+				"wagons": self._nbWagons[1],
+				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 1]]
 			}
 
 		if self._justClaimed:
 			data["claimed"] = {}
 			data["claimed"]["track"] = self._justClaimed['track']
 			data["claimed"]["player"] = self._justClaimed['player']
-
-		data["wagons"] = []
-		data["wagons"].append(self._nbWagons[0])
-		data["wagons"].append(self._nbWagons[1])
 
 		print("Sending to client :")
 		print(data)

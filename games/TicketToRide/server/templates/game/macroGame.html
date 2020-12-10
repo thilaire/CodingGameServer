@@ -45,6 +45,19 @@
                             }
                         }
                     }*/
+                    // draw already claimed tracks
+                    for (let i = 0; i < data.p1.tracks.length; i++) {
+                        for (let j = 0; j < data.p1.tracks[i].length; j++) {
+                            let rect = data.p1.tracks[i][j];
+                            drawRectangle(rect[0], rect[1], "blue");
+                        }
+                    }
+                    for (let i = 0; i < data.p2.tracks.length; i++) {
+                        for (let j = 0; j < data.p2.tracks[i].length; j++) {
+                            let rect = data.p2.tracks[i][j];
+                            drawRectangle(rect[0], rect[1], "red");
+                        }
+                    }
                 }
                 p1.name = data.p1.name;
                 p2.name = data.p2.name;
@@ -55,7 +68,7 @@
 
             // a player claimed a track, draw it
             if (data.hasOwnProperty('claimed')) {
-                console.log(data.claimed.player, data.claimed.track)
+                console.log("track claimed by player ", data.claimed.player, data.claimed.track)
                 let color = "blue";
                 if (data.claimed.player === 0) {
                     p1.wagons -= data.claimed.track.length;
