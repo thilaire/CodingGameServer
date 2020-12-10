@@ -141,10 +141,14 @@ class TicketToRide(Game):
 		if firstTime:
 			data["map_name"] = self._theMap.name
 			data["coordinates"] = self._theMap.imageCoordinates
-			data["players_names"] = []
-			data["players_names"].append(self._players[0].name)
-			data["players_names"].append(self._players[1].name)
-			data["init_wagons"] = self.nbInitCards[self._theMap.name]
+			data["p1"] = {
+				"name": self._players[0].name,
+				"wagons": self._nbWagons[0]
+			}
+			data["p2"] = {
+				"name": self._players[1].name,
+				"wagons": self._nbWagons[1]
+			}
 
 		if self._justClaimed:
 			data["claimed"] = {}
