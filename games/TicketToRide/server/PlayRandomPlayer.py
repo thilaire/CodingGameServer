@@ -23,7 +23,7 @@ from .Constants import MULTICOLOR, NONE
 
 class PlayRandomPlayer(TrainingPlayer):
 	"""
-	This class defines a stupid training player that does... nothing
+	This class defines a stupid training player that play randomly
 	(it get a card from the deck  or the face up card every time)
 	It is used for the first part of the project (players need an opponent that does nothing to check their	code)
 	"""
