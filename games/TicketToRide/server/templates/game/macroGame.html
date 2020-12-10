@@ -22,9 +22,6 @@
         ctx.restore();
     }
 
-    function onImageLoad() {
-    }
-
     /* function run by Game.html and Player.html */
     function updateWebSocket(){
         /* when received update about a Game, just display it */
@@ -38,9 +35,8 @@
                     canvas.setAttribute("width", maps[data['map_name']].width);
                     canvas.setAttribute("height", maps[data['map_name']].height);
                     ctx.drawImage(map_bg, 0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
-
                     // draw all rectangles (only for testing)
-                    for (let key in data.coordinates.tracks) {
+                    /*for (let key in data.coordinates.tracks) {
                         if (data.coordinates.tracks.hasOwnProperty(key)) {
                             let rect_list = data.coordinates.tracks[key];
                             for (let i = 0; i < rect_list.length; i++) {
@@ -48,8 +44,7 @@
                                 drawRectangle(rect[0], rect[1], "green");
                             }
                         }
-                    }
-                    onImageLoad();
+                    }*/
                 }
                 p1.name = data.players_names[0];
                 p2.name = data.players_names[1];
@@ -60,7 +55,7 @@
 
             // a player claimed a track, draw it
             if (data.hasOwnProperty('claimed')) {
-                console.log(data.claimed, data.player)
+                console.log(data.claimed.player, data.claimed.track)
                 let color = "blue";
                 if (data.claimed.player === 0) {
                     p1.wagons -= data.claimed.track.length;
@@ -73,7 +68,6 @@
                     drawRectangle(data.claimed.track[i][0], data.claimed.track[i][1], color);
                 }
             }
-            console.log(p1.wagons, p2.wagons, data.wagons);
             // update players wagons number
             document.getElementById('p1-info').innerHTML = p1.name+" has "+p1.wagons+" wagons.";
             document.getElementById('p2-info').innerHTML = p2.name+" has "+p2.wagons+" wagons.";
@@ -100,6 +94,7 @@
     padding: 20px;
     border: 2px solid;
     border-radius: 5px;
+    margin-bottom: 30px;
 }
 
 #p1-info {

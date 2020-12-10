@@ -144,7 +144,7 @@ class TicketToRide(Game):
 			data["players_names"] = []
 			data["players_names"].append(self._players[0].name)
 			data["players_names"].append(self._players[1].name)
-			data["init_wagons"] = self._nbWagons[0]
+			data["init_wagons"] = self.nbInitCards[self._theMap.name]
 
 		if self._justClaimed:
 			data["claimed"] = {}
