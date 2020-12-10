@@ -158,6 +158,8 @@ class TicketToRide(Game):
 			data["claimed"]["track"] = self._justClaimed['track']
 			data["claimed"]["player"] = self._justClaimed['player']
 
+		data['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
+
 		print("Sending to client :")
 		print(data)
 		return data

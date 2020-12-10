@@ -85,6 +85,10 @@
             document.getElementById('p1-info').innerHTML = p1.name+" has "+p1.wagons+" wagons.";
             document.getElementById('p2-info').innerHTML = p2.name+" has "+p2.wagons+" wagons.";
 
+            // update comments
+            let comments = document.getElementById('comments');
+            comments.innerHTML += data['comments'];
+            comments.scrollTop = comments.scrollHeight;
         });
     }
     /* register to endOfGame and display it when received*/
@@ -98,6 +102,10 @@
 
 {% macro styleGame() %}
 <style>
+* {
+    box-sizing: border-box;
+}
+
 #game_content {
     display: grid;
     grid-template-columns: 75% 25%
@@ -107,7 +115,7 @@
     padding: 20px;
     border: 2px solid;
     border-radius: 5px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 #p1-info {
@@ -115,6 +123,17 @@
 }
 #p2-info {
     border-color: red;
+}
+#comments {
+    border: 2px solid #a9a9a9;
+    border-radius: 5px;
+    padding: 8px;
+    height: 300px;
+    overflow-y: scroll;
+}
+#comments::before{
+    content: "Comments : ";
+    display: block;
 }
 
 </style>
@@ -125,12 +144,9 @@
     <canvas style="display:block; margin: 0 auto; width: 95%;" id="game_canvas">
     </canvas>
     <div id="players-info">
-        <div id="p1-info" class="p-info">
-
-        </div>
-        <div id="p2-info" class="p-info">
-
-        </div>
+        <div id="p1-info" class="p-info"></div>
+        <div id="p2-info" class="p-info"></div>
+        <div id="comments"></div>
     </div>
 </div>
 {% endmacro %}
