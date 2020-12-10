@@ -117,7 +117,7 @@ class Game(BaseClass):
 
 
 		# get a seed if the seed is not given; seed the random numbers generator
-		seed = self._setseed(options)
+		self._seed = self._setseed(options)
 
 		# players
 		# we randomly decide the order of the players
@@ -140,7 +140,7 @@ class Game(BaseClass):
 		name = ""
 		while not ok:   # we need a loop just in case we are unlucky and two existing games have the same hash
 			fullName = str(int(time())) + player1.name + player2.name
-			name = hex6(seed) + hex6(crc24(bytes(fullName, 'utf8')))
+			name = hex6(self._seed) + hex6(crc24(bytes(fullName, 'utf8')))
 			ok = name not in self.allInstances
 			if not ok:
 				timemod.sleep(1)
@@ -154,6 +154,7 @@ class Game(BaseClass):
 		# last move
 		self._lastMove = ""
 		self._lastMessage = ""
+		self._lastBotMessage = ""
 		self._lastReturn_code = 0
 
 		# set a delay after each move (to let the time to see the party)
@@ -194,17 +195,26 @@ class Game(BaseClass):
 		self.logger.info("=================================")
 		if self._tournament:
 			self.logger.message("[Tournament %s] Game %s just starts with '%s' and '%s' (seed=%d).",
-			                    self._tournament.name, name, player1.name, player2.name, seed)
+			                    self._tournament.name, name, player1.name, player2.name, self._seed)
 		else:
-			self.logger.message("Game %s just starts with '%s' and '%s' (seed=%d).", name, player1.name, player2.name, seed)
+			self.logger.message("Game %s just starts with '%s' and '%s' (seed=%d).", name, player1.name, player2.name, self._seed)
 		self.logger.debug("The delay is set to %ds" % self._delay)
 		self.logger.debug("The timeout is set to %ds" % self._timeout)
 
 
-	@staticmethod
-	def _setseed(options):
+	@property
+	def lastBotMessage(self):
+		"""Return the answer of the last move of the bot
+		used for a bot to get feedback/answer for his move"""
+		return self._lastBotMessage
+
+
+	def _setseed(self, options):
 		"""get a seed if the seed is not given
 		 set the seed for the random numbers generator"""
+		# check if the seed has been already set (by a child, before calling the super init)
+		if hasattr(self, '_seed'):
+			return self._seed
 		if 'seed' not in options:
 			set_seed(None)  # (from doc):  If seed is omitted or None, current system time is used
 			seed = randint(0, 16777215)  # between 0 and 2^24-1
@@ -349,7 +359,7 @@ class Game(BaseClass):
 
 			# and update the game
 			return_code, msg, msgOpponent = unpack23(self.updateGame(move))
-
+			self._lastBotMessage = msg
 			# update who plays next and check for the end of the game
 			self.manageNextTurn(return_code, msg)
 
