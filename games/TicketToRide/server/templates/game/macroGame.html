@@ -5,6 +5,9 @@
     var canvas = document.getElementById('game_canvas');
     var ctx = canvas.getContext('2d');
 
+    var p1 = {};
+    var p2 = {};
+
     /**
      * Draw a <color> rectangle centered on <pos>, and rotated <angle> degrees.
      **/
@@ -28,7 +31,7 @@
         socket.on('update{{ GameName }}', function (msg) {
             var data = JSON.parse(msg);
 
-            // load image only first time
+            // load image and get players names only first time
             if (data.hasOwnProperty('map_name')) {
                 let map_bg = new Image();
                 map_bg.onload = function () {
@@ -42,14 +45,39 @@
                             let rect_list = data.coordinates.tracks[key];
                             for (let i = 0; i < rect_list.length; i++) {
                                 let rect = rect_list[i];
-                                drawRectangle(rect[0], rect[1], "blue");
+                                drawRectangle(rect[0], rect[1], "green");
                             }
                         }
                     }
                     onImageLoad();
                 }
+                p1.name = data.players_names[0];
+                p2.name = data.players_names[1];
+                p1.wagons = data.init_wagons;
+                p2.wagons = data.init_wagons;
                 map_bg.src = maps[data['map_name']].data;
             }
+
+            // a player claimed a track, draw it
+            if (data.hasOwnProperty('claimed')) {
+                console.log(data.claimed, data.player)
+                let color = "blue";
+                if (data.claimed.player === 0) {
+                    p1.wagons -= data.claimed.track.length;
+                }
+                if (data.claimed.player === 1) {
+                    color = "red"
+                    p2.wagons -= data.claimed.track.length;
+                }
+                for (let i = 0; i < data.claimed.track.length; i++) {
+                    drawRectangle(data.claimed.track[i][0], data.claimed.track[i][1], color);
+                }
+            }
+            console.log(p1.wagons, p2.wagons, data.wagons);
+            // update players wagons number
+            document.getElementById('p1-info').innerHTML = p1.name+" has "+p1.wagons+" wagons.";
+            document.getElementById('p2-info').innerHTML = p2.name+" has "+p2.wagons+" wagons.";
+
         });
     }
     /* register to endOfGame and display it when received*/
@@ -62,11 +90,39 @@
 {% endmacro %}
 
 {% macro styleGame() %}
+<style>
+#game_content {
+    display: grid;
+    grid-template-columns: 75% 25%
+}
+
+.p-info {
+    padding: 20px;
+    border: 2px solid;
+    border-radius: 5px;
+}
+
+#p1-info {
+    border-color: blue;
+}
+#p2-info {
+    border-color: red;
+}
+
+</style>
 {% endmacro %}
 
 {% macro contentGame() %}
-<div id="game_content">
-    <canvas style="display:block; margin: 25px auto; width: 75%;" id="game_canvas">
+<div id="game_content" style="padding: 25px 15px">
+    <canvas style="display:block; margin: 0 auto; width: 95%;" id="game_canvas">
     </canvas>
+    <div id="players-info">
+        <div id="p1-info" class="p-info">
+
+        </div>
+        <div id="p2-info" class="p-info">
+
+        </div>
+    </div>
 </div>
 {% endmacro %}

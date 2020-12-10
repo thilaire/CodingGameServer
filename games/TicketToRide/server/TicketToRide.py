@@ -111,6 +111,9 @@ class TicketToRide(Game):
 		# manage the last turn
 		self._lastTurn = 3      # == 0 for the very last move
 
+		# actions that happened on last move, will be sent to client
+		self._justClaimed = {}
+
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
@@ -138,7 +141,22 @@ class TicketToRide(Game):
 		if firstTime:
 			data["map_name"] = self._theMap.name
 			data["coordinates"] = self._theMap.imageCoordinates
+			data["players_names"] = []
+			data["players_names"].append(self._players[0].name)
+			data["players_names"].append(self._players[1].name)
+			data["init_wagons"] = self._nbWagons[0]
 
+		if self._justClaimed:
+			data["claimed"] = {}
+			data["claimed"]["track"] = self._justClaimed['track']
+			data["claimed"]["player"] = self._justClaimed['player']
+
+		data["wagons"] = []
+		data["wagons"].append(self._nbWagons[0])
+		data["wagons"].append(self._nbWagons[1])
+
+		print("Sending to client :")
+		print(data)
 		return data
 
 	def __str__(self):
@@ -184,6 +202,8 @@ class TicketToRide(Game):
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
 		- msg: a message to send to the player, explaining why the game is ending
 		"""
+		# reset move action
+		self._justClaimed = {}
 		# parse for the different moves
 		claimRoute = regClaimRoute.match(move)
 		drawBlindCard = regDrawBlindCard.match(move)
@@ -463,4 +483,12 @@ class TicketToRide(Game):
 		if self._nbWagons[self._whoPlays] < 3:
 			self._lastTurn = 2
 
+		# fill data for client
+		key = str((city1, city2))
+		if key not in self._theMap.imageCoordinates['tracks']:
+			key = str((city2, city1))
+		print("claiming : ", key, key in self._theMap.imageCoordinates['tracks'])
+		if key in self._theMap.imageCoordinates['tracks']:
+			self._justClaimed['track'] = self._theMap.imageCoordinates['tracks'][key]
+			self._justClaimed['player'] = self._whoPlays
 		return NORMAL_MOVE, ""
