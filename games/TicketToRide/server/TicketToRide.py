@@ -140,6 +140,7 @@ class TicketToRide(Game):
 
 		if firstTime:
 			data["map_name"] = self._theMap.name
+			#data["coordinates"] = self._theMap.imageCoordinates
 			data["p1"] = {
 				"name": self._players[0].name,
 				"wagons": self._nbWagons[0],
