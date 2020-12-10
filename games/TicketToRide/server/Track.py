@@ -19,7 +19,8 @@ Copyright 2020 T. Hilaire
 
 from itertools import zip_longest
 from colorama import Fore, Back, Style
-from .Constants import NONE, MULTICOLOR, dcol, dlin, BlockWg, BlockTr, BLOCK, playerColors, tracksColors
+from games.TicketToRide.server.Constants import NONE, MULTICOLOR, dcol, dlin, BlockWg, BlockTr, BLOCK, playerColors, \
+	tracksColors
 
 
 class Track:
@@ -55,6 +56,17 @@ class Track:
 	def length(self):
 		"""Returns the length of the track"""
 		return self._length
+
+	@property
+	def color0(self):
+		"""Returns the 1st color"""
+		return self._colors[0]
+
+	@property
+	def color1(self):
+		"""Returns the 1st color"""
+		return self._colors[1]
+
 
 	def checkCards(self, card, nbCards, nbLocomotives):
 		"""check if nbCards of color card, plus nbLocomotives locomotives can be used to claim the track
@@ -96,3 +108,4 @@ class Track:
 			ch = rail if i != int(len(self._path) / 2) else middle      # char to display
 			rawtxt[line - 1][column - 1] = color + ch + Fore.RESET + Style.NORMAL
 			i += 1
+

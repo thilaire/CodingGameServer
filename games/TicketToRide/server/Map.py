@@ -30,9 +30,9 @@ from os.path import join
 from csv import reader
 from copy import copy
 from colorama import Fore, Back
-from .Constants import colorNames
-from .Track import Track
-from .Objective import Objective
+from games.TicketToRide.server.Constants import colorNames
+from games.TicketToRide.server.Track import Track
+from games.TicketToRide.server.Objective import Objective
 
 
 

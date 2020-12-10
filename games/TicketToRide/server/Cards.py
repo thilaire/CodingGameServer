@@ -17,7 +17,7 @@ Copyright 2020 T. Hilaire
 
 from colorama import Fore, Back
 from random import shuffle
-from .Constants import MULTICOLOR, PURPLE, tracksColors
+from games.TicketToRide.server.Constants import MULTICOLOR, PURPLE, tracksColors
 
 
 def strCards(color, amount):
