@@ -10,8 +10,8 @@ Authors: T. Hilaire
 Licence: GPL
 
 File: Map.py
-    Contains the class Map for the TicketToRide game
-    -> defines a map
+	Contains the class Map for the TicketToRide game
+	-> defines a map
 
 
 To create a new map,
