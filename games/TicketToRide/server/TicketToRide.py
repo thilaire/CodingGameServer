@@ -113,8 +113,8 @@ class TicketToRide(Game):
 		# manage the last turn
 		self._lastTurn = 3      # == 0 for the very last move
 
-		# actions that happened on last move, will be sent to client
-		self._justClaimed = {}
+		# actions that happened on last move, will be sent to the web client
+		self._lastMoveWeb = {}
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
@@ -135,35 +135,29 @@ class TicketToRide(Game):
 		- firstTime is True when this is called for the 1st time by a websocket
 		:return:
 		"""
-		#
-		# insert your code here...
-		#
 		data = {}
 
 		if firstTime:
 			data["map_name"] = self._theMap.name
 			#data["coordinates"] = self._theMap.imageCoordinates
-			data["p1"] = {
-				"name": self._players[0].name,
-				"wagons": self._nbWagons[0],
-				# lists comprehension ftw
-				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 0]]
-			}
-			data["p2"] = {
-				"name": self._players[1].name,
-				"wagons": self._nbWagons[1],
-				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 1]]
-			}
+			for pl in range(2):
+				data["p" + str(pl+1)] = {
+					"name": self._players[pl].name,
+					"wagons": self._nbWagons[pl],
+					"points": self._score[pl],
+					"nbObj": len(self._objectives[pl]),
+					# lists comprehension ftw
+					"tracks": [
+						self._theMap.imageCoordinates['tracks'][str(cities)]
+						for cities in (tr.cities for tr in self._tracks.values() if tr.isTakenBy(pl))
+					]
+				}
 
-		if self._justClaimed:
-			data["claimed"] = {}
-			data["claimed"]["track"] = self._justClaimed['track']
-			data["claimed"]["player"] = self._justClaimed['player']
+		if self._lastMoveWeb:
+			data["claimed"] = self._lastMoveWeb
 
 		data['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
 
-		print("Sending to client :")
-		print(data)
 		return data
 
 	def __str__(self):
@@ -210,7 +204,7 @@ class TicketToRide(Game):
 		- msg: a message to send to the player, explaining why the game is ending
 		"""
 		# reset move action
-		self._justClaimed = {}
+		self._lastMoveWeb = {}
 		# parse for the different moves
 		claimRoute = regClaimRoute.match(move)
 		drawBlindCard = regDrawBlindCard.match(move)
@@ -490,12 +484,12 @@ class TicketToRide(Game):
 		if self._nbWagons[self._whoPlays] < 3:
 			self._lastTurn = 2
 
-		# fill data for client
+		# fill data for web client
 		key = str((city1, city2))
 		if key not in self._theMap.imageCoordinates['tracks']:
 			key = str((city2, city1))
 		print("claiming : ", key, key in self._theMap.imageCoordinates['tracks'])
 		if key in self._theMap.imageCoordinates['tracks']:
-			self._justClaimed['track'] = self._theMap.imageCoordinates['tracks'][key]
-			self._justClaimed['player'] = self._whoPlays
+			self._lastMoveWeb['track'] = self._theMap.imageCoordinates['tracks'][key]
+			self._lastMoveWeb['player'] = self._whoPlays
 		return NORMAL_MOVE, ""
