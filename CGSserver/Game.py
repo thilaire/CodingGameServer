@@ -197,7 +197,9 @@ class Game(BaseClass):
 			self.logger.message("[Tournament %s] Game %s just starts with '%s' and '%s' (seed=%d).",
 			                    self._tournament.name, name, player1.name, player2.name, self._seed)
 		else:
-			self.logger.message("Game %s just starts with '%s' and '%s' (seed=%d).", name, player1.name, player2.name, self._seed)
+			self.logger.message(
+				"Game %s just starts with '%s' and '%s' (seed=%d).", name, player1.name, player2.name, self._seed
+			)
 		self.logger.debug("The delay is set to %ds" % self._delay)
 		self.logger.debug("The timeout is set to %ds" % self._timeout)
 
