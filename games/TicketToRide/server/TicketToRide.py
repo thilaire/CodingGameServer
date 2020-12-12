@@ -113,6 +113,9 @@ class TicketToRide(Game):
 		# manage the last turn
 		self._lastTurn = 3      # == 0 for the very last move
 
+		# actions that happened on last move, will be sent to client
+		self._justClaimed = {}
+
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately requires some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
@@ -135,8 +138,33 @@ class TicketToRide(Game):
 		#
 		# insert your code here...
 		#
+		data = {}
 
-		return {}
+		if firstTime:
+			data["map_name"] = self._theMap.name
+			#data["coordinates"] = self._theMap.imageCoordinates
+			data["p1"] = {
+				"name": self._players[0].name,
+				"wagons": self._nbWagons[0],
+				# lists comprehension ftw
+				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 0]]
+			}
+			data["p2"] = {
+				"name": self._players[1].name,
+				"wagons": self._nbWagons[1],
+				"tracks": [self._theMap.imageCoordinates['tracks'][str(cities)] for cities in [tr.cities for tr in self._tracks.values() if tr.isTaken and tr._player == 1]]
+			}
+
+		if self._justClaimed:
+			data["claimed"] = {}
+			data["claimed"]["track"] = self._justClaimed['track']
+			data["claimed"]["player"] = self._justClaimed['player']
+
+		data['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
+
+		print("Sending to client :")
+		print(data)
+		return data
 
 	def __str__(self):
 		"""
@@ -181,6 +209,8 @@ class TicketToRide(Game):
 		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
 		- msg: a message to send to the player, explaining why the game is ending
 		"""
+		# reset move action
+		self._justClaimed = {}
 		# parse for the different moves
 		claimRoute = regClaimRoute.match(move)
 		drawBlindCard = regDrawBlindCard.match(move)
@@ -460,4 +490,12 @@ class TicketToRide(Game):
 		if self._nbWagons[self._whoPlays] < 3:
 			self._lastTurn = 2
 
+		# fill data for client
+		key = str((city1, city2))
+		if key not in self._theMap.imageCoordinates['tracks']:
+			key = str((city2, city1))
+		print("claiming : ", key, key in self._theMap.imageCoordinates['tracks'])
+		if key in self._theMap.imageCoordinates['tracks']:
+			self._justClaimed['track'] = self._theMap.imageCoordinates['tracks'][key]
+			self._justClaimed['player'] = self._whoPlays
 		return NORMAL_MOVE, ""

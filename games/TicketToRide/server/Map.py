@@ -10,8 +10,8 @@ Authors: T. Hilaire
 Licence: GPL
 
 File: Map.py
-	Contains the class Map for the TicketToRide game
-	-> defines a map
+    Contains the class Map for the TicketToRide game
+    -> defines a map
 
 
 To create a new map,
@@ -29,11 +29,11 @@ from itertools import zip_longest
 from os.path import join
 from csv import reader
 from copy import copy
+from importlib import import_module
 from colorama import Fore, Back
 from games.TicketToRide.server.Constants import colorNames
 from games.TicketToRide.server.Track import Track
 from games.TicketToRide.server.Objective import Objective
-
 
 
 def decomment(csvfile):
@@ -56,6 +56,16 @@ class Map:
 	def __init__(self, name):
 		"""create the object from the files"""
 		# build the list of cities
+		self._name = name
+
+		self._coordinates = {}
+		# import image coordinates, stored in python dict rather than json, no one likes parsing
+		try:
+			coo = import_module('games.TicketToRide.maps.' + name + '.coordinates')
+			self._coordinates = coo.COORDINATES
+		except:
+			print("No coordinates data for Map "+name)
+
 		with open(join('games', 'TicketToRide', 'maps', name, 'cities.csv')) as csvCities:
 			cities = list(x for x in reader(decomment(csvCities), delimiter=';'))
 		self._cities = [c[1] for c in cities]
@@ -70,8 +80,8 @@ class Map:
 		for c in cities:
 			lin, col, size = [int(t) for t in c[2:5]]
 			for dc in range(size):
-				self._rawtxt[lin-1][col + dc-1] = Back.LIGHTWHITE_EX + Fore.BLACK + self._rawtxt[lin-1][col + dc-1]\
-				                                  + Fore.RESET + Back.RESET
+				self._rawtxt[lin-1][col + dc-1] = Back.LIGHTWHITE_EX + Fore.BLACK + self._rawtxt[lin-1][col + dc-1] \
+												  + Fore.RESET + Back.RESET
 
 
 		# build the list of tracks
@@ -91,7 +101,7 @@ class Map:
 					tr.draw(self._rawtxt)
 				except KeyError:
 					raise ValueError("The %dth element in %s contains an incorrect item: %s" % (
-										i, join('maps', name, 'tracks.csv'), ';'.join(track)))
+						i, join('maps', name, 'tracks.csv'), ';'.join(track)))
 		data.extend(str(tr) for tr in self._tracks)
 
 		# build the list of objectives
@@ -110,6 +120,9 @@ class Map:
 		# build (once) the string to send to each client
 		self._data = "\n".join(data)
 
+	@property
+	def name(self):
+		return self._name
 
 	@property
 	def data(self):
@@ -149,3 +162,11 @@ class Map:
 		"""Return the tracks, a dictionary of the copy of the tracks"""
 		# build the dictionary of tracks
 		return {t.cities: copy(t) for t in self._tracks}
+
+	@property
+	def imagePath(self):
+		return join('games', 'TicketToRide', 'maps', self._name, 'map.jpg')
+
+	@property
+	def imageCoordinates(self):
+		return self._coordinates
