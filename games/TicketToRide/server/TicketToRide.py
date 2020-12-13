@@ -139,13 +139,14 @@ class TicketToRide(Game):
 
 		if firstTime:
 			data["map_name"] = self._theMap.name
-			#data["coordinates"] = self._theMap.imageCoordinates
+			# data["coordinates"] = self._theMap.imageCoordinates
 			for pl in range(2):
 				data["p" + str(pl+1)] = {
 					"name": self._players[pl].name,
 					"wagons": self._nbWagons[pl],
-					"points": self._score[pl],
-					"nbObj": len(self._objectives[pl]),
+					"score": self._score[pl],
+					"nbCards": len(self._cards[pl]),
+					"objectives": len(self._objectives[pl]),
 					# lists comprehension ftw
 					"tracks": [
 						self._theMap.imageCoordinates['tracks'][str(cities)]
