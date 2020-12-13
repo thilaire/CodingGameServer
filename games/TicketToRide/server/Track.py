@@ -9,7 +9,7 @@
 Authors: T. Hilaire
 Licence: GPL
 
-File: Map.py
+File: Track.py
 	Contains the class Track for the TicketToRide game
 	-> defines a track
 
