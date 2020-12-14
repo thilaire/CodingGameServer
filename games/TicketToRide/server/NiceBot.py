@@ -202,11 +202,11 @@ class NiceBot(TrainingPlayer):
 		else:
 			# the track can be taken with any color
 			# among the color with enough cards, get one with lowest card
-			lc = [(i, self._cards[i]) for i in range(MULTICOLOR) if self._cards[i] >= track.length]
+			lc = [(i, self._cards[i]) for i in range(1, MULTICOLOR) if self._cards[i] >= track.length]
 			if lc:
 				return max(lc, key=itemgetter(1))[0], 0
 			# otherwise, try with Locomotives
-			lc = [(i, self._cards[i]) for i in range(MULTICOLOR) if self._cards[i] > track.length - self._cards[MULTICOLOR]]
+			lc = [(i, self._cards[i]) for i in range(1, MULTICOLOR) if self._cards[i] > track.length - self._cards[MULTICOLOR]]
 			if lc:
 				color = max(lc, key=itemgetter(1))[0]
 				return color, track.length - self._cards[color]
