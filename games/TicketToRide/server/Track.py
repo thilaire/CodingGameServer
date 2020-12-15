@@ -19,21 +19,28 @@ Copyright 2020 T. Hilaire
 
 from itertools import zip_longest
 from colorama import Fore, Back, Style
-from games.TicketToRide.server.Constants import NONE, MULTICOLOR, dcol, dlin, BlockWg, BlockTr, BLOCK, playerColors, \
-	tracksColors
+from games.TicketToRide.server.Constants import NONE, MULTICOLOR, playerColors, tracksColors, colorNames
+from games.TicketToRide.server.Constants import dcol, dlin, BlockWg, BlockTr, BLOCK
 
 
 class Track:
 	"""simple class to store a track"""
-	def __init__(self, cities, length, colors, pos, path):
+	def __init__(self, cities, length, colors, txt, jpg=[]):
 		"""a track contains the two cities, the length and the colors"""
-		self._cities = (min(cities), max(cities))
-		self._length = length
-		self._colors = tuple(colors)
-		self._pos = tuple(pos)
-		self._path = path
-		self._taken = False      # True if taken by a player
-		self._player = 0        # if taken, it gives the number of the player who have it
+		self._cities = (min(cities), max(cities))       # index of the two cities
+		self._length = length                           # length
+		self._pos = tuple(txt[:2])                      # position in the raw twt
+		self._path = txt[2]                             # string describing the path in the raw txt
+		self._taken = False                             # True if taken by a player
+		self._player = 0                                # if taken, it gives the number of the player who have it
+		self._jpg = jpg                                 # list of coordinate of the wagons for the web display
+		# colors
+		colors = colors.split(',')
+		if len(colors) == 1:
+			col = (colorNames.index(colors[0].strip()), NONE)
+		else:
+			col = (colorNames.index(colors[0].strip()), colorNames.index(colors[1].strip()))
+		self._colors = col
 
 	def __str__(self):
 		return "%d %d %d %d %d" % (self._cities[0], self._cities[1], self._length, self._colors[0], self._colors[1])
@@ -109,3 +116,7 @@ class Track:
 			rawtxt[line - 1][column - 1] = color + ch + Fore.RESET + Style.NORMAL
 			i += 1
 
+	@property
+	def imagePos(self):
+		"""Return the position list for the image"""
+		return self._jpg
