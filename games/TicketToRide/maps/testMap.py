@@ -1,69 +1,51 @@
 # just to test the map
+# run `python testMap.py mymap.yml`
 
-from csv import reader
+from sys import argv
+from yaml import SafeLoader, load
+from yamlinclude import YamlIncludeConstructor
 from colorama import Fore, Back
 from random import choice
+from os.path import join, curdir
 
 from games.TicketToRide.server.Track import Track
 from games.TicketToRide.server.Constants import colorNames
+from games.TicketToRide.server.City import City
+
+YamlIncludeConstructor.add_to_loader_class(loader_class=SafeLoader, base_dir=curdir)
 
 
-def decomment(csvfile):
-	"""removes the comments in a csv file
-	(comments start with #)
-	do not take into account if the comment is in a string or not (not necessary here)
-	"""
-	for row in csvfile:
-		raw = row.split('#')[0].strip()
-		if raw:
-			yield raw
-
-
-map = 'small'
-mapFile = map+'/map.txt'
-citiesFile = map+'/cities.csv'
-tracksFile = map+'/tracks.csv'
+# load the yml file (with possible included files)
+with open(argv[1]) as ymlFile:
+	yml = load(ymlFile, Loader=SafeLoader)
 
 
 # build the list of cities
-with open(citiesFile) as csvCities:
-	cities = list(x for x in reader(decomment(csvCities), delimiter=';'))
-	citiesName = [c[1] for c in cities]
-	invCities = {c: i for i, c in enumerate(citiesName)}
+cities = [City(list(city)[0], **list(city.values())[0]) for city in yml['cities']]
+invCities = {c.name: i for i, c in enumerate(cities)}
 
 # open the text map and store it in a 2D array (list of lists)
-with open(mapFile) as txtMap:
+with open(yml['map']['txt']) as txtMap:
 	rawtxt = [list(line[:-1]) for line in txtMap]
-
-# highlight the cities
+# highlight the cities in the txt
 for c in cities:
-	lin, col, size = [int(t) for t in c[2:5]]
-	for dc in range(size):
-		rawtxt[lin-1][col + dc-1] = Back.LIGHTWHITE_EX + Fore.BLACK + rawtxt[lin-1][col + dc-1] + Fore.RESET + Back.RESET
-
+	c.highlight(rawtxt)
 
 # build the list of tracks
-with open(tracksFile) as csvTracks:
-	tracks = []
-	for i, track in enumerate(reader(decomment(csvTracks), delimiter=';')):
-		try:
-			# build the track and draw it
-			cities = (invCities[track[0]], invCities[track[1]])
-			length = int(track[2])
-			col = (colorNames.index(track[3]), colorNames.index(track[4]))
-			pos = (int(track[5]), int(track[6]))
-			path = track[7]
-			# build the track, and plot it (in rawtxt)
-			tr = Track(cities, length, col, pos, path)
-			tr._taken = True    # choice([False]*10+[True])
-			tr._player = choice([0,1])
-			tr.draw(rawtxt)
-		except IndexError:
-			pass
-		except ValueError:
-			pass
+tracks = []
+for cities, data in yml['tracks'].items():
+	cities = [invCities[c.strip()] for c in cities.split(',')]
+	try:
+		tr = Track(cities, **data)
+		tracks.append(tr)
+		tr._taken = True  # choice([False]*10+[True])
+		tr._player = choice([0, 1])
+		tr.draw(rawtxt)
+	except:
+		print("Error for track %s", cities)
 
-#display both
-with open(mapFile) as txtMap:
+
+# display both
+with open(yml['map']['txt']) as txtMap:
 	for orig, modif in zip(txtMap, rawtxt):
 		print(("%-60s" % orig[:-1]) + "".join(modif))
