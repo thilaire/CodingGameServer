@@ -182,6 +182,13 @@ def game(gameName):
 		return render_template('error.html', error="The Game %s doesn't exist." % (gameName,))
 
 
+@flask.route('/data/<path:something>')
+def gameData(something):
+	"""Returns something needed by a grame
+	"""
+	return static_file(something)
+
+
 # ============
 #  Tournament
 # ============
