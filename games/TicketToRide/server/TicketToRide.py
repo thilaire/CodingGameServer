@@ -135,24 +135,25 @@ class TicketToRide(Game):
 		- firstTime is True when this is called for the 1st time by a websocket
 		:return:
 		"""
-		data = {}
-
+		data = {'players': [{
+				"name": self._players[pl].name,
+				"wagons": self._nbWagons[pl],
+				"score": self._score[pl],
+				"nbCards": sum(self._cards[pl]),
+				"objectives": len(self._objectives[pl])
+				} for pl in range(2)]
+		}
 		if firstTime:
 			data["map_name"] = self._theMap.name
-			# data["coordinates"] = self._theMap.imageCoordinates
+			data["map_image"] = self._theMap.imagePath
+			# data["rectangles"] = [tr.imagePos for tr in self._tracks.values()]
 			for pl in range(2):
-				data["p" + str(pl+1)] = {
-					"name": self._players[pl].name,
-					"wagons": self._nbWagons[pl],
-					"score": self._score[pl],
-					"nbCards": len(self._cards[pl]),
-					"objectives": len(self._objectives[pl]),
-					# lists comprehension ftw
-					"tracks": [tr.imagePos for tr in self._taken if tr.isTakenBy(pl)]
-				}
+				data["players"][pl]["tracks"] = [tr.imagePos for tr in self._taken if tr.isTakenBy(pl)]
 			data["faceUp"] = self._deck.faceUp
+
 		# add info from the last move
 		data.update(self._lastMoveWeb)
+
 		# add comments
 		data['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
 
@@ -496,9 +497,9 @@ class TicketToRide(Game):
 
 		# message for web client
 		self._lastMoveWeb = {
-			'track': tr.imagePos,
-			'move': "Player %s takes the road %s \U00002192 %s (color %s, %d locomotives" % (
-				self.playerWhoPlays.name, self._theMap.getCityName(city1), self._theMap.getCityName(city2), card, nbLoco
+			'track': [tr.imagePos, self._whoPlays],
+			'move': "Player %s takes the road %s \U00002192 %s<\\br> (%s, %d locomotives)" % (
+				self.playerWhoPlays.name, self._theMap.getCityName(city1), self._theMap.getCityName(city2), colorNames[card], nbLoco
 			)
 		}
 

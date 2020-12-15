@@ -6,85 +6,88 @@
 	/**
 	 * Draw a <color> rectangle centered on <pos>, and rotated <angle> degrees.
 	 **/
-	function drawRectangle(pos, angle, color) {
+	function drawRectangle(pos, color) {
 		ctx.save();
-
 		ctx.fillStyle = "black";
 		ctx.translate(pos[0], pos[1]);
-		ctx.rotate(angle * Math.PI / 180);
+		ctx.rotate(pos[2] * Math.PI / 180);
 		ctx.fillRect(-7, -20, 13, 40);
 		ctx.fillStyle = color;
 		ctx.fillRect(-6, -19, 11 ,38);
-
 		ctx.restore();
 	}
 
-	/* function run by Game.html and Player.html */
+	// function run by Game.html and Player.html
 	function updateWebSocket(){
-		/* when received update about a Game, just display it */
+		// when received update about a Game, just display it
 		socket.on('update{{ GameName }}', function (msg) {
+			// get data (it's a json)
 			var data = JSON.parse(msg);
 
 			// load image and get players names only first time
 			if (data.hasOwnProperty('map_name')) {
+				// load the image and draw it
 				let map_bg = new Image();
+				map_bg.src = '../data/game/maps/' + data['map_image'];
 				map_bg.onload = function () {
-					canvas.setAttribute("width", maps[data['map_name']].width);
-					canvas.setAttribute("height", maps[data['map_name']].height);
-					ctx.drawImage(map_bg, 0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+					canvas.setAttribute("width", map_bg.width);
+					canvas.setAttribute("height", map_bg.height);
+					ctx.drawImage(map_bg, 0, 0);
 					// draw all rectangles (only for testing)
-					/*for (let key in data.coordinates.tracks) {
-						if (data.coordinates.tracks.hasOwnProperty(key)) {
-							let rect_list = data.coordinates.tracks[key];
-							for (let i = 0; i < rect_list.length; i++) {
-								let rect = rect_list[i];
-								drawRectangle(rect[0], rect[1], "green");
-							}
+					/*for (const track of data.rectangles) {
+						for (const wagon of track) {
+							drawRectangle(wagon, "green");
 						}
 					}*/
 					// draw already claimed tracks
-                    for (let i = 0; i < data.p1.tracks.length; i++) {
-                        for (let j = 0; j < data.p1.tracks[i].length; j++) {
-                            let rect = data.p1.tracks[i][j];
-                            drawRectangle(rect[0], rect[1], "blue");
-                        }
-                    }
-                    for (let i = 0; i < data.p2.tracks.length; i++) {
-                        for (let j = 0; j < data.p2.tracks[i].length; j++) {
-                            let rect = data.p2.tracks[i][j];
-                            drawRectangle(rect[0], rect[1], "red");
-                        }
-                    }
+					for(let i=0; i<2; i++){
+		                for (const track of data.players[i].tracks) {
+		                    for (const wagon of track) {
+		                        drawRectangle(wagon, colors[i]);
+		                    }
+						}
+	                }
 				}
-				players[0] = data.p1;
-				players[1] = data.p2;
-				map_bg.src = maps[data['map_name']].data;
 			}
 
 			// a player claimed a track, draw it
-			if (data.hasOwnProperty('claimed')) {
-				console.log("track claimed by player ", data.claimed.player, data.claimed.track)
-				players[data.claimed.player].wagons -= data.claimed.track.length;
-				for (let i = 0; i < data.claimed.track.length; i++) {
-					drawRectangle(data.claimed.track[i][0], data.claimed.track[i][1], colors[data.claimed.player]);
+			if (data.hasOwnProperty('track')) {
+				for (const wagon of data.track[0]) {
+					drawRectangle(wagon, colors[data.track[1]]);
 				}
 			}
-			// update players wagons number
+			// display move message
+			if (data.hasOwnProperty('move')){
+				let comments = document.getElementById('moves');
+				comments.innerHTML += data['move'] + "</br>";
+				comments.scrollTop = comments.scrollHeight;
+			}
+			// update face up cards
+			if (data.hasOwnProperty('faceUp')){
+				for(let i=0; i<5; i++){
+					document.getElementById('f' + i).style.backgroundImage = cards[data.faceUp[i]];
+				}
+			}
+			// update players information
 			for(let i=0; i<2; i++){
 				document.getElementById('p' + (i+1) + '-info').innerHTML =
-				"<B>" + players[i].name + "</B><BR/>" +
-				"Score : " + players[i].score + "pts, " +
-				"Wagons : " + players[i].wagons + ", " +
-				"Cartes : " + players[i].nbCards;
+				"<B>" + data.players[i].name + "</B><BR/>" +
+				"Score: " + data.players[i].score + "pts, " +
+				"Wagons: " + data.players[i].wagons + ", " +
+				"Cards: " + data.players[i].nbCards + ", " +
+				"Objectives: " + data.players[i].objectives;
 			}
 
 			// update comments
-			let comments = document.getElementById('comments');
-			comments.innerHTML += data['comments'];
-			comments.scrollTop = comments.scrollHeight;
+			if (data.comments) {
+				let comments = document.getElementById('comments');
+				comments.innerHTML += data.comments + "</br>";
+				comments.scrollTop = comments.scrollHeight;
+			}
 		});
 	}
-	/* register to endOfGame and display it when received*/
+
+	// register to endOfGame and display it when received
 	function displayEndOfGame(){
 		socket.on('endOfGame', function(msg){
 			document.getElementById('endOfGame').innerHTML = msg;
