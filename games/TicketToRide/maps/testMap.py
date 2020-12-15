@@ -38,7 +38,9 @@ for cities, data in yml['tracks'].items():
 	try:
 		tr = Track(cities, **data)
 		tracks.append(tr)
-		tr._taken = True  # choice([False]*10+[True])
+		# tr._taken = True
+		tr._taken = False
+		# tr._taken = choice([False]*10+[True])
 		tr._player = choice([0, 1])
 		tr.draw(rawtxt)
 	except:
