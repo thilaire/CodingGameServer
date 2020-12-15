@@ -4,7 +4,7 @@
 nbWagons: 15
 
 map:
-  image: small/map.jpg
+  image: small/small.png
   txt: small/map.txt
 
 cities: !include small/cities.yml

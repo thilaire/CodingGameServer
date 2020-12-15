@@ -25,16 +25,18 @@ c) with the following files
 Copyright 2020 T. Hilaire
 """
 
-from os.path import join, curdir
+from os.path import join, curdir, splitext
 from copy import copy
 from yaml import SafeLoader, load
 from yamlinclude import YamlIncludeConstructor
-from games.TicketToRide.server.Constants import colorNames
+from shutil import copyfile
 from games.TicketToRide.server.Track import Track
 from games.TicketToRide.server.Objective import Objective
 from games.TicketToRide.server.City import City
 
-YamlIncludeConstructor.add_to_loader_class(loader_class=SafeLoader, base_dir=join(curdir, 'games', 'TicketToRide', 'maps'))
+YamlIncludeConstructor.add_to_loader_class(
+	loader_class=SafeLoader, base_dir=join(curdir, 'games', 'TicketToRide', 'maps')
+)
 
 
 class Map:
@@ -76,9 +78,17 @@ class Map:
 			cities = [invCities[c.strip()] for c in cities.split(',')]
 			self._objectives.append(Objective(*cities, data))
 
+		# copy the image to server/template/game (because the webserver cannot access elsewhere)
+		copyfile(
+			join('games', 'TicketToRide', 'maps', yml['map']['image']),
+			join('games', 'TicketToRide', 'server', 'templates', 'game', 'maps', name + '.jpg')
+		)
+		self._image = name + splitext(yml['map']['image'])[1]
+
 		# other properties
 		self._nbWagons = yml['nbWagons']
-		self._image = join('games', 'TicketToRide', 'maps', yml['map']['image'])
+
+
 
 		# build (once) the string to send to each client
 		self._data = "\n".join([c.name.replace(' ', '_') for c in self._cities] + [str(tr) for tr in self._tracks])
@@ -137,3 +147,4 @@ class Map:
 	def nbWagons(self):
 		"""Returns the number of wagons"""
 		return self._nbWagons
+

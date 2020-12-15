@@ -1,6 +1,6 @@
 {% macro socketGame(prefix) %}
 <script type="text/javascript">
-    {% include "game/maps_images.js" %}
+    {% include "game/cards.js" %}
     {% include "game/updateGame.js" %}
 
 </script>
@@ -34,14 +34,37 @@
     border: 2px solid #a9a9a9;
     border-radius: 5px;
     padding: 8px;
-    height: 300px;
+    height: 100px;
     overflow-y: scroll;
 }
 #comments::before{
-    content: "Comments : ";
+    content: "Comments: ";
     display: block;
 }
-
+#moves{
+    border: 2px solid #fea347;
+    border-radius: 5px;
+    padding: 8px;
+    height: 200px;
+    overflow-y: scroll;
+    margin-bottom: 15px;
+}
+#moves::before{
+    content: "Moves: ";
+    display: block;
+}
+#faceup {
+    border: 2px solid #9370db;
+    border-radius: 5px;
+    padding: 8px;
+    height: 116px;
+}
+.card{
+    background-color:#fff;
+    width: 64px;
+    height: 100px;
+    background-clip: content-box;
+}
 </style>
 {% endmacro %}
 
@@ -52,6 +75,14 @@
     <div id="players-info">
         <div id="p1-info" class="p-info"></div>
         <div id="p2-info" class="p-info"></div>
+        <div id="moves"></div>
+        <div id="faceup"><table><tr>
+            <td class="card" id="f0"></td>
+            <td class="card" id="f1"></td>
+            <td class="card" id="f2"></td>
+            <td class="card" id="f3"></td>
+            <td class="card" id="f4"></td>
+        </tr></table></div>
         <div id="comments"></div>
     </div>
 </div>
