@@ -65,7 +65,6 @@ class TicketToRide(Game):
 
 	# create all the maps (each game will have a reference to its map)
 	maps = {m: Map(m) for m in ('USA', 'small')}
-	nbInitCards = {'USA': 45, 'small': 15}
 
 	def __init__(self, player1, player2, **options):
 		"""
@@ -97,7 +96,7 @@ class TicketToRide(Game):
 
 		# score and wagons
 		self._score = [0, 0]
-		self._nbWagons = [self.nbInitCards[options['map']], self.nbInitCards[options['map']]]
+		self._nbWagons = [self._theMap.nbWagons, self._theMap.nbWagons]
 
 		# objectives
 		self._objectivesDeck = self._theMap.objectives      # get a copy of the list of objectives
@@ -109,6 +108,7 @@ class TicketToRide(Game):
 
 		# tracks
 		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (city1, city2): Track
+		self._taken = []
 
 		# manage the last turn
 		self._lastTurn = 3      # == 0 for the very last move
@@ -148,15 +148,12 @@ class TicketToRide(Game):
 					"nbCards": len(self._cards[pl]),
 					"objectives": len(self._objectives[pl]),
 					# lists comprehension ftw
-					"tracks": [
-						self._theMap.imageCoordinates['tracks'][str(cities)]
-						for cities in (tr.cities for tr in self._tracks.values() if tr.isTakenBy(pl))
-					]
+					"tracks": [tr.imagePos for tr in self._taken if tr.isTakenBy(pl)]
 				}
-
-		if self._lastMoveWeb:
-			data["claimed"] = self._lastMoveWeb
-
+			data["faceUp"] = self._deck.faceUp
+		# add info from the last move
+		data.update(self._lastMoveWeb)
+		# add comments
 		data['comments'] = self._comments.getString(2, [p.name for p in self._players], html=True)
 
 		return data
@@ -369,6 +366,10 @@ class TicketToRide(Game):
 			else:
 				self._objectivesDeck.append(self._objDrawn[i])
 		self._objDrawn = []
+		# message for web client
+		self._lastMoveWeb = {
+			'move': 'Player %s take a %d objective cards' % (self.playerWhoPlays.name, len([o for o in objs if o]))
+		}
 		# returns the number of chosen objectives
 		return NORMAL_MOVE, str(len([o for o in objs if o]))
 
@@ -413,6 +414,11 @@ class TicketToRide(Game):
 		if card != MULTICOLOR:
 			self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard
 		deck = " ".join(str(c) for c in self._deck.faceUp)
+		# message for web client
+		self._lastMoveWeb = {
+			'faceUp': self._deck.faceUp,
+			'move': 'Player %s take a %s card' % (self.playerWhoPlays.name, colorNames[card])
+		}
 		# send:
 		# - to the player: the deck
 		# - to the opponent: if the player replay, the card taken and the deck
@@ -433,6 +439,8 @@ class TicketToRide(Game):
 			else:
 				return WINNING_MOVE, "No more cards in the deck !!"
 		self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard  # need/no need to take another card
+		# message for web client
+		self._lastMoveWeb = {'move': 'Player %s take a blind card' % self.playerWhoPlays.name}
 		# send:
 		# - to the player: card drawn
 		# - to the opponent: if the player replay
@@ -476,6 +484,7 @@ class TicketToRide(Game):
 			self._deck.discard(card)
 		# take the track
 		tr.claims(self._whoPlays)
+		self._taken.append(tr)
 		# update the score
 		self._score[self._whoPlays] += Scores[tr.length]
 		self._nbWagons[self._whoPlays] -= tr.length
@@ -485,12 +494,13 @@ class TicketToRide(Game):
 		if self._nbWagons[self._whoPlays] < 3:
 			self._lastTurn = 2
 
-		# fill data for web client
-		key = str((city1, city2))
-		if key not in self._theMap.imageCoordinates['tracks']:
-			key = str((city2, city1))
-		print("claiming : ", key, key in self._theMap.imageCoordinates['tracks'])
-		if key in self._theMap.imageCoordinates['tracks']:
-			self._lastMoveWeb['track'] = self._theMap.imageCoordinates['tracks'][key]
-			self._lastMoveWeb['player'] = self._whoPlays
+		# message for web client
+		self._lastMoveWeb = {
+			'track': tr.imagePos,
+			'move': "Player %s takes the road %s \U00002192 %s (color %s, %d locomotives" % (
+				self.playerWhoPlays.name, self._theMap.getCityName(city1), self._theMap.getCityName(city2), card, nbLoco
+			)
+		}
+
+		# normal move
 		return NORMAL_MOVE, ""
