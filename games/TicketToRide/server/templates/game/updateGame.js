@@ -87,9 +87,9 @@
 		});
 	}
 
-	// register to endOfGame and display it when received
-	function displayEndOfGame(){
-		socket.on('endOfGame', function(msg){
-			document.getElementById('endOfGame').innerHTML = msg;
-		});
-	}
+    /* register to endOfGame and display it when received*/
+    function displayEndOfGame(){
+        socket.on('endOfGame', function(msg){
+            document.getElementById('endOfGame').innerHTML = msg;
+        });
+    }

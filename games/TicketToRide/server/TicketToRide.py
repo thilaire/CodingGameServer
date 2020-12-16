@@ -498,7 +498,7 @@ class TicketToRide(Game):
 		# message for web client
 		self._lastMoveWeb = {
 			'track': [tr.imagePos, self._whoPlays],
-			'move': "Player %s takes the road %s \U00002192 %s<\\br> (%s, %d locomotives)" % (
+			'move': "Player %s takes the road %s \U00002192 %s<br/> (%s, %d locomotives)" % (
 				self.playerWhoPlays.name, self._theMap.getCityName(city1), self._theMap.getCityName(city2), colorNames[card], nbLoco
 			)
 		}

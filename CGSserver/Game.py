@@ -21,7 +21,7 @@ from datetime import datetime
 from random import seed as set_seed, randint, choice
 from threading import Barrier, BrokenBarrierError
 from time import time
-
+from ansi2html import Ansi2HTMLConverter
 from CGSserver.Comments import CommentQueue
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE, TIMEOUT_TURN, MAX_COMMENTS
 from CGSserver.BaseClass import BaseClass
@@ -299,9 +299,10 @@ class Game(BaseClass):
 
 		# tell the websockets the game has ended
 		if self.socketio:
-			txt = "%s won against (%s) !!!" % (self._players[whoWins].name, msg)
+			conv = Ansi2HTMLConverter()
+			msg = "<span class='result'>%s won !!</span><br/>%s" % (self._players[whoWins].name, conv.convert(msg))
 			# send to all the websockets or only to one
-			self.socketio.emit('endOfGame', txt, room=self.__class__.__name__ + '/' + self.name)
+			self.socketio.emit('endOfGame', msg, room=self.__class__.__name__ + '/' + self.name)
 
 		# remove from the list of Games
 		Game.removeInstance(self.name)
