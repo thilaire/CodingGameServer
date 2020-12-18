@@ -31,3 +31,5 @@ SIZE_FMT = "%06d"
 
 # Maximum number of comments per player
 MAX_COMMENTS = 5
+
+mode = ''

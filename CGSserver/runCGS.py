@@ -24,18 +24,9 @@ CGS requires Python3 and the following packages:
 
 Copyright 2016-2019 T. Hilaire, J. Brajard
 """
-# from gevent import monkey
-# monkey.patch_all()
 
-import threading  # to run threads
-from importlib import import_module  # to dynamically import modules
-from socketserver import ThreadingTCPServer  # socket server (with multi-threads capabilities)
-from colorama import Fore
-from docopt import docopt  # used to parse the command line
+from docopt import docopt                   # used to parse the command line
 
-from CGSserver.Game import Game
-from CGSserver.Logger import configureRootLogger
-from CGSserver.Player import PlayerSocketHandler  # TCP socket handler for players
 
 usage = """
 Coding Game Server
@@ -72,6 +63,27 @@ def runCGS():
 	args['--web'] = int(args['--web'])
 	gameName = args['<gameName>']
 
+	# get the mode (export it to Constants.mode, so that the webserver can have it as global constant)
+	mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug'
+	import CGSserver.Constants as Constants
+	Constants.mode = mode
+
+	# now, we can import the library, depending on the mode (prod vs dev/debug)
+	# because in case of prod, we import gevent and monkey patch all
+	if mode == 'prod':
+		from gevent import monkey
+		monkey.patch_all()
+
+
+	import threading  # to run threads
+	from importlib import import_module  # to dynamically import modules
+	from socketserver import ThreadingTCPServer  # socket server (with multi-threads capabilities)
+	from colorama import Fore
+
+	from CGSserver.Game import Game
+	from CGSserver.Logger import configureRootLogger
+	from CGSserver.Player import PlayerSocketHandler  # TCP socket handler for players
+
 	# import the <gameName> module and store it (in Game)
 	try:
 		mod = import_module('games.' + gameName + '.server.' + gameName)
@@ -90,7 +102,6 @@ def runCGS():
 	logger = configureRootLogger(args)
 
 	# Start !
-	mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug'
 	logger.message("")
 	logger.message("#=====================================================#")
 	logger.message("# Coding Game Server is going to start (mode=`%s`) #" % mode)

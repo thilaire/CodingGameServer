@@ -28,11 +28,15 @@ from CGSserver.Player import RegularPlayer
 from CGSserver.Logger import Config
 from CGSserver.Tournament import Tournament
 from CGSserver.BaseClass import BaseClass
+from CGSserver.Constants import mode
 
-# flask object
+
+# flask object and socketIO ('threading' in debug/dev mode, but 'gevent' in prod)
 flask = Flask("webserver")
-socketio = SocketIO(flask, async_mode='threading')
-# socketio = SocketIO(flask, async_mode='gevent')
+if mode == 'prod':
+	socketio = SocketIO(flask, async_mode='gevent')
+else:
+	socketio = SocketIO(flask, async_mode='threading')
 
 # set the template paths so that in priority,
 # it first looks in <gameName>/server/templates/ and then in CGS/server/templates
