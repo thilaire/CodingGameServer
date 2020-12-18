@@ -49,7 +49,7 @@ setup(
 	packages=['CGSserver'],
 	install_requires=[
 		'colorama', 'colorlog', 'docopt', 'flask', 'jinja2', 'ansi2html',
-		'flask-socketio', 'gevent', 'eventlet', 'gevent-websocket', 'pyyaml', 'pyyaml-include'
+		'flask-socketio', 'gevent', 'eventlet', 'gevent-websocket', 'pyyaml-include'
 	],
 	include_package_data=True,
 	zip_safe=False,
