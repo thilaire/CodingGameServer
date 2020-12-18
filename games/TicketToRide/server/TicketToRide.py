@@ -318,11 +318,11 @@ class TicketToRide(Game):
 
 			# equality, check the number of objectives
 			if len(self._objectives[self._whoPlays]) > len(self._objectives[1-self._whoPlays]):
-				msg.append("Equality, but %s has more objectives card than %s" %
+				msg.append("Equality, but %s has more objective cards than %s" %
 				           (self._players[self._whoPlays].name, self._players[1-self._whoPlays].name))
 				return WINNING_MOVE, "\n".join(msg)
 			elif len(self._objectives[self._whoPlays]) < len(self._objectives[1-self._whoPlays]):
-				msg.append("Equality, but %s has more objectives card than %s" %
+				msg.append("Equality, but %s has more objective cards than %s" %
 				           (self._players[1-self._whoPlays].name, self._players[self._whoPlays].name))
 				return LOSING_MOVE, "\n".join(msg)
 			else:
