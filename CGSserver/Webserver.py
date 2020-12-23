@@ -137,7 +137,6 @@ def new_game():
 	Page to create a new game
 	"""
 	Players = ''.join(['<option value="%s">%s</option>\n' % (p.name, p.name) for p in RegularPlayer.allInstances.values()])
-	print(Players)
 	return render_template('game/new_game.html', list_players=Players, nb_players=len(RegularPlayer.allInstances))
 
 
