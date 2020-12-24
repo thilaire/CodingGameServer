@@ -25,7 +25,7 @@ from games.TicketToRide.server.Constants import dcol, dlin, BlockWg, BlockTr, BL
 
 class Track:
 	"""simple class to store a track"""
-	def __init__(self, cities, length, colors, txt, jpg=[]):
+	def __init__(self, cities, length, colors, txt, jpg=[], **_):
 		"""a track contains the two cities, the length and the colors"""
 		self._cities = (min(cities), max(cities))       # index of the two cities
 		self._length = length                           # length
