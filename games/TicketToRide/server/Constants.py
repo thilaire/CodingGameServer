@@ -71,7 +71,7 @@ BLOCK = '\U00002588'
 dcol = {'N':  0, 'S': 0, 'E': 1, 'W': -1}
 dlin = {'N': -1, 'S': 1, 'E': 0, 'W':  0}
 
-# define the block to display in fonction of the current and next direction ('N', 'E', 'S' or 'W')
+# define the block to display in function of the current and next direction ('N', 'E', 'S' or 'W')
 # for the track
 BlockTr = {
 	('N', ''): BLOCK_S_NS, ('S', ''): BLOCK_S_NS, ('E', ''): BLOCK_S_EW, ('W', ''): BLOCK_S_EW,

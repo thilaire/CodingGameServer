@@ -110,7 +110,11 @@ class Track:
 			color = playerColors[self._player] if self._taken else (color1 if i % 2 else color2)
 			line += dlin[cour]
 			column += dcol[cour]
-			rail = BlockWg[(cour, suiv)] if self._taken else BlockTr[(cour, suiv)]
+			# rail character changes if the track is double or is taken
+			if self._taken or self._colors[1] != NONE:
+				rail = BlockWg[(cour, suiv)]
+			else:
+				rail = BlockTr[(cour, suiv)]
 			middle = BLOCK if self._taken else str(self._length)
 			ch = rail if i != int(len(self._path) / 2) else middle      # char to display
 			rawtxt[line - 1][column - 1] = color + ch + Fore.RESET + Style.NORMAL
