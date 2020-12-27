@@ -1,7 +1,7 @@
 # just to test the map
 # run `python testMap.py mymap.yml`
 
-from sys import argv
+from sys import argv, exc_info
 from yaml import SafeLoader, load
 from yamlinclude import YamlIncludeConstructor
 from colorama import Fore, Back
@@ -44,7 +44,8 @@ for cities, data in yml['tracks'].items():
 		tr._player = choice([0, 1])
 		tr.draw(rawtxt)
 	except:
-		print("Error for track %s", cities)
+		print("Unexpected error:", exc_info())
+		print("Error for track %s"% cities)
 
 
 # display both
