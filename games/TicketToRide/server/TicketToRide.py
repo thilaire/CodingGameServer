@@ -492,7 +492,7 @@ class TicketToRide(Game):
 		# update the txt map
 		tr.draw(self._mapTxt)
 		# check for the last turn
-		if self._nbWagons[self._whoPlays] < 3:
+		if self._nbWagons[self._whoPlays] < 3 and self._lastTurn > 2:
 			self._lastTurn = 2
 
 		# message for web client
