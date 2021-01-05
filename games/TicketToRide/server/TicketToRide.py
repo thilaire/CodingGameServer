@@ -64,7 +64,7 @@ class TicketToRide(Game):
 	type_dict = {"DO_NOTHING": DoNothingPlayer, "PLAY_RANDOM": PlayRandomPlayer, 'NICE_BOT': NiceBot}
 
 	# create all the maps (each game will have a reference to its map)
-	maps = {m: Map(m) for m in ('USA', 'small')}
+	maps = {m: Map(m) for m in ('USA', 'small', 'Europe')}
 
 	def __init__(self, player1, player2, **options):
 		"""
