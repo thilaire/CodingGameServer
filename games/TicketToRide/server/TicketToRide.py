@@ -167,7 +167,11 @@ class TicketToRide(Game):
 		mapLines = ["".join(line) for line in self._mapTxt]
 
 		# score lines
-		scoreLines = ["\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp), '', '']
+		scoreLines = [
+			"\t\tGame: " + self.name, '',
+			"\t\tCards: " + " ".join(strCards(c, c) for c in self._deck.faceUp),
+			'', ''
+		]
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
 			scoreLines.append(
