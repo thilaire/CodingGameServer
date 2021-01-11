@@ -150,7 +150,7 @@ class NiceBot(TrainingPlayer):
 					self._onceAgain = False
 					return "1 %d %d %d %d" % (tr.cities[0], tr.cities[1], res[0], res[1])
 			# can we take that color ? (only if we are not in the very last end of the game)
-			if min(self._game._nbWagons)>8:
+			if min(self._game._nbWagons) > 8:
 				for color in tr.iterColors:
 					if color != MULTICOLOR and color in self._game.faceUpCards():
 						self._onceAgain = (not self._onceAgain) if color != MULTICOLOR else False
