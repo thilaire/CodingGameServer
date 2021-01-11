@@ -32,8 +32,8 @@ from jinja2 import Template
 
 # Max File Size (in octets)
 MAX_ACTIVITY_SIZE = 1000000     # 1Mo for the activity.log file
-MAX_BASECLASS_SIZE = {'Game':  10e3, 'Player': 100e3, 'Tournament': 1e6}  # 10ko per game and player, 1Mo per tournament
-MAX_BASECLASS_FOLDER = {'Game':  1e6, 'Player': 5e6, 'Tournament': 1e6}   # 5Mo per game, player and tournament folders
+MAX_BASECLASS_SIZE = {'Game':  10e4, 'Player': 10e6, 'Tournament': 1e6}  # 10ko per game and player, 1Mo per tournament
+MAX_BASECLASS_FOLDER = {'Game':  1e7, 'Player': 5e7, 'Tournament': 1e6}   # 5Mo per game, player and tournament folders
 
 
 # logging levels (see 'Logging.md'), depending on the mode
