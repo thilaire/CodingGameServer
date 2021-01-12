@@ -361,9 +361,12 @@ class TicketToRide(Game):
 			return LOSING_MOVE, "`Choose Objectives` is not preceded by `Draw Objectives`"
 		objs = [int(move.group(1)), int(move.group(2)), int(move.group(3))]
 		# check if at least one objective is taken
-		if sum([1 if o else 0 for o in objs]) == 0:
+		nbObjectives = sum([1 if o else 0 for o in objs])
+		if nbObjectives == 0:
 			return LOSING_MOVE, "None objective has been kept"
-		# TODO: check that at least 2 objectives are kept for the 1st move
+		# check that at least 2 objectives are kept for the 1st move
+		if len(self._objectives[self._whoPlays])==0 and nbObjectives < 2:
+			return LOSING_MOVE, "At least two objectives should be taken for the 1st time"
 		# put the chosen objectives in the player hand, or back in the objective deck
 		for i in range(3):
 			if objs[i]:
