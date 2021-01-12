@@ -151,13 +151,13 @@ def create_new_game():
 	player2 = RegularPlayer.getFromName(request.form.get('player2'))
 
 	seed = request.form.get('seed')
-	pause = request.form.get('pause')
+	delay = request.form.get('delay')
 	timeout = request.form.get('timeout')
 	# !TODO: add some options (timeout, seed, etc.) in the html, and send them to the constructor
 	try:
 		# the constructor will check if player1 and player2 are available to play
 		# no need to store the game object created here
-		Game.getTheGameClass()(player1, player2, seed=seed, pause=pause, timeout=timeout)
+		Game.getTheGameClass()(player1, player2, seed=seed, delay=delay, timeout=timeout)
 
 	except ValueError as e:
 		return render_template('error.html', error='Error. Impossible to create a game with ' +
