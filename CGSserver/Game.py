@@ -264,7 +264,7 @@ class Game(BaseClass):
 		# check if the player wins
 		if return_code == NORMAL_MOVE:
 			# Wait for the delay time
-			timemod.sleep(self._delay/1000)
+			timemod.sleep(self._delay)
 			# change who plays
 			self._whoPlays = self.getNextPlayer()
 		elif return_code == WINNING_MOVE:
