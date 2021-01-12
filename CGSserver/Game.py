@@ -217,12 +217,9 @@ class Game(BaseClass):
 		# check if the seed has been already set (by a child, before calling the super init)
 		if hasattr(self, '_seed'):
 			return self._seed
-		if 'seed' not in options:
+		if 'seed' not in options or not options['seed']:
 			set_seed(None)  # (from doc):  If seed is omitted or None, current system time is used
 			seed = randint(0, 16777215)  # between 0 and 2^24-1
-		if not options['seed']:
-			set_seed(None)
-			seed = randint(0, 16777215)
 		else:
 			try:
 				seed = int(options['seed'], 0)
@@ -418,6 +415,7 @@ class Game(BaseClass):
 
 			# update who plays next and check for the end of the game
 			self.manageNextTurn(return_code, msg)
+			self.sendUpdateToWebSocket()
 
 			# 2nd synchronization with the opponent
 			self._sync.wait()
