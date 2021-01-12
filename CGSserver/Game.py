@@ -96,7 +96,7 @@ class Game(BaseClass):
 			- 'timeout': timeout of the game (if not given, the default timeout is used)
 			- 'start': who starts the game (0, 1 or -1); random when not precised or '-1'
 			- 'once': when presents, the player can only play once
-			# TODO: add a delay/pause option (in second)
+			- 'delay': delay between two moves
 		"""
 
 		# check if we can create the game (are the players available)
@@ -220,6 +220,9 @@ class Game(BaseClass):
 		if 'seed' not in options:
 			set_seed(None)  # (from doc):  If seed is omitted or None, current system time is used
 			seed = randint(0, 16777215)  # between 0 and 2^24-1
+		if not options['seed']:
+			set_seed(None)
+			seed = randint(0, 16777215)
 		else:
 			try:
 				seed = int(options['seed'], 0)

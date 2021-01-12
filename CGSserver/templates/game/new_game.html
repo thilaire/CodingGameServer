@@ -9,12 +9,30 @@
                 {{list_players|safe}}
             </select>
         </label>
+        &nbsp;
         <label>
             Player2:
             <select name="player2">
                 {{list_players|safe}}
             </select>
         </label>
+        <br/>
+        <label>
+            Seed:
+            <input type="text" name="seed" size="10"/>
+        </label>
+         &nbsp;
+        <label>
+            Timeout:
+            <input type="text" name="timeout" size="10" value="5"/>
+        </label>
+         &nbsp;
+        <label>
+            Pause:
+            <input type="text" name="pause" size="10" value="0"/>
+        </label>
+        <br/>
+        <br/>
         <button name="send">Create Game</button>
 
     </form>
