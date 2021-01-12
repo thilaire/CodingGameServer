@@ -110,8 +110,11 @@ class TicketToRide(Game):
 		self._tracks = self._theMap.tracks      # get a copy of the tracks in a dictionary (city1, city2): Track
 		self._taken = []
 
-		# manage the last turn
-		self._lastTurn = 3      # == 0 for the very last move
+		# manage the 1st round
+		self._firstMove = [True, False]
+
+		# manage the last round
+		self._lastRound = 3      # == 0 for the very last move
 
 		# actions that happened on last move, will be sent to the web client
 		self._lastMoveWeb = {}
@@ -221,6 +224,9 @@ class TicketToRide(Game):
 		if self._shouldTakeAnotherCard and not (drawCard or drawBlindCard):
 			return LOSING_MOVE, "a `draw card` or `draw blind card` must be followed by a `draw card` " \
 			                    "or `draw blind card` (except for Locomotive taken face up)"
+		# the 1st move MUST be chooseObjectives
+		if self._firstMove[self._whoPlays] and not drawObjectives:
+			return LOSING_MOVE, "The 1st move MUST be a `draw objective` move!"
 		# Claim a route
 		if claimRoute:
 			answer = self._claimRoute(claimRoute)
@@ -240,10 +246,13 @@ class TicketToRide(Game):
 		else:
 			return LOSING_MOVE, "The move is not in correct !"
 
+		# end of the 1st round
+		self._firstMove[self._whoPlays] = False
+
 		# check the end of the game
-		if self._lastTurn < 3:
-			self._lastTurn -= 1
-		if self._lastTurn < 0:
+		if self._lastRound < 3:
+			self._lastRound -= 1
+		if self._lastRound < 0:
 			# check how has won !
 			return self.whoWins()
 
@@ -499,8 +508,8 @@ class TicketToRide(Game):
 		# update the txt map
 		tr.draw(self._mapTxt)
 		# check for the last turn
-		if self._nbWagons[self._whoPlays] < 3 and self._lastTurn > 2:
-			self._lastTurn = 2
+		if self._nbWagons[self._whoPlays] < 3 and self._lastRound > 2:
+			self._lastRound = 2
 
 		# message for web client
 		self._lastMoveWeb = {
