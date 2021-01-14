@@ -34,7 +34,7 @@ Run the servers (Game server and web server)
 
 Usage:
   runCGS.py -h | --help
-  runCGS.py <gameName> [options] [--debug|--dev|--prod]
+  runCGS.py <gameName> [options] [--debug|--dev|--prod|--nolog]
 
 Options:
   gameName                 Name of game [default: Labyrinth]
@@ -50,6 +50,7 @@ Options:
   --debug                  Debug mode (log and display everything)
   --dev                    Development mode (log everything, display infos, warnings and errors)
   --prod                   Production mode (only log infos, warnings and errors and send emails) [default: True]
+  --nolog                  No logs
 """
 
 
@@ -57,20 +58,20 @@ def runCGS():
 	"""run CGS server"""
 	# parse the command line
 	args = docopt(usage)
-	if (not args['--debug']) and (not args['--dev']) and (not args['--prod']):
+	if (not args['--debug']) and (not args['--dev']) and (not args['--prod']) and (not args['--nolog']):
 		args['--prod'] = True
 	args['--port'] = int(args['--port'])
 	args['--web'] = int(args['--web'])
 	gameName = args['<gameName>']
 
 	# get the mode (export it to Constants.mode, so that the webserver can have it as global constant)
-	mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug'
+	mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug' if args['--debug'] else 'nolog'
 	import CGSserver.Constants as Constants
 	Constants.mode = mode
 
 	# now, we can import the library, depending on the mode (prod vs dev/debug)
 	# because in case of prod, we import gevent and monkey patch all
-	if mode == 'prod':
+	if mode in ('prod', 'nolog') :
 		from gevent import monkey
 		monkey.patch_all()
 
