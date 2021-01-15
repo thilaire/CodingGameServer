@@ -34,9 +34,14 @@ def Dijkstra(tracks, nbCities, city1, city2, opponent):
 	city = city1
 
 	# repeat until going to city2
+	count = 0
 	while city != city2:
+		count+=1
 		# get the closest unvisited city
+		oldcity = city
 		city = min(range(nbCities), key=lambda x: distance[x] if not visited[x] else infinity)
+		if oldcity == city and oldcity != city1:
+			break
 		# update the distance for all the connected cities
 		visited[city] = True
 		for v in range(nbCities):
@@ -111,7 +116,10 @@ class NiceBot(TrainingPlayer):
 			for i, obj in enumerate(self.game._objDrawn):
 				opp = 1 if (self.game.players[0] is self) else 0
 				path = Dijkstra(self._tr, self.game._theMap.nbCities, obj.city1, obj.city2, opp)
-				nbWagons[i] = sum([t.length for t in path])
+				if path is not None:
+					nbWagons[i] = sum([t.length for t in path])
+				else:
+					nbWagons[i] = infinity
 			# take all if we can do it
 			if sum(nbWagons) < min(self.game._nbWagons):
 				return "5 1 1 1"
