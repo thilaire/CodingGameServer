@@ -148,3 +148,55 @@ class Map:
 		"""Returns the number of wagons"""
 		return self._nbWagons
 
+
+
+def longestPath(tracks):
+	"""tracks: dict of tracks owned by a player"""
+	# get the city and how many tracks related to them
+	cities = {}
+	for t in tracks:
+		for i in range(2):
+			if t.cities[i] in cities:
+				cities[t.cities[i]].append(t)
+			else:
+				cities[t.cities[i]] = [t]
+	# check longest from each city with only one track
+	cityEnd = [c for c, tr in cities.items() if len(tr) == 1]
+	l = [_longestUnvisited(c, {c: list(track) for c, track in cities.items()}) for c in cityEnd]
+	return max(l)
+	# return max(_longestUnvisited(c, deepcopy(cities)) for c, tr in cities.items() if len(tr) == 1)
+
+
+def _longestUnvisited(start, cities):
+	"""recursively explore the graph"""
+	long = 0
+
+	# explore the route up to a branch
+	# (continue the road until we reach a branch)
+	while len(cities[start]) == 1:
+		# remove the track
+		tr = cities[start][0]
+		for c in tr.cities:
+			cities[c].remove(tr)
+		# go to the next city
+		start = tr.cities[1] if tr.cities[0] == start else tr.cities[0]
+		long += tr.length
+
+	# end of the road or a branch
+	if len(cities[start]) == 0:
+		return long
+	else:
+		length = []
+		# try each possible branch
+		for tr in cities[start]:
+			# copy the cities
+			cpy = {c: list(track) for c, track in cities.items()}
+			# remove the track
+			for c in tr.cities:
+				cpy[c].remove(tr)
+			# go to the next city
+			nextCity = tr.cities[1] if tr.cities[0] == start else tr.cities[0]
+			# recursively compute the length starting from this new city
+			length.append(tr.length + _longestUnvisited(nextCity, cpy))
+
+		return long + max(length)
