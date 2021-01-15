@@ -25,7 +25,7 @@ from CGSserver.Game import Game
 from games.TicketToRide.server.DoNothingPlayer import DoNothingPlayer
 from games.TicketToRide.server.PlayRandomPlayer import PlayRandomPlayer
 from games.TicketToRide.server.NiceBot import NiceBot
-from games.TicketToRide.server.Map import Map, longestPath
+from games.TicketToRide.server.Map import Map
 from games.TicketToRide.server.Cards import Deck, strCards
 from games.TicketToRide.server.Constants import colorNames, tracksColors, MULTICOLOR, PURPLE, Scores, playerColors, \
 	checkChar
@@ -317,71 +317,48 @@ class TicketToRide(Game):
 					obj.score
 				))
 
-		# longest path (10 points)
-		long = [0, 0]
-		for pl in [0, 1]:
-			long[pl] = longestPath([tr for tr in self._tracks.values() if tr.isTakenBy(pl)])
-		if long[0] > long[1]:
-			self._score[0] += 10
-			msg.append("Player %s has the longest path (%d vs %d)" % (self._players[0].name, long[0], long[1]))
-		elif long[1] > long[0]:
-			self._score[1] += 10
-			msg.append("Player %s has the longest path (%d vs %d)" % (self._players[1].name, long[1], long[0]))
-		else:
-			self._score[0] += 10
-			self._score[1] += 10
-			msg.append("Both players has the longest path (%d wagons)" % long[0])
-		# total score
+		# TODO: longest path (10 points)
+
 		msg.append("Total score: \t%s: %dpts\t%s: %dpts" %
 		           (self._players[0].name, self._score[0], self._players[1].name, self._score[1]))
 		msg.append("")
-		# determine who wins
 		if self._score[self._whoPlays] > self._score[1-self._whoPlays]:
 			return WINNING_MOVE, "\n".join(msg)
 		elif self._score[self._whoPlays] < self._score[1-self._whoPlays]:
 			return LOSING_MOVE, "\n".join(msg)
 		else:
-			# equality, check the longest path
-			if long[self._whoPlays] > long[1-self._whoPlays]:
-				msg.append("Equality, but %s has longest path %s" %
+			# TODO: check first who has the longest path (-> he/she wins)
+
+			# equality, check the number of objectives
+			if len(self._objectives[self._whoPlays]) > len(self._objectives[1-self._whoPlays]):
+				msg.append("Equality, but %s has more objective cards than %s" %
 				           (self._players[self._whoPlays].name, self._players[1-self._whoPlays].name))
 				return WINNING_MOVE, "\n".join(msg)
-			if long[1-self._whoPlays] > long[self._whoPlays]:
-				msg.append("Equality, but %s has longest path %s" %
+			elif len(self._objectives[self._whoPlays]) < len(self._objectives[1-self._whoPlays]):
+				msg.append("Equality, but %s has more objective cards than %s" %
 				           (self._players[1-self._whoPlays].name, self._players[self._whoPlays].name))
 				return LOSING_MOVE, "\n".join(msg)
-			# equality, check the number of objectives
 			else:
-				msg.append("Same longest path")
-				if len(self._objectives[self._whoPlays]) > len(self._objectives[1-self._whoPlays]):
-					msg.append("Equality, but %s has more objective cards than %s" %
-					           (self._players[self._whoPlays].name, self._players[1-self._whoPlays].name))
+				msg.append("Same number of objective cards")
+				# equality, check the number of cards
+				if sum(self._cards[self._whoPlays]) < sum(self._cards[1 - self._whoPlays]):
+					msg.append("Equality, but %s has less wagon cards than %s" %
+					           (self._players[self._whoPlays].name, self._players[1 - self._whoPlays].name))
 					return WINNING_MOVE, "\n".join(msg)
-				elif len(self._objectives[self._whoPlays]) < len(self._objectives[1-self._whoPlays]):
-					msg.append("Equality, but %s has more objective cards than %s" %
-					           (self._players[1-self._whoPlays].name, self._players[self._whoPlays].name))
+				elif sum(self._cards[self._whoPlays]) > sum(self._cards[1 - self._whoPlays]):
+					msg.append("Equality, but %s has less wagon cards than %s" %
+					           (self._players[1 - self._whoPlays].name, self._players[self._whoPlays].name))
 					return LOSING_MOVE, "\n".join(msg)
 				else:
-					msg.append("Same number of objective cards")
-					# equality, check the number of cards
-					if sum(self._cards[self._whoPlays]) < sum(self._cards[1 - self._whoPlays]):
-						msg.append("Equality, but %s has less wagon cards than %s" %
-						           (self._players[self._whoPlays].name, self._players[1 - self._whoPlays].name))
+					# flip a coin
+					msg.append("Same number of wagon cards")
+					winner = choice([0, 1])
+					if winner == self._whoPlays:
+						msg.append("Coin tossing: %s wins" % self._players[self._whoPlays].name)
 						return WINNING_MOVE, "\n".join(msg)
-					elif sum(self._cards[self._whoPlays]) > sum(self._cards[1 - self._whoPlays]):
-						msg.append("Equality, but %s has less wagon cards than %s" %
-						           (self._players[1 - self._whoPlays].name, self._players[self._whoPlays].name))
-						return LOSING_MOVE, "\n".join(msg)
 					else:
-						# flip a coin
-						msg.append("Same number of wagon cards")
-						winner = choice([0, 1])
-						if winner == self._whoPlays:
-							msg.append("Coin tossing: %s wins" % self._players[self._whoPlays].name)
-							return WINNING_MOVE, "\n".join(msg)
-						else:
-							msg.append("Coin tossing: %s wins" % self._players[1-self._whoPlays].name)
-							return LOSING_MOVE, "\n".join(msg)
+						msg.append("Coin tossing: %s wins" % self._players[1-self._whoPlays].name)
+						return LOSING_MOVE, "\n".join(msg)
 
 
 
