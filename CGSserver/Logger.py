@@ -40,12 +40,11 @@ MAX_BASECLASS_FOLDER = {'Game':  1e7, 'Player': 5e7, 'Tournament': 1e6}   # 5Mo 
 LOW_DEBUG_LEVEL = 5
 MESSAGE_LEVEL = 35
 activity_level = {
-	'nolog': (MESSAGE_LEVEL, logging.ERROR, logging.ERROR),
 	'prod': (MESSAGE_LEVEL, logging.WARNING, logging.ERROR),
 	'dev': (logging.INFO, logging.DEBUG),
 	'debug': (logging.DEBUG, LOW_DEBUG_LEVEL)}
-error_level = {'nolog': logging.ERROR, 'prod': logging.ERROR, 'dev': MESSAGE_LEVEL, 'debug': MESSAGE_LEVEL}
-baseclass_level = {'nolog': logging.ERROR, 'prod': logging.INFO, 'dev': logging.DEBUG, 'debug': LOW_DEBUG_LEVEL}
+error_level = {'prod': logging.ERROR, 'dev': MESSAGE_LEVEL, 'debug': MESSAGE_LEVEL}
+baseclass_level = {'prod': logging.INFO, 'dev': logging.DEBUG, 'debug': LOW_DEBUG_LEVEL}
 
 
 # dictionary of Lockes, used for removeOldestWithLock (to that removeOldestFilePlayer is only run once a time)
@@ -84,7 +83,7 @@ def configureRootLogger(args):
 	"""
 	# store the configuration in Config (data used elsewhere)
 	gameName = args['<gameName>']
-	Config.mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug' if args['--debug'] else 'nolog'
+	Config.mode = 'prod' if args['--prod'] else 'dev' if args['--dev'] else 'debug'
 	Config.logPath = join('games', gameName, Template(args['--log']).render(hostname=gethostname()))
 	Config.webPort = args['--web']
 	Config.host = args['--host']
@@ -97,7 +96,7 @@ def configureRootLogger(args):
 
 	# Create and setup the logger
 	logger = logging.getLogger()
-	logger.setLevel(logging.ERROR if Config.mode=='nolog' else LOW_DEBUG_LEVEL)
+	logger.setLevel(LOW_DEBUG_LEVEL)
 
 	# add an handler to redirect the log to a file (1Mo max)
 	makedirs(Config.logPath, exist_ok=True)
