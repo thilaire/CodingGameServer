@@ -518,6 +518,8 @@ class TicketToRide(Game):
 		# remove the cards
 		self._cards[self._whoPlays][MULTICOLOR] -= nbLoco
 		self._cards[self._whoPlays][card] -= (tr.length - nbLoco)
+		if self._cards[self._whoPlays][MULTICOLOR] < 0 or self._cards[self._whoPlays][card] < 0:
+			return LOSING_MOVE, "You don't have enough card to claim the route!"
 		for i in range(nbLoco):
 			self._deck.discard(MULTICOLOR)
 		for i in range(tr.length - nbLoco):
