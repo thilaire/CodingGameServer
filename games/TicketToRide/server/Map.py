@@ -173,7 +173,11 @@ def _longestUnvisited(start, cities):
 
 	# explore the route up to a branch
 	# (continue the road until we reach a branch)
+	count = 0
 	while len(cities[start]) == 1:
+		count += 1
+		if count>500:
+			return 0
 		# remove the track
 		tr = cities[start][0]
 		for c in tr.cities:

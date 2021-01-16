@@ -39,7 +39,11 @@ class Deck:
 		self._discarded = []
 		# distribute 5 cards face up (and prevent having more than 2 Locomotives)
 		self._faceUp = [self._cards.pop() for _ in range(5)]    # Five 1st cards face up
+		count =0
 		while self._faceUp.count(MULTICOLOR) >= 3:
+			count += 1
+			if count>500:
+				return None
 			# remove the 5 face up cards
 			for i in range(5):
 				self.discard(i)

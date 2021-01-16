@@ -37,6 +37,8 @@ def Dijkstra(tracks, nbCities, city1, city2, opponent):
 	count = 0
 	while city != city2:
 		count+=1
+		if count>500:
+			return None
 		# get the closest unvisited city
 		oldcity = city
 		city = min(range(nbCities), key=lambda x: distance[x] if not visited[x] else infinity)
@@ -57,7 +59,11 @@ def Dijkstra(tracks, nbCities, city1, city2, opponent):
 
 	# return the tracks from city2 to city1
 	path = []       # list of tracks to take
+	count = 0
 	while city != city1:
+		count += 1
+		if count>500:
+			return None
 		tr = tracks[(min(city, prec[city]), max(city, prec[city]))]
 		if not tr.isTaken:
 			path.append(tr)

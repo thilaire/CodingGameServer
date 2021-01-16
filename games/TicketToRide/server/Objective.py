@@ -64,7 +64,11 @@ class Objective:
 		tracks = remainTracks
 
 		# update to get all the cities we can reach from self.city1
+		count = 0
 		while s:
+			count += 1
+			if count>500:
+				return False
 			cities.update(s)
 			s = set()
 			remainTracks = []
