@@ -80,7 +80,11 @@ class Deck:
 		card = self._faceUp[pos]
 		self._faceUp[pos] = self._pop()
 		# check for three Locomotives
+		count = 0
 		while self._faceUp.count(MULTICOLOR) >= 3:
+			count += 1
+			if count > 50:
+				raise ValueError("Only Locomotives in the deck!")
 			ThreeLoco = True
 			# remove the 5 face up cards
 			for i in range(5):
