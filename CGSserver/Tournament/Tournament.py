@@ -381,7 +381,7 @@ class Tournament(BaseClass):
 		:param playerName: (string) name of the player
 		:return: (string) HTML representation
 		"""
-		p = self._players[playerName]
+		p = self._players.get(playerName)   # return None in case the player is not registered anymore
 		return p.HTMLrepr() if p else playerName
 
 
