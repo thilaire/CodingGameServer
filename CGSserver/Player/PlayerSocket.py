@@ -237,6 +237,8 @@ class PlayerSocketHandler(BaseRequestHandler):
 				logger.low_debug("Send '%s' to %s", data, self.client_address[0])
 		except BrokenPipeError:
 			raise DisconnectionError()
+		except OSError:
+			raise DisconnectionError()
 
 
 	@property
