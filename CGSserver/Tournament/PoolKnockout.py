@@ -131,7 +131,7 @@ class PoolKnockout(Tournament):
 		# iterate using round robin algorithm for each group
 		for i in range(nmax):
 			# update the phase name
-			phase = '%d%s round' % (i + 1, numbering(i + 1))
+			phase = '%d%s round (%d/%d)' % (i + 1, numbering(i + 1), i + 1, nmax)
 			# list of match by group
 			lmatch = []
 			for j in range(len(nbrounds)):
@@ -143,22 +143,20 @@ class PoolKnockout(Tournament):
 			yield phase, lmatch
 
 		# Selection of the best players to be in SingleEliminationTournament
-		# Works only if self._nbFirst == 2
-		self._Draw = [[None for _ in range(self._nbFirst * self._nbGroups)]]
 		self._cycle = 1  # begin of the final phase
 		WinPlayers = []
 		for lplayers in self._groups:
 			lp = [p for p, score in sorted(self._score.items(),
-			                               key=lambda x: str(x[1][0])+str(x[1][1]), reverse=True) if p in lplayers]
-			if len(lp) < 2:  # should not happen...
+			                               key=lambda x: x[1][0]*10010+x[1][1], reverse=True) if p in lplayers]
+			if len(lp) < self._nbFirst:  # should not happen...
 				lp.append("")
 			WinPlayers.extend(lp[:self._nbFirst])
 
 		# Set the players in the draw
-		for j in range(self._nbGroups):
-			self._Draw[0][2*j] = WinPlayers[2*j]
-			self._Draw[0][-2*j-1] = WinPlayers[2*j+1]
-		nturn = frexp(self._nbGroups*self._nbFirst)[1]-1  # frexp : log2 int
+		W1 = WinPlayers[:len(WinPlayers)//2]            # 1st half
+		W2 = WinPlayers[:len(WinPlayers)//2-1:-1]       # 2nd half, reversed
+		self._Draw = [[x for y in zip(W1, W2) for x in y]]  # W1 and W2 enterlaced
+		nturn = frexp(len(WinPlayers))[1]-1     # frexp : log2 int
 
 		for iturn in range(nturn):
 			if nturn-iturn > 4:
@@ -217,12 +215,15 @@ class PoolKnockout(Tournament):
 		if self._cycle == 1:
 
 			for t in self._Draw[::-1]:
-				HTMLs += "".join("%s (%d) vs %s (%d)<br>" % (
-									self.playerHTMLrepr(t[2*i]),
-									self._score[t[2*i]][2],
-									self.playerHTMLrepr(t[2*i+1]),
-									self._score[t[2*i+1]][2]) for i in range(len(t)//2))
-				HTMLs += "<br>"
+				try:
+					HTMLs += "".join("%s (%d) vs %s (%d)<br>" % (
+										self.playerHTMLrepr(t[2*i]),
+										self._score[t[2*i]][2],
+										self.playerHTMLrepr(t[2*i+1]),
+										self._score[t[2*i+1]][2]) for i in range(len(t)//2))
+					HTMLs += "<br>"
+				except:
+					pass
 
 		if self._score and self._groups:
 			for i, lplayers in enumerate(self._groups):
@@ -230,7 +231,7 @@ class PoolKnockout(Tournament):
 				# note : the key of sorting is str to have a lexicographic ordering
 				HTMLs += "<ul>" + "".join(
 					"<li>%s: %d(%+d) points</li>" % (self.playerHTMLrepr(p), score[0], score[1])
-					for p, score in sorted(self._score.items(), key=lambda x: str(x[1][0])+str(x[1][1]), reverse=True)
+					for p, score in sorted(self._score.items(), key=lambda x: x[1][0]*10010+x[1][1], reverse=True)
 					if p in lplayers) + "</ul>"
 
 
@@ -250,7 +251,7 @@ class PoolKnockout(Tournament):
 				# note : the key of sorting is str to have a lexicographic ordering
 				st += "\n".join(
 					"  - %s: %d(%+d) points" % (self.playerHTMLrepr(p), score[0], score[1])
-					for p, score in sorted(self._score.items(), key=lambda x: str(x[1][0])+str(x[1][1]), reverse=True)
+					for p, score in sorted(self._score.items(), key=lambda x: x[1][0]*10010+x[1][1], reverse=True)
 					if p in lplayers
 				)
 

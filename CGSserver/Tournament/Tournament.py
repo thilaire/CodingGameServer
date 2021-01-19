@@ -216,7 +216,8 @@ class Tournament(BaseClass):
 		Tournament.removeInstance(self.name)
 		# Disconnect all the players of that tournament
 		for p in self._players.values():
-			p.disconnect()
+			if p:
+				p.disconnect()
 
 
 	@property
@@ -468,8 +469,10 @@ class Tournament(BaseClass):
 
 			# update the websockets (no need to update everytime a game is added)
 			self.sendUpdateToWebSocket()
+
 			# and wait for all the games to end (before running the next round)
 			self._queue.join()
+
 			time.sleep(1)       # !!TODO: check why is not fully working when we remove this sleep....
 
 		# update the scores
