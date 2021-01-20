@@ -250,7 +250,7 @@ class TicketToRide(Game):
 		self._firstMove[self._whoPlays] = False
 
 		# check the end of the game
-		if self._lastRound < 3:
+		if self._lastRound < 3 and not (self._shouldTakeAnotherCard or self._objDrawn):
 			self._lastRound -= 1
 		if self._lastRound < 0:
 			# check how has won !
