@@ -138,11 +138,15 @@ class PoolKnockout(Tournament):
 				if nbrounds[j] > 0:
 					nbrounds[j] -= 1
 					rotation = groups[j]
-					lmatch.extend(list(zip(*[iter(rotation)] * 2)))
+					n = len(rotation)
+					lmatch.extend(list(zip(rotation[0:n//2], reversed(rotation[n//2:n]))))
 					groups[j] = [rotation[0]] + [rotation[-1]] + rotation[1:-1]
 			yield phase, lmatch
 
 		# Selection of the best players to be in SingleEliminationTournament
+		# FIXME: add a new phase when two players have the same number of points
+		# in each pool, organize a mini round-robin tournament with the players that have the same score has the
+		# 2nd best player (in that pool)
 		self._cycle = 1  # begin of the final phase
 		WinPlayers = []
 		for lplayers in self._groups:

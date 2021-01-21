@@ -449,6 +449,7 @@ class Tournament(BaseClass):
 
 					# run the game only if the two players are here (otherwise, one wins directly)
 					player1, player2 = self._players[pName1], self._players[pName2]
+					self.logger.info("The game `%s` vs `%s` is planned", pName1, pName2)
 					if player1 and player2:
 
 						self._games[(pName1, pName2)][1] = Game.getTheGameClass()(
@@ -457,15 +458,13 @@ class Tournament(BaseClass):
 						self._queue.put_nowait(None)
 					else:
 						# one player is not playing anymore (disconnected), so the other wins
+						# in the case where the 2 players are disconnected, no points is distributed
 						score = self._games[(pName1, pName2)][0]
 						if player1 is not None:
 							score[0] += 1
 						elif player2 is not None:
 							score[1] += 1
-						else:
-							# in the case where the 2 players are disconnected, the 1st win...
-							# !FIXME: introduce equality (the result of a game is either WIN, LOOSE or EQUALITY !)
-							score[start] += 1
+
 
 			# update the websockets (no need to update everytime a game is added)
 			self.sendUpdateToWebSocket()

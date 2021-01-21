@@ -59,7 +59,8 @@ class League(Tournament):
 			# update the phase name
 			phase = '%d%s phase' % (i + 1, numbering(i + 1))
 			# generate list of pairs (player1,player2)
-			yield phase, list(zip(*[iter(rotation)] * 2))
+			n = len(rotation)
+			yield phase, list(zip(rotation[0:n//2], reversed(rotation[n//2:n])))
 			# prepare the next list by rotating the list
 			rotation = [rotation[0]] + [rotation[-1]] + rotation[1:-1]
 
