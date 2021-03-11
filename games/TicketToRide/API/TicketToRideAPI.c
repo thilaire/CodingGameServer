@@ -189,7 +189,7 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
 	/* get the 4 initial cards */
 	sscanf(p, "%d %d %d %d", (int*)cards, (int*)cards+1, (int*)cards+2, (int*)cards+3);
 
-    return ret;
+	return ret;
 }
 
 
@@ -209,16 +209,16 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
  */
 t_return_code getMove(t_move* move, int* replay)
 {
-    char moveStr[MAX_GET_MOVE];
+	char moveStr[MAX_GET_MOVE];
 	char msg[MAX_MESSAGE];
 	int obj[3];
 	char* p;
 	unsigned int nbchar;
 
-    /* get the move */
-    t_return_code ret = getCGSMove(__FUNCTION__, moveStr, msg);
+	/* get the move */
+	t_return_code ret = getCGSMove(__FUNCTION__, moveStr, msg);
 
-    /* extract result */
+	/* extract result */
 	if (ret == NORMAL_MOVE) {
 		sscanf(moveStr, "%d%n", (int*) &move->type, &nbchar);
 		p = moveStr + nbchar;
@@ -360,7 +360,7 @@ void printMap()
  */
 void sendComment(char* comment)
 {
-    sendCGSComment( __FUNCTION__, comment);
+	sendCGSComment( __FUNCTION__, comment);
 }
 
 /* --------------------
