@@ -38,7 +38,8 @@ typedef enum
 } t_return_code;
 
 
-/* Display Error message and exit
+/* --------------------
+ * Display Error message and exit
  *
  * Parameters:
  * - fct: name of the function where the error raises (__FUNCTION__ can be used)
@@ -49,7 +50,8 @@ void dispError(const char* fct, const char* msg, ...);
 
 
 
-/* Display Debug message (only if `debug` constant is set to 1)
+/* ------------------------
+ * Display Debug message (only if `debug` constant is set to 1)
  *
  * Parameters:
  * - fct: name of the function where the error raises (__FUNCTION__ can be used)
@@ -71,7 +73,7 @@ void dispDebug(const char* fct,int level, const char* msg, ...);
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters (checked by the server)
  */
-void connectToCGS( const char* fct, char* serverName, unsigned int port, char* name);
+void connectToCGS(const char* fct, const char* serverName, unsigned int port, char* name);
 
 
 
@@ -82,7 +84,7 @@ void connectToCGS( const char* fct, char* serverName, unsigned int port, char* n
  * Parameters:
  * - fct: name of the function that calls closeCGSConnection (used for the logging)
 */
-void closeCGSConnection( const char* fct);
+void closeCGSConnection(const char* fct);
 
 
 
@@ -102,14 +104,13 @@ void closeCGSConnection( const char* fct);
  *   the following options are common to every training player (when NAME is not empty):
  *   - timeout: allows an define the timeout when training (in seconds)
  */
-void waitForGame( const char* fct, char* training, char* gameName, char* data);
+void waitForGame(const char* fct, const char* training, char* gameName, char* data);
 
 
 
 /* -------------------------------------
  * Get the game data and tell who starts
  * It fills the char* data with the data of the game (it will be parsed by the caller)
- * 1 if there's a wall, 0 for nothing
  *
  * Parameters:
  * - fct: name of the function that calls getGameData (used for the logging)
@@ -118,7 +119,7 @@ void waitForGame( const char* fct, char* training, char* gameName, char* data);
  *
  * Returns 0 if the client begins, or 1 if the opponent begins
  */
-int getGameData( const char* fct, char* data, size_t ndata);
+int getGameData(const char* fct, char* data, size_t ndata);
 
 
 
@@ -133,7 +134,7 @@ int getGameData( const char* fct, char* data, size_t ndata);
  * Fill the move and returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move)
  * this code is relative to the opponent (+1 if HE wins, ...)
  */
-t_return_code getCGSMove( const char* fct, char* move ,char* msg);
+t_return_code getCGSMove(const char* fct, char* move ,char* msg);
 
 
 
@@ -147,7 +148,7 @@ t_return_code getCGSMove( const char* fct, char* move ,char* msg);
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove( const char* fct, char* move, char* answer);
+t_return_code sendCGSMove(const char* fct, char* move, char* answer);
 
 
 
@@ -169,7 +170,7 @@ void printCGSGame(const char* fct);
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  * - comment: (string) comment to send to the server (max 100 char.)
  */
-void sendCGSComment( const char* fct, char* comment);
+void sendCGSComment(const char* fct, const char* comment);
 
 
 

@@ -46,7 +46,7 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 int sockfd = -1;		        /* socket descriptor, equal to -1 when we are not yet connected */
 char buffer[MAX_LENGTH];		/* global buffer used to send message (global so that it is not allocated/desallocated for each message) */
 int debug=0;			        /* debug constant; we do not use here a #DEFINE, since it allows the client to declare 'extern int debug;' set it to 1 to have debug information, without having to re-compile labyrinthAPI.c */
-char playerName[20];            /* name of the player, stored to display it in debug */
+char playerName[21] = {};            /* name of the player, stored to display it in debug */
 
 
 /* Display Error message and exit
@@ -176,7 +176,7 @@ void sendString(const char* fct, const char* str, ...) {
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters (checked by the server)
  */
-void connectToCGS( const char* fct, char* serverName, unsigned int port, char* name)
+void connectToCGS(const char* fct, const char* serverName, unsigned int port, char* name)
 {
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -221,7 +221,7 @@ void connectToCGS( const char* fct, char* serverName, unsigned int port, char* n
  * Parameters:
  * - fct: name of the function that calls closeCGSConnection (used for the logging)
 */
-void closeCGSConnection( const char* fct)
+void closeCGSConnection(const char* fct)
 {
 	if (sockfd<0)
 		dispError( fct,"The connection to the server is not established. Call 'connectToServer' before !");
@@ -240,7 +240,7 @@ void closeCGSConnection( const char* fct)
  * - data: string (max 128 characters), corresponds to the data returns by the server
  *
  * gameType is a string like "GAME key1=value1 key2=value1 ..."
- * - GAME can be empty (wait for a game. It gives the type of the game
+ * - GAME can be empty (wait for a game). It gives the type of the game
  *   it could be "TRAINING xxxx" to play against bot xxxx
  *   or "TOURNAMENT xxxx" to join the tournament xxxx
  * - key=value pairs are used for options (each training player has its own options)
@@ -250,7 +250,7 @@ void closeCGSConnection( const char* fct)
  *     - 'seed': allows to set the seed of the random generator
  *     - 'start': allows to set who starts ('0' or '1')
  */
-void waitForGame( const char* fct, char* gameType, char* gameName, char* data)
+void waitForGame(const char* fct, const char* gameType, char* gameName, char* data)
 {
 	size_t r;
 	if (gameType)
@@ -439,7 +439,7 @@ void printCGSGame(const char* fct)
  * - fct: name of the function that calls sendCGSMove (used for the logging)
  * - comment: (string) comment to send to the server (max 100 char.)
  */
-void sendCGSComment( const char* fct, char* comment)
+void sendCGSComment(const char* fct, const char* comment)
 {
   dispDebug( fct,2, "Try to send a comment");
 
