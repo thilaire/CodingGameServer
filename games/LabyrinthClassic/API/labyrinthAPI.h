@@ -49,7 +49,7 @@ typedef enum
 A move is a composed of:
 - a type of insertion (that can be INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_UP, or INSERT_COLUMN_DOWN)
 - the line or column number for the insertion
-- the tile to be inserted
+- the rotation of the tile to be inserted
 - a tuple (x,y) that indicates where to move
 */
 typedef struct
