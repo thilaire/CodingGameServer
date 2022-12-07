@@ -14,12 +14,28 @@ File: LabyrinthClassic.py
 	-> defines the Labyrinth game (its rules, moves, etc.)
 
 Copyright 2021 T. Hilaire
+
+
+TODO:
+Reste à faire:
+- tester le déplacement (Lab.reachable marche, donc devrait être ok; tester le déplacement en bord de labyrinthe)
+- tester la fin de partie (pris tous les items)
+- coder le joueur random (insert une tuile random, se déplace sur l'item si il est joignable sinon se déplace au hasard là où il peut)
+- coder un autre joueur (teste toutes les possibilités, regarde celles qui peuvent faire gagner et prend celle qui ne permet pas à l'adversaire d'avoir son item)
+
+Coté C:
+implémenter la partie de jeu (déplacement colone)
+implémenter le A* (reachable)
+implémenter la même IA que le dernier joueur Python
+
+
 """
 
 from random import shuffle, random, randint
 from re import compile
 from ansi2html import Ansi2HTMLConverter
 from colorama import Fore, Back
+from logging import getLogger
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
@@ -30,6 +46,7 @@ from .PlayRandomPlayer import PlayRandomPlayer
 from .Laby import Tile, Laby
 
 
+logger = getLogger("Labyclassic")  # general logger ('root')
 
 regdd = compile(r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")  # regex to parse a "%d %d %d %d %d" string
 
@@ -83,8 +100,11 @@ class LabyrinthClassic(Game):
 		# last move
 		self._lastInsert = 0, 0
 
+		# get the margin in the option
+		self._margin = options.get("margin", "").lower() in ['true', '1', 'yes']
+
 		# call the superclass constructor (only at the end, because the superclass constructor launches
-		# the players and they will immediately requires some Labyrinth's properties)
+		# the players, and they will immediately require some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
 
 
@@ -120,29 +140,32 @@ class LabyrinthClassic(Game):
 
 	def __str__(self):
 		"""
-		Convert a Game into string (to be send to clients, and display)
+		Convert a Game into string (to be sent to clients, and display)
 		"""
-		lines = ["   " + " ▽  ▼ " *(self.L//2) + " ▽"]
+		xmargin = "  " if self._margin else ""
+		lines = ["   " + (" ▽ " + xmargin + " ▼ " + xmargin) * (self.L//2) + " ▽"]
 		for y in range(self.H):
 			top, mid, bot = ["   "], [" ▶ " if y % 2 else " ▷ "], ["   "]
 			for x in range(self.L):
-				c = BACKPLAYER[(x, y) == self._playerPos[0], (x, y) == self._playerPos[1], self._lab[x, y].reachable] \
+				c = BACKPLAYER[(x, y) == self._playerPos[0], (x, y) == self._playerPos[1]] \
 					+ ITEMCHAR[self.lab[x, y].item == self._playerItem[0], self.lab[x, y].item == self._playerItem[1]] \
 				    + ("⚑" if self.lab[x, y].item > 0 else "·") \
 					+ Fore.RESET + Back.RESET
 				t, m, b = self._lab.toStr(x, y, c)
-				top.append(t)
-				mid.append(m)
-				bot.append(b)
+				top.append(t + xmargin)
+				mid.append(m + xmargin)
+				bot.append(b + xmargin)
 			lines.append("".join(top))
 			lines.append("".join(mid))
 			lines.append("".join(bot))
-			#lines.append("")
+
+			if self._margin:
+				lines.append("")
 
 		# add player names
 		# index of lines where player display is add
-		iline = [self.H, self.H + 4]
-		colors = [Fore.LIGHTBLUE_EX, Fore.LIGHTRED_EX]
+		iline = [(self.H//4)*4 + 1, (self.H//4)*4 + 5]
+		colors = [Fore.LIGHTRED_EX, Fore.LIGHTBLUE_EX]
 		for i, pl in enumerate(self._players):
 			br = "[]" if self._whoPlays == i else "  "
 			lines[iline[i]] += "\t\t" + br[0] + colors[i] + "Player " + str(i + 1) + ": " + Fore.RESET + pl.name + br[1]
@@ -151,9 +174,9 @@ class LabyrinthClassic(Game):
 				    + ("⚑" if self._lab.extraTile.item > 0 else "·") \
 					+ Fore.RESET + Back.RESET
 		extra_top, extra_mid, extra_bot = self._lab.toStr(-1, 0, extra_item)
-		lines[self.H + 7] += "\t\t             " + extra_top
-		lines[self.H + 8] += "\t\t Extra tile: " + extra_mid
-		lines[self.H + 9] += "\t\t             " + extra_bot
+		lines[(self.H//4)*4 + 9] += "\t\t             " + extra_top
+		lines[(self.H//4)*4 + 10] += "\t\t Extra tile: " + extra_mid
+		lines[(self.H//4)*4 + 11] += "\t\t             " + extra_bot
 
 		return "\n".join(lines)
 
