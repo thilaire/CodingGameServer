@@ -19,9 +19,14 @@ Copyright 2021 T. Hilaire
 from dataclasses import dataclass
 from itertools import product
 from random import randint, shuffle, choice
+from logging import getLogger
+
 from .Constants import MAX_ITEM, LT_RANDOM
 from .Constants import INSERT_COLUMN_DOWN, INSERT_COLUMN_UP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT
 from .Constants import TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT, MIDMID
+
+
+logger = getLogger("Labyclassic")  # general logger ('root')
 
 
 @dataclass
@@ -163,7 +168,8 @@ class Laby:
 
 
 	def reachable(self, x: int, y: int):
-		"""computes all the tiles that can be reached from position x,y"""
+		"""computes all the tiles that can be reached from position x,y
+		update the `reacheable` attribute of the tiles"""
 		# set reachable to False
 		for i, j in product(range(self.L), range(self.H)):
 			self._lab[i][j].reachable = False
@@ -182,4 +188,4 @@ class Laby:
 				stack.append((i-1, j))
 			if (not self._lab[i][j].east) and i < self.H-1 and (not self._lab[i+1][j].reachable) and (not self._lab[i+1][j].west):
 				stack.append((i+1, j))
-		print(stack)
+		logger.debug("Stack = " + str(stack))
