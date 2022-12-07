@@ -65,7 +65,7 @@ def runWebServer(host, port):
 	BaseClass.socketio = socketio
 	# TODO: do not run it in a separate thread, but use socketio.start_background_task instead
 	# see https://stackoverflow.com/questions/34581255/python-flask-socketio-send-message-from-thread-not-always-working
-	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False)
+	socketio.run(flask, host=host, port=port, debug=True, use_reloader=False, allow_unsafe_werkzeug=True)
 
 
 # # ================
