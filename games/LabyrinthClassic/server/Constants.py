@@ -42,8 +42,7 @@ BOTTOMLEFT = {(True, True): "▙", (True, False): "▄", (False, True): "▌", (
 BOTTOMMID = {True: "▄", False: "│"}
 BOTTOMRIGHT = {(True, True): "▟", (True, False): "▄", (False, True): "▐", (False, False): "▗"}
 
-BACKPLAYER = {(True, True, False): Back.LIGHTMAGENTA_EX, (True, False, False): Back.LIGHTRED_EX, (False, True, False): Back.LIGHTBLUE_EX, (False, False, False): Back.RESET,
-				(True, True, True): Back.LIGHTMAGENTA_EX, (True, False, True): Back.LIGHTRED_EX, (False, True, True): Back.LIGHTBLUE_EX, (False, False, True): Back.LIGHTGREEN_EX}
+BACKPLAYER = {(True, True): Back.LIGHTMAGENTA_EX, (True, False): Back.LIGHTRED_EX, (False, True): Back.LIGHTBLUE_EX, (False, False): Back.RESET}
 ITEMCHAR = {(True, True): Fore.MAGENTA, (True, False): Fore.MAGENTA, (False, True): Fore.BLUE, (False, False): ""}
 
 LT_RANDOM = [True, True, True, False, False, False, False, False]
