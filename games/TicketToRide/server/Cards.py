@@ -43,7 +43,7 @@ class Deck:
 		while self._faceUp.count(MULTICOLOR) >= 3:
 			count += 1
 			if count>500:
-				return None
+				return
 			# remove the 5 face up cards
 			for i in range(5):
 				self.discard(i)
