@@ -21,10 +21,10 @@ from colorama import Back, Fore
 # constants defining a move
 INSERT_LINE_LEFT = 0
 INSERT_LINE_RIGHT = 1
-INSERT_COLUMN_UP = 2
-INSERT_COLUMN_DOWN = 3
+INSERT_COLUMN_TOP = 2
+INSERT_COLUMN_BOTTOM = 3
 OPPOSITE = {INSERT_LINE_LEFT: INSERT_LINE_RIGHT, INSERT_LINE_RIGHT: INSERT_LINE_LEFT,
-			INSERT_COLUMN_UP: INSERT_COLUMN_DOWN, INSERT_COLUMN_DOWN: INSERT_COLUMN_UP}
+			INSERT_COLUMN_TOP: INSERT_COLUMN_BOTTOM, INSERT_COLUMN_BOTTOM: INSERT_COLUMN_TOP}
 
 MAX_ITEM = 24
 
@@ -43,6 +43,6 @@ BOTTOMMID = {True: "▄", False: "│"}
 BOTTOMRIGHT = {(True, True): "▟", (True, False): "▄", (False, True): "▐", (False, False): "▗"}
 
 BACKPLAYER = {(True, True): Back.LIGHTMAGENTA_EX, (True, False): Back.LIGHTRED_EX, (False, True): Back.LIGHTBLUE_EX, (False, False): Back.RESET}
-ITEMCHAR = {(True, True): Fore.MAGENTA, (True, False): Fore.MAGENTA, (False, True): Fore.BLUE, (False, False): ""}
+ITEMCHAR = {(True, True): Fore.MAGENTA, (True, False): Fore.MAGENTA, (False, True): Fore.BLUE, (False, False): Fore.RESET}
 
 LT_RANDOM = [True, True, True, False, False, False, False, False]

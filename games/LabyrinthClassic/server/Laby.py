@@ -22,7 +22,7 @@ from random import randint, shuffle, choice
 from logging import getLogger
 
 from .Constants import MAX_ITEM, LT_RANDOM
-from .Constants import INSERT_COLUMN_DOWN, INSERT_COLUMN_UP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT
+from .Constants import INSERT_COLUMN_BOTTOM, INSERT_COLUMN_TOP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT
 from .Constants import TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDRIGHT, BOTTOMLEFT, BOTTOMMID, BOTTOMRIGHT, MIDMID
 
 
@@ -111,8 +111,9 @@ class Laby:
 	def toStr(self, x: int, y: int, c: str) -> tuple[str, str, str]:
 		"""returns three strings representing the tile at position (x,y)
 		ie ["▛▀▀",
-		    "▍x ",
+		    "▍c ",
 		    "▍ ▗"]
+		where c is the extra character put in the middle (it can be composed with color, so it is in fact a full string)
 		If x < 0, then the extra tile is used
 		"""
 		if x >= 0:
@@ -120,20 +121,20 @@ class Laby:
 		else:
 			tile = self._extraTile
 		top = TOPLEFT[tile.north, tile.west] + TOPMID[tile.north] + TOPRIGHT[tile.north, tile.east]
-		mid = MIDLEFT[tile.west] + (MIDMID[tile.north, tile.east, tile.south, tile.west] if '·' in c else c) + MIDRIGHT[tile.east]
+		mid = MIDLEFT[tile.west] + c.replace('·', MIDMID[tile.north, tile.east, tile.south, tile.west]) + MIDRIGHT[tile.east]
 		bot = BOTTOMLEFT[tile.south, tile.west] + BOTTOMMID[tile.south] + BOTTOMRIGHT[tile.south, tile.east]
 		return top, mid, bot
 
 	def insertExtraTile(self, insert: int, number: int, playerPos: list[tuple[int, int]]):
 		"""Insert the extra tile and rotate a line or column"""
 		# insert the extra tile (and produce a new extra tile)
-		if insert == INSERT_COLUMN_UP:
-			# insert the extra tile in the column up
+		if insert == INSERT_COLUMN_TOP:
+			# insert the extra tile in the column top
 			extra = self._lab[number][-1]
 			self._lab[number] = [self._extraTile] + self._lab[number][:-1]
 			self._extraTile = extra
-		elif insert == INSERT_COLUMN_DOWN:
-			# insert the extra tile in the column down
+		elif insert == INSERT_COLUMN_BOTTOM:
+			# insert the extra tile in the column bottom
 			extra = self._lab[number][0]
 			self._lab[number] = self._lab[number][1:] + [self._extraTile]
 			self._extraTile = extra
@@ -155,10 +156,10 @@ class Laby:
 		for i in range(0, 2):
 			x, y = playerPos[i]
 			# check if the player is on a moved line or column
-			# if so, compute the new position (the player go back to the beginning of the line/column if he's expulsed)
-			if x == number and insert == INSERT_COLUMN_UP:
+			# if so, compute the new position (the player go back to the beginning of the line/column if it is expulsed)
+			if x == number and insert == INSERT_COLUMN_TOP:
 				y = (y+1) % self.H
-			if x == number and insert == INSERT_COLUMN_DOWN:
+			if x == number and insert == INSERT_COLUMN_BOTTOM:
 				y = (y-1) % self.H
 			if y == number and insert == INSERT_LINE_LEFT:
 				x = (x+1) % self.L
