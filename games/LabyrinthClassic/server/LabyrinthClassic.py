@@ -18,7 +18,7 @@ Copyright 2021 T. Hilaire
 
 TODO:
 Reste à faire:
-- tester le déplacement (Lab.reachable marche, donc devrait être ok; tester le déplacement en bord de labyrinthe)
++ tester le déplacement (Lab.reachable marche, donc devrait être ok; tester le déplacement en bord de labyrinthe)
 - tester la fin de partie (pris tous les items)
 - coder le joueur random (insert une tuile random, se déplace sur l'item si il est joignable sinon se déplace au hasard là où il peut)
 - coder un autre joueur (teste toutes les possibilités, regarde celles qui peuvent faire gagner et prend celle qui ne permet pas à l'adversaire d'avoir son item)
@@ -39,10 +39,11 @@ from logging import getLogger
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
-from .Constants import INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_UP, INSERT_COLUMN_DOWN
+from .Constants import INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_TOP, INSERT_COLUMN_BOTTOM
 from .Constants import MAX_ITEM, BACKPLAYER, ITEMCHAR, OPPOSITE
 from .AstarPlayer import AstarPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
+from .DontMove import PlayDontMove
 from .Laby import Tile, Laby
 
 
@@ -71,7 +72,7 @@ class LabyrinthClassic(Game):
 	"""
 
 	# dictionary of the possible training Players (non-regular players)
-	type_dict = {"RANDOM": PlayRandomPlayer, "ASTAR": AstarPlayer}
+	type_dict = {"RANDOM": PlayRandomPlayer, "ASTAR": AstarPlayer, "DONTMOVE": PlayDontMove}
 
 	def __init__(self, player1, player2, **options):
 		"""
@@ -207,7 +208,7 @@ class LabyrinthClassic(Game):
 		result = regdd.match(move)
 		# check if the data receive is valid
 		if result is None:
-			return LOSING_MOVE, "The move is not in correct form ('%d %d') !"
+			return LOSING_MOVE, "The move is not in correct form ('%d %d %d %d %d') !"
 		# get the type and the value
 		insert = int(result.group(1))
 		number = int(result.group(2))
@@ -215,11 +216,11 @@ class LabyrinthClassic(Game):
 		x = int(result.group(4))
 		y = int(result.group(5))
 		# check the possible values
-		if not (INSERT_LINE_LEFT <= insert <= INSERT_COLUMN_DOWN):
+		if not (INSERT_LINE_LEFT <= insert <= INSERT_COLUMN_BOTTOM):
 			return LOSING_MOVE, "The insertion is not valid !"
 		if (INSERT_LINE_LEFT <= insert <= INSERT_LINE_RIGHT) and not (0 <= number < self.H):
 			return LOSING_MOVE, "The line number is not valid !"
-		if (INSERT_COLUMN_UP <= insert <= INSERT_COLUMN_DOWN) and not (0 <= number < self.L):
+		if (INSERT_COLUMN_TOP <= insert <= INSERT_COLUMN_BOTTOM) and not (0 <= number < self.L):
 			return LOSING_MOVE, "The column number is not valid !"
 		if (number % 2) == 0:
 			return LOSING_MOVE, "The column/line number must be odd !"
@@ -244,7 +245,11 @@ class LabyrinthClassic(Game):
 
 		# check if the item is found
 		if self._lab[x, y].item == self._playerItem[self._whoPlays]:
+			# found !
 			self._playerItem[self._whoPlays] += -1 if self._whoPlays else +1
+			self.sendComment(self.playerWhoPlays, "I've found a new item!")
+			self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
+			# is it the last one ?
 			if self._playerItem[self._whoPlays] == (0 if self._whoPlays else MAX_ITEM+1):
 				return WINNING_MOVE, "The last item has been reached!"
 
