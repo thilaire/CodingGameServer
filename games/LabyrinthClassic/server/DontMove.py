@@ -9,30 +9,28 @@
 Authors: T. Hilaire, J. Brajard
 Licence: GPL
 
-File: playRandomPlayer.py
-	Contains the class playRandomPlayer
-	-> defines a dummy player that play randomly every time (but do not loose)
+File: DontMove.py
+	Contains the class playDontMove
+	-> defines a dummy player that do not move (and change randomly the tiles)
 
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
-from operator import itemgetter
-from math import sqrt
 from CGSserver.Player import TrainingPlayer
 from random import choice, randint
 from .Constants import INSERT_COLUMN_BOTTOM, INSERT_COLUMN_TOP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT, OPPOSITE
 
 
-class PlayRandomPlayer(TrainingPlayer):
+class PlayDontMove(TrainingPlayer):
 	"""
-	This class implements a training player that plays... randomly
+	This class implements a training player that do not move
 	Every player should be able to beat him
 	"""
 	def __init__(self, **options):
 		"""
 		Initialize the training player
 		"""
-		super().__init__('Play_Random')
+		super().__init__('Dont_Move')
 
 
 	def playMove(self):
@@ -52,24 +50,8 @@ class PlayRandomPlayer(TrainingPlayer):
 		# check if same as the last move
 		if self.game.lastInsert == (OPPOSITE[insert], number):
 			insert = OPPOSITE[insert]
-
 		# same position
-		#x, y = self.game.playerPos[us]
-
-		# search for the next item
-		nextItem = self.game._playerItem[self.game._whoPlays]
-		xitem, yitem = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if self.game._lab[x, y].item == nextItem][0]
-
-		#try to reach the next item
-		self.game._lab.reachable(*self.game._playerPos[self.game._whoPlays])
-		if self.game._lab[xitem, yitem].reachable:
-			x, y = xitem, yitem
-		else:
-			# if not, move to the reachable tile that is the closest to the item to reach
-			pos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if	self.game._lab[x, y].reachable]	# list of reachable points
-			dist = list(map(lambda p: sqrt((p[0] - xitem) ** 2 + (p[1] - yitem) ** 2), pos))	# list of distance
-			x, y = pos[min(enumerate(pos), key=itemgetter(1))[0]]		# find the index of the minimum distance
-
+		x, y = self.game.playerPos[us]
 		return "%d %d %d %d %d" % (insert, number, rotate, x, y)
 
 
