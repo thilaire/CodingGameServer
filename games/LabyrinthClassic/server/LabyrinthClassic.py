@@ -101,8 +101,10 @@ class LabyrinthClassic(Game):
 		# last move
 		self._lastInsert = 0, 0
 
-		# get the margin in the option
+		# get the margin in the options
 		self._margin = options.get("margin", "").lower() in ['true', '1', 'yes']
+		# get debug display in the options
+		self._displayDebug = options.get("display", "").lower() == 'debug'
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players, and they will immediately require some Labyrinth's properties)
@@ -178,6 +180,13 @@ class LabyrinthClassic(Game):
 		lines[(self.H//4)*4 + 9] += "\t\t             " + extra_top
 		lines[(self.H//4)*4 + 10] += "\t\t Extra tile: " + extra_mid
 		lines[(self.H//4)*4 + 11] += "\t\t             " + extra_bot
+
+		# debug mode
+		if self._displayDebug:
+			lines.append("\n\n\n")
+			for y in range(self.H):
+				line = " ".join(["%d%d%d%d%d" % (self.lab[x, y].north, self.lab[x, y].east, self.lab[x, y].south, self.lab[x, y].west, self.lab[x, y].item) for x in range(self.L)])
+				lines.append(line)
 
 		return "\n".join(lines)
 
