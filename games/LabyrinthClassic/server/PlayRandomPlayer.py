@@ -66,9 +66,9 @@ class PlayRandomPlayer(TrainingPlayer):
 			x, y = xitem, yitem
 		else:
 			# if not, move to the reachable tile that is the closest to the item to reach
-			pos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if	self.game._lab[x, y].reachable]	# list of reachable points
-			dist = list(map(lambda p: sqrt((p[0] - xitem) ** 2 + (p[1] - yitem) ** 2), pos))	# list of distance
-			x, y = pos[min(enumerate(pos), key=itemgetter(1))[0]]		# find the index of the minimum distance
+			pos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if self.game._lab[x, y].reachable]  # list of reachable points
+			dist = list(map(lambda p: sqrt((p[0] - xitem) ** 2 + (p[1] - yitem) ** 2), pos))  # list of distance
+			x, y = pos[min(enumerate(dist), key=itemgetter(1))[0]]		# find the index of the minimum distance
 
 		return "%d %d %d %d %d" % (insert, number, rotate, x, y)
 
