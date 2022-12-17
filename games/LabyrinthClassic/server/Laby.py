@@ -183,10 +183,10 @@ class Laby:
 			# stack the neighbors that are not yet reachable
 			if (not self._lab[i][j].north) and j > 0 and (not self._lab[i][j-1].reachable) and (not self._lab[i][j-1].south):
 				stack.append((i, j-1))
-			if (not self._lab[i][j].south) and j < self.L-1 and (not self._lab[i][j+1].reachable) and (not self._lab[i][j+1].north):
+			if (not self._lab[i][j].south) and j < (self.H-1) and (not self._lab[i][j+1].reachable) and (not self._lab[i][j+1].north):
 				stack.append((i, j+1))
 			if (not self._lab[i][j].west) and i > 0 and (not self._lab[i-1][j].reachable) and (not self._lab[i-1][j].east):
 				stack.append((i-1, j))
-			if (not self._lab[i][j].east) and i < self.H-1 and (not self._lab[i+1][j].reachable) and (not self._lab[i+1][j].west):
+			if (not self._lab[i][j].east) and i < (self.L-1) and (not self._lab[i+1][j].reachable) and (not self._lab[i+1][j].west):
 				stack.append((i+1, j))
 		logger.debug("Stack = " + str(stack))
