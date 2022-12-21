@@ -49,8 +49,10 @@ typedef enum
 A move is a composed of:
 - a type of insertion (that can be INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_UP, or INSERT_COLUMN_DOWN)
 - the line or column number for the insertion
-- the rotation of the tile to be inserted
+- the rotation of the tile to be inserted (from 0 to 3 clockwise quarters)
 - a tuple (x,y) that indicates where to move
+- info on the new tile (if it has a wall on North, East, South, West, and it's item number)
+- next item for the player who has played
 */
 typedef struct
 {
@@ -110,8 +112,6 @@ void closeConnection();
  *
  * The bot name <BOT> could be:
  * - "PLAY_RANDOM" for a player that make random (but legal) moves
- * - "ASTAR" for a
- *
  *
  */
 void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int* sizeY);
