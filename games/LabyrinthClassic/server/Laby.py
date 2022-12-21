@@ -189,4 +189,4 @@ class Laby:
 				stack.append((i-1, j))
 			if (not self._lab[i][j].east) and i < (self.L-1) and (not self._lab[i+1][j].reachable) and (not self._lab[i+1][j].west):
 				stack.append((i+1, j))
-		logger.debug("Stack = " + str(stack))
+

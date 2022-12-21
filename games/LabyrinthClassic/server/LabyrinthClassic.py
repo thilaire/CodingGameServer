@@ -41,7 +41,7 @@ from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from .Constants import INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_TOP, INSERT_COLUMN_BOTTOM
 from .Constants import MAX_ITEM, BACKPLAYER, ITEMCHAR, OPPOSITE
-from .AstarPlayer import AstarPlayer
+from .Basic import BasicPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
 from .DontMove import PlayDontMove
 from .Laby import Tile, Laby
@@ -72,7 +72,7 @@ class LabyrinthClassic(Game):
 	"""
 
 	# dictionary of the possible training Players (non-regular players)
-	type_dict = {"RANDOM": PlayRandomPlayer, "ASTAR": AstarPlayer, "DONTMOVE": PlayDontMove}
+	type_dict = {"RANDOM": PlayRandomPlayer, "BASIC": BasicPlayer, "DONTMOVE": PlayDontMove}
 
 	def __init__(self, player1, player2, **options):
 		"""
