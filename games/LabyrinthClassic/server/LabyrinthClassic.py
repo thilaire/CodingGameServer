@@ -257,10 +257,11 @@ class LabyrinthClassic(Game):
 			# found !
 			self._playerItem[self._whoPlays] += -1 if self._whoPlays else +1
 			self.sendComment(self.playerWhoPlays, "I've found a new item!")
-			self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
 			# is it the last one ?
 			if self._playerItem[self._whoPlays] == (0 if self._whoPlays else MAX_ITEM+1):
 				return WINNING_MOVE, "The last item has been reached!"
+			else:
+				self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
 
 		# then return the new extra tile and numbering of the next item of the player
 		self._lastInsert = insert, number
