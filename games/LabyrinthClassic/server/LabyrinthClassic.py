@@ -235,9 +235,9 @@ class LabyrinthClassic(Game):
 			return LOSING_MOVE, "The column/line number must be odd !"
 		if not (0 <= rotation <= 3):
 			return LOSING_MOVE, "The rotation is not valid !"
-		if not (0 <= x <= self.L):
+		if not (0 <= x < self.L):
 			return LOSING_MOVE, "The position x is not valid !"
-		if not (0 <= y <= self.H):
+		if not (0 <= y < self.H):
 			return LOSING_MOVE, "The position y is not valid !"
 		if self._lastInsert == (OPPOSITE[insert], number):
 			return LOSING_MOVE, "The extra tile cannot be pushed back at the same place as previous move !"
