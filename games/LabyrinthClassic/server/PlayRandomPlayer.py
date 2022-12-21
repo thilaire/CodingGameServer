@@ -16,6 +16,7 @@ File: playRandomPlayer.py
 Copyright 2016-2017 T. Hilaire, J. Brajard
 """
 
+from copy import deepcopy
 from operator import itemgetter
 from math import sqrt
 from CGSserver.Player import TrainingPlayer
@@ -53,20 +54,24 @@ class PlayRandomPlayer(TrainingPlayer):
 		if self.game.lastInsert == (OPPOSITE[insert], number):
 			insert = OPPOSITE[insert]
 
-		# same position
-		#x, y = self.game.playerPos[us]
+		# copy the labyrinth and play the move
+		lab = deepcopy(self.game._lab)
+		playerPos = self.game._playerPos.copy()
+		lab.extraTile.rotate(rotate)
+		lab.insertExtraTile(insert=insert, number=number, playerPos=playerPos)
 
 		# search for the next item
 		nextItem = self.game._playerItem[self.game._whoPlays]
-		xitem, yitem = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if self.game._lab[x, y].item == nextItem][0]
+		itemPos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if lab[x, y].item == nextItem]
+		xitem, yitem = itemPos[0] if itemPos else playerPos[self.game._whoPlays]
 
 		#try to reach the next item
-		self.game._lab.reachable(*self.game._playerPos[self.game._whoPlays])
-		if self.game._lab[xitem, yitem].reachable:
+		lab.reachable(*playerPos[self.game._whoPlays])
+		if lab[xitem, yitem].reachable:
 			x, y = xitem, yitem
 		else:
 			# if not, move to the reachable tile that is the closest to the item to reach
-			pos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if self.game._lab[x, y].reachable]  # list of reachable points
+			pos = [(x, y) for x in range(self.game.L) for y in range(self.game.H) if lab[x, y].reachable]  # list of reachable points
 			dist = list(map(lambda p: sqrt((p[0] - xitem) ** 2 + (p[1] - yitem) ** 2), pos))  # list of distance
 			x, y = pos[min(enumerate(dist), key=itemgetter(1))[0]]		# find the index of the minimum distance
 
