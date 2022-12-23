@@ -137,7 +137,7 @@ class LabyrinthClassic(Game):
 		html = html.replace(u'\u2589', '<span style="background-color:black"> </span>')  # black box
 		html = html.replace(u'\u265F', 'o')  # player
 
-		return {'labycontent': html, 'item': self._playerItem}
+		return {'content': html, 'item': self._playerItem}
 		# return "Game %s (with players '%s' and '%s'\n<br><br>%s" % (
 		# self.name, self._players[0].name, self._players[1].name, self)
 
