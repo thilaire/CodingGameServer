@@ -1,0 +1,26 @@
+{% macro socketGame(prefix) %}
+<script type="text/javascript">
+    {% include "game/updateGame.js" %}
+</script>
+{% endmacro %}
+
+{% macro styleGame() %}
+<style>
+#comments {
+    border-color: #a9a9a9;
+}
+#comments::before{
+    content: "Comments: ";
+    display: block;
+    font-weight: bold;
+    font-style: italic;
+}
+</style>
+{% endmacro %}
+
+{% macro contentGame() %}
+<div id="game_content" style="padding: 5px 0">
+
+        <div id="comments" class="game-info-frame"></div>
+</div>
+{% endmacro %}

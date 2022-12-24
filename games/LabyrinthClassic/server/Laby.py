@@ -28,6 +28,12 @@ from .Constants import TOPLEFT, TOPMID, TOPRIGHT, MIDLEFT, MIDRIGHT, BOTTOMLEFT,
 
 logger = getLogger("Labyclassic")  # general logger ('root')
 
+TYPE = {(True, False, True, False): ('I', 0), (False, True, False, True): ('I', 1),
+		(False, False, True, True): ('L', 1), (True, False, False, True): ('L', 1),
+		(True, True, False, False): ('L', 2), (False, True, True, False): ('L', 3),
+		(True, False, False, False): ('T', 0), (False, True, False, False): ('T', 1),
+		(False, False, True, False): ('T', 2), (False, False, False, True): ('T', 3)
+}
 
 @dataclass
 class Tile:
@@ -43,6 +49,13 @@ class Tile:
 		"""rotate a tile of rot 1/4 round in clockwise direction"""
 		for _ in range(rot):
 			self.north, self.east, self.south, self.west = self.west, self.north, self.east, self.south
+
+	def toType(self):
+		"""return a tuple type, rot, item
+		where type is in 'T', 'L' or 'I' and rot is an integer between 0 and 3 (1/4 round in clockwise)"""
+		return TYPE[(self.north, self.east, self.south, self.west)] + (self.item,)
+
+
 
 
 class Laby:
@@ -190,3 +203,11 @@ class Laby:
 			if (not self._lab[i][j].east) and i < (self.L-1) and (not self._lab[i+1][j].reachable) and (not self._lab[i+1][j].west):
 				stack.append((i+1, j))
 
+	def toJSON(self):
+		"""return a dictionary used by the JS client"""
+		return {
+			'sizeX': self.L,
+			'sizeY': self.H,
+			'extra': self._extraTile.toType(),
+			'lab':  [[self._lab[x][y].toType() for x in range(self.L)] for y in range(self.H)]
+		}
