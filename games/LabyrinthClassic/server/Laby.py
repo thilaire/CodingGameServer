@@ -53,7 +53,8 @@ class Tile:
 	def toType(self):
 		"""return a tuple type, rot, item
 		where type is in 'T', 'L' or 'I' and rot is an integer between 0 and 3 (1/4 round in clockwise)"""
-		return TYPE[(self.north, self.east, self.south, self.west)] + (self.item,)
+		return (self.north, self.east, self.south, self.west, self.item)
+		#return TYPE[(self.north, self.east, self.south, self.west)] + (self.item,)
 
 
 
