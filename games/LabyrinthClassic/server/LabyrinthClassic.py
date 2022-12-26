@@ -36,7 +36,7 @@ from re import compile
 from ansi2html import Ansi2HTMLConverter
 from colorama import Fore, Back
 from logging import getLogger
-from copy import deepcopy
+from copy import deepcopy, copy
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
@@ -260,7 +260,7 @@ class LabyrinthClassic(Game):
 			return LOSING_MOVE, "The extra tile cannot be pushed back at the same place as previous move !"
 		# rotate the line/column and insert the rotated extra tile
 		self._lab.extraTile.rotate(rotation)
-		inserted = self._lab.extraTile
+		inserted = copy(self._lab.extraTile)
 		self._lab.insertExtraTile(insert, number, self._playerPos)
 
 		# move the player
@@ -287,8 +287,8 @@ class LabyrinthClassic(Game):
 			'insert': insert,
 			'number': number,
 			'inserted': inserted.toType(),
-			'playerPos': self._playerPos,
-			'itemPos': self._playerItem,
+			'playerPos': self._playerPos[:],
+			'itemPos': self._playerItem[:],
 		})
 		return NORMAL_MOVE, "%d %d %d %d %d %d" % (self._lab.extraTile.north, self._lab.extraTile.east, self._lab.extraTile.south, self._lab.extraTile.west, self._lab.extraTile.item, self._playerItem[self._whoPlays])
 
