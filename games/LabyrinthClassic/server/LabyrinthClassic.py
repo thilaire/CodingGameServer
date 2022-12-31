@@ -144,7 +144,8 @@ class LabyrinthClassic(Game):
 			d['history'] = self._history[:-1]
 
 		# add the last move and the inserted tile
-		d['lastInsert'] = self._history[-1]
+		if self._history:
+			d['lastInsert'] = self._history[-1]
 
 		return d
 
