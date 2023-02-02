@@ -278,6 +278,7 @@ class LabyrinthClassic(Game):
 			'insert': insert,
 			'number': number,
 			'inserted': inserted.toType(),
+			'rotation' : rotation,
 			'playerPos': self._playerPos[:],
 			'itemPos': self._playerItem[:],
 		})
