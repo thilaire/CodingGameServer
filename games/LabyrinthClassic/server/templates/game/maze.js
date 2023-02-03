@@ -12,8 +12,10 @@ class Maze {
         this.shift = 0;
         this.history = [];
         this.historyPointer = -1;
+        this.isReady = false;
         this.isAnimating = false;
-        this.isPaused = true;
+        this.isPaused = false;
+        this.turn = 0;
         this.players = [
             {
                 x: 0,
@@ -28,6 +30,10 @@ class Maze {
         ];
     }
 
+    /**
+     * Method: draw
+     * Draws the labyrinth onto the canvas
+     */
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (let i = 0; i < this.dimensions.x; i++) {
@@ -35,16 +41,46 @@ class Maze {
                 this.ctx.drawImage(this.getSprite(this.labyrinth[j][i], [j, i]), (i + 1) * 64, (j + 1) * 64, 64, 64);
             }
         }
+    }
 
+    /**
+     * Method: drawExtraTile
+     * Updates the extra tile in its HTML canvas
+     */
+    drawExtraTile () {
         let extraTileCanvas = document.getElementById("extra_tile");
         let extraTileCtx = extraTileCanvas.getContext("2d");
         extraTileCtx.drawImage(this.getSprite(this.extraTile, [-1, -1]), 0, 0, 64, 64);
     }
 
-    async insert(insertion, number) {
-        console.log(`maze.insert(${insertion}, ${number})`);
+    /**
+     * Method: rotate
+     * Rotates a given tile clockwise
+     * @param tile
+     * @param amount
+     * @returns {*}
+     */
+    rotate (tile, amount) {
+        for (let i = 0; i < amount; i++) {
+            tile = [tile[1], tile[2], tile[3], tile[0], tile[4]];
+        }
+
+        return tile;
+    }
+
+    /**
+     * Method: insert
+     * Inserts and animates a tile into the labyrinth
+     * @param insertion
+     * @param number
+     * @param rotation
+     * @returns {Promise<unknown>}
+     */
+    async insert(insertion, number, rotation) {
         return new Promise(async resolve => {
             this.draw();
+
+            this.extraTile = this.rotate(this.extraTile, rotation);
 
             await this.animate(insertion, number);
 
@@ -56,8 +92,8 @@ class Maze {
                 }
                 this.labyrinth[number][0] = this.extraTile;
 
-                if (this.players[0].y === number) this.players[0].x = (this.players[0].x+1)%this.dimensions.x;
-                if (this.players[1].y === number) this.players[1].x = (this.players[1].x+1)%this.dimensions.x;
+                if (this.players[0].y === number && !this.turn) this.players[0].x = (this.players[0].x+1)%this.dimensions.x;
+                if (this.players[1].y === number && this.turn) this.players[1].x = (this.players[1].x+1)%this.dimensions.x;
             } else if (insertion === 1) {
                 extraTile = this.labyrinth[number][0];
                 for (let i = 1; i < this.dimensions.x; i++) {
@@ -65,11 +101,11 @@ class Maze {
                 }
                 this.labyrinth[number][this.dimensions.x - 1] = this.extraTile;
 
-                if (this.players[0].y === number) {
+                if (this.players[0].y === number && !this.turn) {
                     this.players[0].x = (this.players[0].x-1);
                     if(this.players[0].x < 0) this.players[0].x = this.dimensions.x-1;
                 }
-                if (this.players[1].y === number) {
+                if (this.players[1].y === number && this.turn) {
                     this.players[1].x = (this.players[1].x-1);
                     if(this.players[1].x < 0) this.players[1].x = this.dimensions.x-1;
                 }
@@ -80,8 +116,8 @@ class Maze {
                 }
                 this.labyrinth[0][number] = this.extraTile;
 
-                if (this.players[0].x === number) this.players[0].y = (this.players[0].y+1)%this.dimensions.x;
-                if (this.players[1].x === number) this.players[1].y = (this.players[1].y+1)%this.dimensions.x;
+                if (this.players[0].x === number && !this.turn) this.players[0].y = (this.players[0].y+1)%this.dimensions.x;
+                if (this.players[1].x === number && this.turn) this.players[1].y = (this.players[1].y+1)%this.dimensions.x;
             } else if (insertion === 3) {
                 extraTile = this.labyrinth[0][number];
                 for (let i = 1; i < this.dimensions.y; i++) {
@@ -89,11 +125,11 @@ class Maze {
                 }
                 this.labyrinth[this.dimensions.y - 1][number] = this.extraTile;
 
-                if (this.players[0].x === number) {
+                if (this.players[0].x === number && !this.turn) {
                     this.players[0].y = (this.players[0].y-1);
                     if(this.players[0].y < 0) this.players[0].y = this.dimensions.y-1;
                 }
-                if (this.players[1].x === number) {
+                if (this.players[1].x === number && this.turn) {
                     this.players[1].y = (this.players[1].y-1);
                     if(this.players[1].y < 0) this.players[1].y = this.dimensions.y-1;
                 }
@@ -106,6 +142,13 @@ class Maze {
         });
     }
 
+    /**
+     * Method: animate
+     * Animates the insertion of a tile into the canvas
+     * @param insertion
+     * @param number
+     * @returns {Promise<unknown>}
+     */
     animate(insertion, number) {
         // Clear the this.canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -164,6 +207,13 @@ class Maze {
         });
     }
 
+    /**
+     * Method: getSprite
+     * Builds and return a sprite corresponding to the given tile and coordinates
+     * @param tile
+     * @param coordinates
+     * @returns {HTMLElement}
+     */
     getSprite(tile, coordinates) {
         let sprite;
         // L sprites
@@ -228,8 +278,13 @@ class Maze {
         return sprite;
     }
 
+    /**
+     * Method: opposite
+     * Returns the opposite of a given move
+     * @param insertion
+     * @returns {number}
+     */
     opposite(insertion){
-        let opposite = [1, 0, 3, 2];
-        return opposite[insertion];
+        return [1, 0, 3, 2][insertion];
     }
 }
