@@ -142,6 +142,7 @@ class LabyrinthClassic(Game):
 		if firstTime:
 			d.update(self._lab.toJSON())
 			d['history'] = self._history[:-1]
+			d['names'] = [p.name for p in self.players]
 
 		# add the last move and the inserted tile
 		if self._history:
