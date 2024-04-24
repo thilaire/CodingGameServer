@@ -34,7 +34,7 @@ typedef enum
 {
 	NORMAL_MOVE = 0,
 	WINNING_MOVE = 1,
-	LOOSING_MOVE = -1
+	LOSING_MOVE = -1
 } t_return_code;
 
 
@@ -171,7 +171,5 @@ void printCGSGame(const char* fct);
  * - comment: (string) comment to send to the server (max 100 char.)
  */
 void sendCGSComment(const char* fct, const char* comment);
-
-
 
 #endif
