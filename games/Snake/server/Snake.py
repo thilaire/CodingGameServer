@@ -356,7 +356,7 @@ class Snake(Game):
 		ny = hy + Ddy[direction]
 		# check if there is a wall and if the new position is free
 		if self.arena.getWall(hx, hy, direction):
-			return LOSING_MOVE, "The move makes the snake goes into a wall"
+			return LOSING_MOVE, "The move makes the snake go into a wall"
 		if self.arena.getPlayer(nx, ny) is not None:
 			return LOSING_MOVE, "The move makes the snakes collide..."
 		# the snake move

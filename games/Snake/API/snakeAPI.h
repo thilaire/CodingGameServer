@@ -72,7 +72,7 @@ void closeConnection();
 * gameType is a string like "GAME key1=value1 key2=value1 ..."
  * - It indicates the type of the game you want to plys
  *   it could be "TRAINING <BOT>" to play against bot <BOT>
- *   or "TOURNAMENT xxxx" to join the tournament xxxx
+ *   or "TOURNAMENT <xxxx>" to join the tournament <xxxx>
  *   or "" (empty string) to wait for an opponent (decided by the server)
  * - key=value pairs are used for options (each training player has its own options)
  *   invalid keys are ignored, invalid values leads to error
