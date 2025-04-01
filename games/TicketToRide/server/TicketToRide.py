@@ -462,7 +462,7 @@ class TicketToRide(Game):
 		# send:
 		# - to the player: the deck
 		# - to the opponent: if the player replay, the card taken and the deck
-		return NORMAL_MOVE, deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(card) + " " + deck
+		return NORMAL_MOVE, ("1 " if self._shouldTakeAnotherCard else "0 ") + deck, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(card) + " " + deck
 
 
 	def _drawBlindCard(self):
@@ -484,7 +484,7 @@ class TicketToRide(Game):
 		# send:
 		# - to the player: card drawn
 		# - to the opponent: if the player replay
-		return NORMAL_MOVE, str(draw), ("1 " if self._shouldTakeAnotherCard else "0 ")
+		return NORMAL_MOVE, ("1 " if self._shouldTakeAnotherCard else "0 ") + str(draw), ("1 " if self._shouldTakeAnotherCard else "0 ")
 
 
 	def _claimRoute(self, move):
