@@ -33,7 +33,7 @@ class DoNothingPlayer(TrainingPlayer):
 		no options, nothing to do with options
 		"""
 		super().__init__('Do_nothing')
-
+		self._round = 0
 
 	def playMove(self):
 		"""
@@ -41,7 +41,18 @@ class DoNothingPlayer(TrainingPlayer):
 		(50% chance to take from the deck, 50% to take a random face up card)
 		Returns the move
 		"""
-		# face up cards that are not a Locomotive
-		faceUp = ["3 %d" % c for c in self.game.faceUpCards() if c != MULTICOLOR]
-		return choice(["2", choice(faceUp)])
+		# check for 1st or 2nd round
+		if self._round == 0:
+			# 1st round, take 3 objectives
+			self._round = 1
+			return "4"
+		elif self._round == 1:
+			# then keep the three
+			self._round = 2
+			return "5 1 1 1"
+		# other try to claim a route that starts from one of its cities
+		else:
+			# face up cards that are not a Locomotive
+			faceUp = ["3 %d" % c for c in self.game.faceUpCards() if c != MULTICOLOR]
+			return choice(["2", choice(faceUp)])
 
