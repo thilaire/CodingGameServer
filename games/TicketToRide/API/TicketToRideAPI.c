@@ -1,47 +1,15 @@
-/*
-+----------------------------------------------------+
-|                                                    |
-|        #######                                     |
-|           #    #  ####  #    # ###### #####        |
-|           #    # #    # #   #  #        #          |
-|           #    # #      ####   #####    #          |
-|           #    # #      #  #   #        #          |
-|           #    # #    # #   #  #        #          |
-|           #    #  ####  #    # ######   #          |
-|                                                    |
-|                      ######                        |
-|      #####  ####     #     # # #####  ######       |
-|        #   #    #    #     # # #    # #            |
-|        #   #    #    ######  # #    # #####        |
-|        #   #    #    #   #   # #    # #            |
-|        #   #    #    #    #  # #    # #            |
-|        #    ####     #     # # #####  ######       |
-|                                                    |
-|                                                    |
-+----------------------------------------------------+
-
-Authors: T. Hilaire
-Licence: GPL
-
-File: TicketToRide.h
-	Client API for the TicketToRide game with CGS
-
-Copyright 2020 T. Hilaire
-*/
-
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include "ticketToRide.h"
 #include "clientAPI.h"
-#include "TicketToRideAPI.h"
 
 
 /* global variables used in intern, so the user do not have to pass them once again) */
 int nbTr;        		/* number of tracks */
 int nbC;				/* number of cities */
 char** cityNames;		/* array of city names (used by printCity) */
-
+CardColor faceUp[5];   /* store the face up cards returned by the get/sendMove */
 
 /* -----------------------
  * Dummy function that does
@@ -60,113 +28,69 @@ void strCpyReplace(char* dest, const char* src)
 }
 
 
-
 /* -------------------------------------
  * Initialize connection with the server
- * Quit the program if the connection to the server
- * cannot be established
+ * This is the first function you should call, it will connect you to the server.
+ * You need to provide the server address and the port to connect to.
+ * This is a blocking function, it will wait until the connection is established, it may take some time.
  *
  * Parameters:
- * - serverName: (string) address of the server
+ * - address: (string) address of the server
  * - port: (int) port number used for the connection
- * - name: (string) name of the bot : max 20 characters
- */
-void connectToServer(char* serverName, unsigned int port, char* name)
-{
-	connectToCGS(__FUNCTION__, serverName, port, name);
-}
-
-
-/* ----------------------------------
- * Close the connection to the server
- * because we are polite
+ * - name: (string) your bot's name
  *
- */
-void closeConnection()
-{
-	/* free the data */
-	char** p = cityNames;
-	for(int i=0; i<nbC; i++)
-		free(*p++);
-	free(cityNames);
-	/* close the connection */
-	closeCGSConnection(__FUNCTION__);
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode connectToCGS(const char* address, unsigned int port, const char* name){
+    connectToCGSServer(__FUNCTION__, address, port, name);
+    return ALL_GOOD;
 }
 
 
-/* ----------------------------------------------------------------
- * Wait for a T2R Game, and retrieve its name and first data
- * (the number of cities and the number of connections)
+/* -------------------------------------
+ * Send the game settings to the server in order to start a game
+ * After connecting, you need to send game settings to the server to start a game.
+ * You need to provide a string for the game setting and a GameData struct to store the game data returned by the server.
+  *
+ * The fields `gameName` and `trackData` (of GameData) are allocated by the function, so they need to be freed by the user
  *
  * Parameters:
- * - gameType: string (max 200 characters) type of the game we want to play
- *             (empty string for regular game)
+* - gameType: string (max 200 characters) type of the game we want to play (empty string for regular game)
  *             "TRAINING xxxx" to play with the bot xxxx
  *             "TOURNAMENT xxxx" to join the tournament xxxx
- *     gameType can also contains extra data in form "key1=value1 key2=value1 ..."
- *     to provide options (to bots)
+ *     gameType can also contain extra data in form "key1=value1 key2=value1 ..." to provide options (to bots)
  *     invalid keys are ignored, invalid values leads to error
  *     the options are:
- *        - 'timeout': allows an define the timeout when training (in seconds)
+ *        - 'timeout': allows to define the timeout when training (in seconds)
  *        - 'seed': allows to set the seed of the random generator
  *        - 'start': allows to set who starts ('0' to begin, '1' otherwise)
- *        - 'map': allows to choose a map ('USA' for the moment)
+ *        - 'map': allows to choose a map ('USA', 'small' or 'Europe')
  *     the following bots are available:
- *        - DO_NOTHING (stupid player what withdraw cards)
+ *        - DO_NOTHING (stupid bot what withdraw cards)
+ *        - PLAY_RANDOM (bot that plays randomly)
+ *        - NICE_BOT (bot that plays reasonably well, but not too well)
+ * - gameData: (GameData*) store the game data
  *
- * - gameName: char* to get the game Name (should be allocated, max 50 characters),
- *
- * - nbCities: to get the number of cities
- * - nbTracks: to get the number of tracks between the cities
- */
-void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks)
-{
-	char data[10];
-	/* wait for a game */
-	waitForGame(__FUNCTION__, gameType, gameName, data);
-
-	/* parse the data */
-	sscanf(data, "%d %d", nbCities, nbTracks);
-	nbTr = *nbTracks;
-	nbC = *nbCities;
-	cityNames = (char**) malloc(nbC*sizeof(char*));
-}
-
-
-/* ------------------------------------------------------------
- * Get the map, the decks and initial cards and tell who starts
- * the three arrays are filled by the function
- *
- * Parameters:
- * - tracks: array of (5 x number of tracks) integers
- * 		Five integers are used to define a track:
- * 		- (1) id of the 1st city
- * 		- (2) id of the 2nd city
- * 		- (3) length of the track (between 1 and 6)
- * 		- (4) color of the track (MULTICOLOR if any color can be used)
- * 		- (5) color of the 2nd track if the track is double (NONE if the track is not a double track)
- * 	- faceUp: array of 5 t_color giving the 5 face up cards
- * 	- cards: array of 4 t_colors with the initial cards in your hand
- *
- *   (the pointers data MUST HAVE allocated with the right size !!)
- *
- * Returns 0 if you begin, or 1 if the opponent begins
- */
-int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
-{
-	char data[4096];   /* 16 char per track, 256 tracks max */
-	int nbchar;
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendGameSettings(const char* gameSettings, GameData* gameData){
+    char data[4096];
+    int nbchar;
 	char *p, **name;
 	char city[20];
 
-	/* check parameter */
-	if (!tracks)
-		dispError(__FUNCTION__, "The parameter `tracks` is NULL !");
+    /* wait for a game  and parse the data*/
+	char gameName[50];
+	waitForGame(__FUNCTION__, gameSettings, gameName, data);
+	sscanf(data, "%d %d", &nbC, &nbTr);
+	gameData->nbTracks = nbTr;
+	gameData->nbCities = nbC;
+	cityNames = (char**) malloc(nbC*sizeof(char*));
+	gameData->gameName = (char*)malloc((strlen(gameName)+1)*sizeof(char));
+	strcpy(gameData->gameName, gameName);
 
-	/* wait for a game */
-	int ret = getGameData( __FUNCTION__, data, 4096);
+	/* wait for the game data */
+	gameData->starter = getGameData( __FUNCTION__, data, 4096);
 
-	/* copy the city's names */
+	/* copy the cities' names */
 	p = data;
 	name = cityNames;
 	for(int i=0; i < nbC; i++){
@@ -177,198 +101,226 @@ int getMap(int* tracks, t_color faceUp[5], t_color cards[4])
 	}
 
 	/* copy the data in the tracks array */
+	gameData->trackData = (int*) malloc(sizeof(int) * gameData->nbTracks * 5);
+	int* tracks = gameData->trackData;
+	if (!gameData->trackData) return MEMORY_ALLOCATION_ERROR;
 	for(int i=0; i < nbTr; i++){
 		sscanf(p, "%d %d %d %d %d %n", tracks, tracks+1, tracks+2, tracks+3, tracks+4, &nbchar);
 		tracks += 5;
 		p += nbchar;
 	}
 
-	/* get the 5 face up cards */
+	/* get the 5 face up cards, but ignore them */
 	sscanf(p, "%d %d %d %d %d %n", (int*)faceUp, (int*)faceUp+1, (int*)faceUp+2, (int*)faceUp+3, (int*)faceUp+4, &nbchar);
 	p += nbchar;
 	/* get the 4 initial cards */
-	sscanf(p, "%d %d %d %d", (int*)cards, (int*)cards+1, (int*)cards+2, (int*)cards+3);
+	sscanf(p, "%d %d %d %d", (int*)gameData->cards, (int*)gameData->cards+1, (int*)gameData->cards+2, (int*)gameData->cards+3);
 
-	return ret;
+	return ALL_GOOD;
 }
 
 
 
-/* ----------------------
- * Get the opponent move
+/* -------------------------------------
+ * Get the move of the opponent
+ * During a game this function is used to know what your opponent did during his turn.
+ * You need to provide an empty MoveData struct and an empty MoveResult struct to store the move data returned by the server.
+ * MoveData struct store the move your opponent did and MoveResult struct store the result of the move.
+ *
+ * The fields `opponentMessage` and `message` (of moveResult) are allocated by the function, so they need to be freed by the user
  *
  * Parameters:
- * - move: a t_move variable, filled by the function
- * - replay: boolean, tells if the player must replay after this move or not
-  *
- * Returns:
- * - NORMAL_MOVE for normal move,
- * - WINNING_MOVE for a winning move, -1
- * -  LOOSING_MOVE for a losing (or illegal) move
- * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
- */
-t_return_code getMove(t_move* move, int* replay)
-{
+ * - moveData: (GameSettings*) data defining the opponent's move
+ * - moreResult: (MoveResult*) data returned after the move
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode getMove(MoveData* moveData, MoveResult* moveResult){
 	char moveStr[MAX_GET_MOVE];
 	char msg[MAX_MESSAGE];
 	int obj[3];
 	char* p;
 	unsigned int nbchar;
+	int replay;
+
 
 	/* get the move */
-	t_return_code ret = getCGSMove(__FUNCTION__, moveStr, msg);
+	moveResult->state = getCGSMove(__FUNCTION__, moveStr, msg);
+	moveResult->replay = false;
 
 	/* extract result */
-	if (ret == NORMAL_MOVE) {
-		sscanf(moveStr, "%d%n", (int*) &move->type, &nbchar);
+	if (moveResult->state == NORMAL_MOVE) {
+		sscanf(moveStr, "%d%n", (int*) &moveData->action, &nbchar);
 		p = moveStr + nbchar;
-		if (move->type == CLAIM_ROUTE) {
-			sscanf(p, "%d %d %d %d", &move->claimRoute.city1, &move->claimRoute.city2, (int*)&move->claimRoute.color, &move->claimRoute.nbLocomotives);
-			*replay = 0;
+		if (moveData->action == CLAIM_ROUTE) {
+			sscanf(p, "%d %d %d %d", &moveData->claimRoute.from, &moveData->claimRoute.to, (int*)&moveData->claimRoute.color, &moveData->claimRoute.nbLocomotives);
 		}
-		else if (move->type == DRAW_CARD) {
-			sscanf(msg, "%d %d %d %d %d %d %d", replay, (int*) &move->drawCard.card, (int*) move->drawCard.faceUp,
-				   (int*)move->drawCard.faceUp + 1,
-				   (int*)move->drawCard.faceUp + 2, (int*)move->drawCard.faceUp + 3, (int*)move->drawCard.faceUp + 4);
+		else if (moveData->action == DRAW_CARD) {
+			sscanf(msg, "%d %d %d %d %d %d %d", &replay, (int*) &moveData->drawCard, (int*) faceUp, (int*) faceUp+1, (int*) faceUp+2, (int*) faceUp+3, (int*) faceUp+4);
+			moveResult->replay =  (bool) replay;
 		}
-		else if (move->type == DRAW_BLIND_CARD){
-			sscanf(msg, "%d", replay);
-			move->drawBlindCard.card = NONE;		/* we don't know which card the opponent has */
+		else if (moveData->action == DRAW_BLIND_CARD){
+			sscanf(msg, "%d", &replay);
+			moveResult->replay = (bool) replay;
+			moveResult->card = NONE;		/* we don't know which card the opponent has */
 		}
-		else if (move->type == DRAW_OBJECTIVES) {
-			*replay = 1;
+		else if (moveData->action == DRAW_OBJECTIVES) {
+			moveResult->replay = true;
 		}
-		else if (move->type == CHOOSE_OBJECTIVES) {
+		else if (moveData->action == CHOOSE_OBJECTIVES) {
 			sscanf(p, "%d %d %d", obj, obj + 1, obj + 2);
-			/* get the number of objectives kept by the opponent*/
-			move->chooseObjectives.nbObjectives = (obj[0] != 0) + (obj[1] != 0) + (obj[2] != 0);
-			*replay =0;
+			for(int i=0;i<3;i++)
+			    moveData->chooseObjectives[i] = (bool) obj[i];
 		}
 	}
 
-	return ret;
-}
+    //TODO: get the messages
+    moveResult->message = NULL;
+    moveResult->opponentMessage = NULL;
 
-/* play the move "claim a route"
- * between two cities, using a color (it should correspond to a track between the two cities)
- * and a certain number of Locomotives
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code claimRoute(int city1, int city2, int color, int nbLocomotives){
-	char msg[256];
-	char answer[MAX_MESSAGE];
-	sprintf(msg, "1 %d %d %d %d", city1, city2, color, nbLocomotives);
-	return sendCGSMove(__FUNCTION__, msg, answer);
-}
+	return ALL_GOOD;
 
-/* play the move "draw a blind card"
- * the drawn card is put in card
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code drawBlindCard(t_color* card){
-	char answer[MAX_MESSAGE];
-	/* send message */
-	t_return_code ret = sendCGSMove(__FUNCTION__, "2", answer);
-	/* get card drawn */
-	if (ret == NORMAL_MOVE)
-		sscanf(answer, "%d", (int*)card);
 
-	return ret;
 }
 
 
-/* play the move "draw a card in the deck"
- * - card: color of the card chosen in the deck (it MUST exist)
- * - deck: array representing the deck (modified by the function)
+
+/* -------------------------------------
+ * Send the move to the server
+ * During a game this function is used to send your move to the server.
+ * You need to provide a MoveData struct containing your move and an empty MoveResult struct to store the result of the
+ * move returned by the server.
  *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code drawCard(t_color card, t_color deck[5]){
-	char answer[MAX_MESSAGE];
-	char msg[MAX_GET_MOVE];
-	/* send message */
-	sprintf(msg, "3 %d", card);
-	t_return_code ret = sendCGSMove(__FUNCTION__, msg, answer);
-	/* get the new deck */
-	if (ret == NORMAL_MOVE)
-		sscanf(answer, "%d %d %d %d %d", (int*)deck, (int*)deck+1, (int*)deck+2, (int*)deck+3, (int*)deck+4);
-
-	return ret;
-}
-
-
-/* play the move "draw some objective cards"
- * - obj: array representing the objective card (modified by the function)
+ * The fields `opponentMessage` and `message` (of moveResult) are allocated by the function, so they need to be freed by the user
  *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- * -> the move "choose objectives" MUST be play just after !!
- */
-t_return_code drawObjectives(t_objective obj[3]){
+ * Parameters:
+ * - moveData: (GameSettings*) data defining our move
+ * - moreResult: (MoveResult*) data returned after the move
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendMove(const MoveData *moveData, MoveResult* moveResult){
+    char msg[256];
 	char answer[MAX_MESSAGE], *str = answer;
 	int nbchar;
-	/* send message */
-	t_return_code ret = sendCGSMove(__FUNCTION__, "4", answer);
-	/* get the new obj */
-	if (ret == NORMAL_MOVE) {
-		t_objective *p = obj;
-		for (int i = 0; i < 3; i++, p++) {
-			sscanf(str, "%d %d %d%n", &p->city1, &p->city2, &p->score, &nbchar);
-			str += nbchar;
-		}
-	}
+	int replay;
 
-	return ret;
+	// TODO: manage messages
+	moveResult->message = NULL;
+	moveResult->opponentMessage = NULL;
+	moveResult->replay = false;
+    // send the appropriate message
+    switch(moveData->action){
+
+        case CLAIM_ROUTE:
+            sprintf(msg, "1 %d %d %d %d", moveData->claimRoute.from, moveData->claimRoute.to, moveData->claimRoute.color, moveData->claimRoute.nbLocomotives);
+	        moveResult->state = sendCGSMove(__FUNCTION__, msg, answer);
+	        break;
+
+	    case DRAW_BLIND_CARD:
+	        moveResult->state = sendCGSMove(__FUNCTION__, "2", answer);
+        	/* get card drawn */
+	        if (moveResult->state == NORMAL_MOVE) {
+		        sscanf(answer, "%d %d", &replay, (int*)&moveResult->card);
+	        	moveResult->replay = replay;
+	        }
+		    break;
+
+		case DRAW_CARD:
+			sprintf(msg, "3 %d", moveData->drawCard);
+	        moveResult->state = sendCGSMove(__FUNCTION__, msg, answer);
+        	if (moveResult->state == NORMAL_MOVE) {
+        		sscanf(answer, "%d %d %d %d %d %d", &replay, (int*)faceUp, (int*)faceUp+1, (int*)faceUp+2, (int*)faceUp+3, (int*)faceUp+4);
+        		moveResult->replay = replay;
+        	}
+		    break;
+
+		case DRAW_OBJECTIVES:
+			moveResult->state = sendCGSMove(__FUNCTION__, "4", answer);
+            if (moveResult->state == NORMAL_MOVE) {
+                Objective *p = moveResult->objectives;
+                for (int i = 0; i < 3; i++, p++) {
+                    sscanf(str, "%d %d %d%n", &p->from, &p->to, &p->score, &nbchar);
+                    str += nbchar;
+                }
+            	moveResult->replay = true;
+            }
+            break;
+
+        case CHOOSE_OBJECTIVES:
+            sprintf(msg, "5 %d %d %d", (int) moveData->chooseObjectives[0], (int) moveData->chooseObjectives[1], (int) moveData->chooseObjectives[2]);
+	        moveResult->state = sendCGSMove(__FUNCTION__, msg, answer);
+            break;
+    }
+
+    return ALL_GOOD;
+
 }
 
 
-/* play the move "choose some objective cards"
- * - objectivesCards: array of boolean indicating which cards are taken
- * 		(0 -> the objective card is not taken)
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- * -> MUST be played after "draw objectives
- */
-t_return_code chooseObjectives(int objectiveCards[3]){
-	char msg[MAX_GET_MOVE];
-	char answer[MAX_MESSAGE];
-	/* send message */
-	sprintf(msg, "5 %d %d %d", objectiveCards[0], objectiveCards[1], objectiveCards[2]);
-	t_return_code ret = sendCGSMove(__FUNCTION__, msg, answer);
-
-	return ret;
-}
-
-
-/* ----------------------
- * Display the Game
- * in a pretty way (ask the server what to print)
- */
-void printMap()
-{
-	printCGSGame(__FUNCTION__);
-}
-
-
-
-/* ----------------------------
- * Send a comment to the server
+/* -------------------------------------
+ * This function is used to get the current state of the board during a game.
+ * It returns the 5 face-up cards
  *
  * Parameters:
- * - comment: (string) comment to send to the server (max 100 char.)
- */
-void sendComment(char* comment)
-{
-	sendCGSComment( __FUNCTION__, comment);
+ * - boardState: (BoardState*) the 5 face-up cards
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode getBoardState(BoardState* boardState){
+    for(int i=0;i<5;i++)
+        boardState->card[i] = faceUp[i];
+    return ALL_GOOD;
 }
 
-/* --------------------
- * Display a city's name
+/* -------------------------------------
+ * This function is used to send a message to your opponent during a game.
+ * You need to provide the message as a string. It should be less than 256 characters long.
+ *
  * Parameters:
- * - city: (int) id of the city
- */
-void printCity(int city){
-	printf("%s", cityNames[city]);
+ * - message: (string) the message sent
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendMessage(const char* message){
+    sendCGSComment( __FUNCTION__, message);
+    return ALL_GOOD;
 }
 
+
+/* -------------------------------------
+ * This function is used to display the game board during a game.
+ * It will print the colored board in the console.
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode printBoard(){
+    printCGSGame(__FUNCTION__);
+    return ALL_GOOD;
+}
+
+
+/* -------------------------------------
+ * This function prints the city name
+ *
+ * Parameters:
+ * - cityId: (int) id of the city to be printed
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode printCity(unsigned int cityId){
+	printf("%s", cityNames[cityId]);
+	return ALL_GOOD;
+}
+
+
+/* -------------------------------------
+ * This function is used to quit the currently running game.
+ *
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode quitGame(){
+	/* free the data */
+	char** p = cityNames;
+	for(int i=0; i<nbC; i++)
+		free(*p++);
+	free(cityNames);
+	/* close the connection */
+	closeCGSConnection(__FUNCTION__);
+
+	return ALL_GOOD;
+}

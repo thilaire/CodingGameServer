@@ -20,247 +20,304 @@
 |                                                    |
 +----------------------------------------------------+
 
-Authors: T. Hilaire
+Authors: T. Hilaire, V. Le Lièvre
 Licence: GPL
 
 File: TicketToRide.h
 	Client API for the TicketToRide game with CGS
 
-Copyright 2020 T. Hilaire
+Copyright 2025 T. Hilaire, V. Le Lièvre
 */
 
 
-#ifndef __API_CLIENT_T2R__
-#define __API_CLIENT_T2R__
+/*
+
+    1. How to use:
+        To connect to the server and play a game you have to call (in order):
+            - ResultCode connectToCGS(const char *address, unsigned int port)
+            - ResultCode sendName(const char *name)
+            - ResultCode sendGameSettings(GameSettings gameSettings, GameData* gameData)
+
+        You will then be connected to a game and will be able to play by calling:
+            - ResultCode getMove(MoveData* moveData, MoveResult* moveResult)
+            - ResultCode sendMove(const MoveData *moveData, MoveResult* moveResult)
+
+    2. Constants:
+        To communicate actions to the server you can use CONSTANTS variables, defined
+        in enum types below, instead of hex code values.
+
+        For exemple: use the TRAINING constant instead of code 0x1. It will greatly improve code readability.
+
+    3. Defaults values for struct:
+        You can instantiate struct with pre-set default values by using:
+            - GameSettings gameSettings = GameSettingsDefaults;
+            - GameData gameData = GameDataDefaults;
+
+        This will reduce potential errors and unexpected behaviours.
+
+    4. Every function will return an int (ResultCode) indicating the success / failure of the function.
+        Possible error codes are:
+            - 0x10: Param errors
+            - 0x20: server / network errors
+            - 0x30: other error
+            - 0x40: all good
+
+        Be sure to check return values of functions to handle errors. You may want to use the constants for better readability.
+
+        Exemple: if(result == SERVER_ERROR) { ... }
+
+    5. Memory management:
+        Some functions are using malloc calls to allocate memory space. You will need
+        to free those spaces.
+
+        Variables that need to be freed are detailed in the comment of each function
+
+        NOTE: you are likely to create multiple instance of MoveData, don't forget
+        to free opponentMessage, or you will likely encounter Segmentation fault error.
+
+*/
+
+
+#ifndef __TICKET_TO_RIDE_H__
+#define __TICKET_TO_RIDE_H__
 #include "clientAPI.h"
+#include <stdbool.h>
 
 
-/* colors' definitions */
+
+/* The 5 different type of moves
+ * The `DRAW_OBJECTIVES` move must be followed by a `CHOOSE_OBJECTIVES` move
+ */
 typedef enum {
-	NONE = 0,       		/* used to indicate a track is not double */
-	PURPLE,
-	WHITE,
-	BLUE,
-	YELLOW,
-	ORANGE,
-	BLACK,
-	RED,
-	GREEN,
-	MULTICOLOR 				/* used for the locomotive card (joker) or for a track that can accept any color */
-} t_color;
+    CLAIM_ROUTE = 0x1,  // Claim a route between two cities
 
-/* different possible moves */
-typedef enum
-{
-	CLAIM_ROUTE = 1,
-	DRAW_BLIND_CARD = 2,
-	DRAW_CARD = 3,
-	DRAW_OBJECTIVES = 4,
-	CHOOSE_OBJECTIVES = 5
-} t_typeMove;
+    DRAW_BLIND_CARD, // Draw a card from the deck
+    DRAW_CARD, // Draw a card from the visible cards
 
-/* an objective card */
-typedef struct{
-	int city1, city2;
-	int score;
-} t_objective;
+    DRAW_OBJECTIVES, // Draw 3 objectives
+    CHOOSE_OBJECTIVES // Choose 1 to 3 objectives
+} Action;
 
-/* a 'claim a route' move */
-typedef struct{
-	int city1, city2;		/* id of the two cities */
-	t_color color;			/* main color of the track */
-	int nbLocomotives;		/* number of Locomotives used */
-} t_claimRouteMove;
 
-/* a 'draw a card' move */
-typedef struct{
-	t_color card;			/* color of the card taken */
-	t_color faceUp[5];		/* returned face up cards */
-} t_drawCard;
+/* Different colors */
+typedef enum {
+    NONE = 0,       // only used when a route does not have a second color/track
+    PURPLE = 1,
+	WHITE = 2,
+	BLUE = 3,
+	YELLOW = 4,
+	ORANGE = 5,
+	BLACK = 6,
+	RED = 7,
+	GREEN = 8,
+	LOCOMOTIVE = 9  // jocker, that can be used for any color
+} CardColor;
 
-/* a 'draw blind card' move */
-typedef struct{
-	t_color card;			/* returned card */
-} t_drawBlindCard;
 
-/* a 'draw objectives' move */
-typedef struct{
-	t_objective objectives[3];	/* returned objectives */
-} t_drawObjectives;
+/* define an objective
+ * from a city to another city
+ * and allow to win `score` points */
+typedef struct {
+    unsigned int from;
+    unsigned int to;
+    unsigned int score;
+} Objective;
 
-/* a 'choose an objective' move */
-typedef struct{
-	int nbObjectives;			/* returned number of objectives */
-	int chosen[3];				/* array of boolean, to tell which objective we choose */
-} t_chooseObjectives;
 
-/* a move */
-typedef struct{
-	t_typeMove type;
-	union{
-		t_claimRouteMove claimRoute;
-		t_drawCard drawCard;
-		t_drawBlindCard drawBlindCard;
-		t_drawObjectives drawObjectives;
-		t_chooseObjectives chooseObjectives;
-	};
-} t_move;
+/* Data used to clam a route, from a city to another city
+ * using a color, and some locomotive cards
+ */
+typedef struct {
+    unsigned int from;
+    unsigned int to;
+    CardColor color;
+    unsigned int nbLocomotives;
+} ClaimRouteMove;
 
+
+/* Data defining a move */
+typedef struct {
+    Action action;                      // One of Actions values
+
+    union {
+        ClaimRouteMove claimRoute;      // the route we claim
+        CardColor drawCard;             // the card we draw
+        bool chooseObjectives[3];       // the objectives we choose
+    };
+} MoveData;
+
+
+/* Data returns after a move */
+typedef struct MoveResult_ {
+    MoveState state;            // tells if the move winning/losing/normal move
+
+    union {
+        CardColor card;             // card when we draw a blind card
+        Objective objectives[3];    // objectives when we draw the ojbectives
+    };
+    bool replay;                    // true if the player plays once again
+
+    char* opponentMessage;          // String containing a message send by the opponent
+    char* message;                  // String containing a message send by the server
+} MoveResult;
+
+
+/* data returned when we call getBoardState
+ * here the five face-up cards
+ */
+typedef struct {
+        CardColor card[5]; // Visible cards
+} BoardState;
+
+
+/* game data, used to get the initial values of the board
+ * the `trackData` is a raw array of (5 x number of tracks) integers
+ * 	 Five integers are used to define a track:
+ * 	  - (1) id of the 1st city
+ * 	  - (2) id of the 2nd city
+ * 	  - (3) length of the track (between 1 and 6)
+ * 	  - (4) color of the track (MULTICOLOR if any color can be used)
+ * 	  - (5) color of the 2nd track if the track is double (NONE if the track is not a double track) */
+typedef struct {
+    char* gameName; // String containing the game name
+    int gameSeed; // Contain the seed used for the game board generation (if you didn't provide one)
+    int starter; // Defines who start, 1 you and 2 opponent
+
+    int nbCities; // Total number of cities in the map
+    int nbTracks;   // total number of tracks
+    int* trackData; // Track data, an array containing unformatted data about the trackstracks:
+    CardColor cards[4];
+} GameData;
+
+
+
+/*
+
+    Exposed functions
+
+*/
 
 /* -------------------------------------
  * Initialize connection with the server
- * Quit the program if the connection to the server
- * cannot be established
+ * This is the first function you should call, it will connect you to the server.
+ * You need to provide the server address and the port to connect to.
+ * This is a blocking function, it will wait until the connection is established, it may take some time.
  *
  * Parameters:
- * - serverName: (string) address of the server
+ * - address: (string) address of the server
  * - port: (int) port number used for the connection
- * - name: (string) name of the bot : max 20 characters
- */
-void connectToServer(char* serverName, unsigned int port, char* name);
-
-
-
-/* ----------------------------------
- * Close the connection to the server
- * because we are polite
+ * - name: (string) your bot's name
  *
- */
-void closeConnection();
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode connectToCGS(const char* address, unsigned int port, const char* name);
 
 
-/* ----------------------------------------------------------------
- * Wait for a T2R Game, and retrieve its name and first data
- * (the number of cities and the number of connections)
+/* -------------------------------------
+ * Send the game settings to the server in order to start a game
+ * After connecting, you need to send game settings to the server to start a game.
+ * You need to provide a string for the game setting and a GameData struct to store the game data returned by the server.
+  *
+ * The fields `gameName` and `trackData` (of GameData) are allocated by the function, so they need to be freed by the user
  *
  * Parameters:
- * - gameType: string (max 200 characters) type of the game we want to play
- *             (empty string for regular game)
+* - gameType: string (max 200 characters) type of the game we want to play (empty string for regular game)
  *             "TRAINING xxxx" to play with the bot xxxx
  *             "TOURNAMENT xxxx" to join the tournament xxxx
- *     gameType can also contains extra data in form "key1=value1 key2=value1 ..."
- *     to provide options (to bots)
+ *     gameType can also contain extra data in form "key1=value1 key2=value1 ..." to provide options (to bots)
  *     invalid keys are ignored, invalid values leads to error
  *     the options are:
- *        - 'timeout': allows an define the timeout when training (in seconds)
+ *        - 'timeout': allows to define the timeout when training (in seconds)
  *        - 'seed': allows to set the seed of the random generator
  *        - 'start': allows to set who starts ('0' to begin, '1' otherwise)
- *        - 'map': allows to choose a map ('USA' for the moment)
+ *        - 'map': allows to choose a map ('USA', 'small' or 'Europe')
  *     the following bots are available:
- *        - DO_NOTHING (stupid player what withdraw cards)
+ *        - DO_NOTHING (stupid bot what withdraw cards)
+ *        - PLAY_RANDOM (bot that plays randomly)
+ *        - NICE_BOT (bot that plays reasonably well, but not too well)
+ * - gameData: (GameData*) store the game data
  *
- * - gameName: char* to get the game Name (should be allocated, max 50 characters),
- *
- * - nbCities: to get the number of cities
- * - nbTracks: to get the number of tracks between the cities
- */
-void waitForT2RGame(char* gameType, char* gameName, int* nbCities, int* nbTracks);
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendGameSettings(const char* gameSettings, GameData* gameData);
 
 
-/* ------------------------------------------------------------
- * Get the map, the decks and initial cards and tell who starts
- * the three arrays are filled by the function
+/* -------------------------------------
+ * Get the move of the opponent
+ * During a game this function is used to know what your opponent did during his turn.
+ * You need to provide an empty MoveData struct and an empty MoveResult struct to store the move data returned by the server.
+ * MoveData struct store the move your opponent did and MoveResult struct store the result of the move.
  *
- * Parameters:
- * - tracks: array of (5 x number of tracks) integers
- * 		Five integers are used to define a track:
- * 		- (1) id of the 1st city
- * 		- (2) id of the 2nd city
- * 		- (3) length of the track (between 1 and 6)
- * 		- (4) color of the track (MULTICOLOR if any color can be used)
- * 		- (5) color of the 2nd track if the track is double (NONE if the track is not a double track)
- * 	- faceUp: array of 5 t_color giving the 5 face up cards
- * 	- cards: array of 4 t_colors with the initial cards in your hand
- *
- *   (the pointers data MUST HAVE allocated with the right size !!)
- *
- * Returns 0 if you begin, or 1 if the opponent begins
- */
-int getMap(int* tracks, t_color faceUp[5], t_color cards[4]);
-
-
-
-/* ----------------------
- * Get the opponent move
+ * The fields `opponentMessage` and `message` (of moveResult) are allocated by the function, so they need to be freed by the user
  *
  * Parameters:
- * - move: a t_move variable, filled by the function
- * - replay: boolean, tells if the player must replay after this move or not
-  *
- * Returns:
- * - NORMAL_MOVE for normal move,
- * - WINNING_MOVE for a winning move, -1
- * -  LOOSING_MOVE for a losing (or illegal) move
- * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
- */
-t_return_code getMove(t_move* move, int* replay);
-
-
-/* play the move "claim a route"
- * between two cities, using a color (it should correspond to a track between the two cities)
- * and a certain number of Locomotives
+ * - moveData: (GameSettings*) data defining the opponent's move
+ * - moreResult: (MoveResult*) data returned after the move
  *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code claimRoute(int city1, int city2, int color, int nbLocomotives);
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode getMove(MoveData* moveData, MoveResult* moveResult);
 
 
-/* play the move "draw a blind card"
- * the drawn card is put in card
+/* -------------------------------------
+ * Send the move to the server
+ * During a game this function is used to send your move to the server.
+ * You need to provide a MoveData struct containing your move and an empty MoveResult struct to store the result of the
+ * move returned by the server.
  *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code drawBlindCard(t_color* card);
-
-
-/* play the move "draw a card in the deck"
- * - card: color of the card chosen in the deck (it MUST exist)
- * - deck: array representing the deck (modified by the function)
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- */
-t_return_code drawCard(t_color card, t_color deck[5]);
-
-
-/* play the move "draw some objective cards"
- * - obj: array representing the objective card (modified by the function)
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- * -> the move "choose objectives" MUST be play just after !!
- */
-t_return_code drawObjectives(t_objective obj[3]);
-
-/* play the move "choose some objective cards"
- * - objectivesCards: array of boolean indicating which cards are taken
- * 		(0 -> the objective card is not taken)
- *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
- * -> MUST be played after "draw objectives
- */
-t_return_code chooseObjectives(int objectiveCards[3]);
-
-/* ----------------------
- * Display the Game
- * in a pretty way (ask the server what to print)
- */
-void printMap();
-
-
-
-/* ----------------------------
- * Send a comment to the server
+ * The fields `opponentMessage` and `message` (of moveResult) are allocated by the function, so they need to be freed by the user
  *
  * Parameters:
- * - comment: (string) comment to send to the server (max 100 char.)
- */
-void sendComment(char* comment);
+ * - moveData: (GameSettings*) data defining our move
+ * - moreResult: (MoveResult*) data returned after the move
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendMove(const MoveData *moveData, MoveResult* moveResult);
 
 
-/* --------------------
- * Display a city's name
+/* -------------------------------------
+ * This function is used to get the current state of the board during a game.
+ * It returns the 5 face-up cards
+ *
  * Parameters:
- * - city: (int) id of the city
- */
-void printCity(int city);
+ * - boardState: (BoardState*) the 5 face-up cards
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode getBoardState(BoardState* boardState);
+
+
+/* -------------------------------------
+ * This function is used to send a message to your opponent during a game.
+ * You need to provide the message as a string. It should be less than 256 characters long.
+ *
+ * Parameters:
+ * - message: (string) the message sent
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode sendMessage(const char* message);
+
+
+/* -------------------------------------
+ * This function is used to display the game board during a game.
+ * It will print the colored board in the console.
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode printBoard();
+
+
+/* -------------------------------------
+ * This function prints the city name
+ *
+ * Parameters:
+ * - cityId: (int) id of the city to be printed
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode printCity(unsigned int cityId);
+
+
+/* -------------------------------------
+ * This function is used to quit the currently running game.
+ *
+ *
+ * Returns the error code (ALL_GOOD if everything is ok) */
+ResultCode quitGame();
+
 
 #endif

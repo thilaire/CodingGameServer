@@ -45,7 +45,7 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 int sockfd = -1;		        /* socket descriptor, equal to -1 when we are not yet connected */
 char buffer[MAX_LENGTH];		/* global buffer used to send message (global so that it is not allocated/desallocated for each message) */
-int debug=0;			        /* debug constant; we do not use here a #DEFINE, since it allows the client to declare 'extern int debug;' set it to 1 to have debug information, without having to re-compile labyrinthAPI.c */
+int DEBUG_LEVEL = NO_DEBUG;			        /* debug constant; we do not use here a #DEFINE, since it allows the client to declare 'extern int debug;' set it to 1 to have debug information, without having to re-compile labyrinthAPI.c */
 char playerName[21] = {};       /* name of the player, stored to display it in debug */
 
 
@@ -76,7 +76,7 @@ void dispError(const char* fct, const char* msg, ...) {
  * - ...: extra parameters to give to printf...
 */
 void dispDebug(const char* fct, int level, const char* msg, ...) {
-  if (debug>=level)	{
+  if (DEBUG_LEVEL>=level)	{
 		printf("\e[35m\u26A0\e[0m [%s] (%s) ", playerName, fct);
 
 		/* print the msg, using the varying number of parameters */
@@ -112,7 +112,7 @@ size_t read_inbuf(const char *fct, char *buf, size_t nbuf) {
 		dispDebug (fct, 3, "prepare to receive a message of length :%lu",length);
 	}
 	size_t mini = length > nbuf ? nbuf: length;
-	int read_length = 0;
+	unsigned int read_length = 0;
 	bzero(buf, nbuf);
 	do {
 		r = read(sockfd, buf + read_length, mini-read_length);
@@ -172,7 +172,7 @@ void sendString(const char* fct, const char* str, ...) {
  * - port: (int) port number used for the connection
  * - name: (string) name of the bot : max 20 characters (checked by the server)
  */
-void connectToCGS(const char* fct, const char* serverName, unsigned int port, char* name) {
+void connectToCGSServer(const char* fct, const char* serverName, unsigned int port, const char* name) {
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
@@ -251,7 +251,7 @@ void waitForGame(const char* fct, const char* gameType, char* gameName, char* da
 
 	/* read Labyrinth name
 	 If the name send is "NOT_READY", then we need to wait again
-	 This (stupid) polling is here to allow the server to dectect (at least at the polling sampling period)
+	 This (stupid) polling is here to allow the server to detect (at least at the polling sampling period)
 	 if we have disconnected or not
 	 (that's the only way for the server to detect disconnection, ie sending something and check if the socket is still open)*/
 	do {
@@ -324,8 +324,8 @@ int getGameData(const char* fct, char* data, size_t ndata) {
  * Fill the move  and string, and returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move)
  * this code is relative to the opponent (+1 if HE wins, ...)
  */
-t_return_code getCGSMove(const char* fct, char* move ,char* msg) {
-	t_return_code result;
+MoveState getCGSMove(const char* fct, char* move ,char* msg) {
+	MoveState result;
 	sendString(fct, "GET_MOVE");
 	*move = *msg = 0;
 
@@ -367,8 +367,8 @@ t_return_code getCGSMove(const char* fct, char* move ,char* msg) {
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove( const char* fct, char* move, char* answer) {
-	t_return_code result;
+MoveState sendCGSMove( const char* fct, char* move, char* answer) {
+	MoveState result;
 	sendString(fct, "PLAY_MOVE %s", move);
 
 	/* read the associated answer */
