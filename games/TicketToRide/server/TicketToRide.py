@@ -425,6 +425,11 @@ class TicketToRide(Game):
 				return WINNING_MOVE, "No more available objective cards !!"
 		# get the 3 objective cards
 		self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
+
+		# check if the player doesn't have more than 20 objectives
+		if sum(self._cards[self._whoPlays]) > 20:
+			return LOSING_MOVE, "You cannot have more than 20 objectives!"
+
 		return NORMAL_MOVE, " ".join(str(c) for c in self._objDrawn), ""
 
 
@@ -448,6 +453,9 @@ class TicketToRide(Game):
 		# check if the player can take a Locomotive
 		if self._shouldTakeAnotherCard and card == MULTICOLOR:
 			return LOSING_MOVE, "You cannot take a Locomotive as 2nd drawn card"
+		# check if the player doesn't have more than 50 cards
+		if sum(self._cards[self._whoPlays])>50:
+			return LOSING_MOVE, "You cannot have more than 50 cards!"
 		# add it in the hand
 		self._cards[self._whoPlays][card] += 1
 		# if it's not a Locomotive, the player MUST take another one
@@ -478,6 +486,10 @@ class TicketToRide(Game):
 				return LOSING_MOVE,  "No more cards in the deck !!"
 			else:
 				return WINNING_MOVE, "No more cards in the deck !!"
+		# check if the player doesn't have more than 50 cards
+		if sum(self._cards[self._whoPlays]) > 50:
+			return LOSING_MOVE, "You cannot have more than 50 cards!"
+
 		self._shouldTakeAnotherCard = not self._shouldTakeAnotherCard  # need/no need to take another card
 		# message for web client
 		self._lastMoveWeb = {'move': 'Player %s take a blind card' % self.playerWhoPlays.name}
