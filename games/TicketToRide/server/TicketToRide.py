@@ -407,7 +407,7 @@ class TicketToRide(Game):
 				self._objectivesDeck.append(self._objDrawn[i])
 		self._objDrawn = []
 		# check if the player doesn't have more than 20 objectives
-		if sum(self._objectives[self._whoPlays]) > 20:
+		if len(self._objectives[self._whoPlays]) > 20:
 			return LOSING_MOVE, "You cannot have more than 20 objectives!"
 
 		# message for web client
