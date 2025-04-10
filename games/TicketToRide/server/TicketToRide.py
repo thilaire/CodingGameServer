@@ -406,6 +406,10 @@ class TicketToRide(Game):
 			else:
 				self._objectivesDeck.append(self._objDrawn[i])
 		self._objDrawn = []
+		# check if the player doesn't have more than 20 objectives
+		if sum(self._objectives[self._whoPlays]) > 20:
+			return LOSING_MOVE, "You cannot have more than 20 objectives!"
+
 		# message for web client
 		self._lastMoveWeb = {
 			'move': 'Player %s take a %d objective cards' % (self.playerWhoPlays.name, len([o for o in objs if o]))
@@ -425,10 +429,6 @@ class TicketToRide(Game):
 				return WINNING_MOVE, "No more available objective cards !!"
 		# get the 3 objective cards
 		self._objDrawn = [self._objectivesDeck.pop() for _ in range(3)]
-
-		# check if the player doesn't have more than 20 objectives
-		if sum(self._cards[self._whoPlays]) > 20:
-			return LOSING_MOVE, "You cannot have more than 20 objectives!"
 
 		return NORMAL_MOVE, " ".join(str(c) for c in self._objDrawn), ""
 
