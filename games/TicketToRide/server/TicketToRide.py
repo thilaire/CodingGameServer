@@ -404,7 +404,7 @@ class TicketToRide(Game):
 			if objs[i]:
 				self._objectives[self._whoPlays].append(self._objDrawn[i])
 			else:
-				self._objectivesDeck.append(self._objDrawn[i])
+				self._objectivesDeck.insert(0, self._objDrawn[i])
 		self._objDrawn = []
 		# check if the player doesn't have more than 20 objectives
 		if len(self._objectives[self._whoPlays]) > 20:
