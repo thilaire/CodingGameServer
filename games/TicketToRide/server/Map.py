@@ -163,7 +163,7 @@ def longestPath(tracks):
 	# check longest from each city with only one track
 	cityEnd = [c for c, tr in cities.items() if len(tr) == 1]
 	l = [_longestUnvisited(c, {c: list(track) for c, track in cities.items()}) for c in cityEnd]
-	return max(l)
+	return max(l) if l else 0
 	# return max(_longestUnvisited(c, deepcopy(cities)) for c, tr in cities.items() if len(tr) == 1)
 
 
