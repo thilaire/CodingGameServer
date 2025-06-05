@@ -1,0 +1,236 @@
+"""
+This file is a template for a new Game in CGS
+
+The two main methods to fill in are:
+	- the __init__ to build the game (you put all the intern data here)
+	- the updateMove, to check if a move is legal, to play it (and change the intern state of the game),
+	and returns if the move is legal or not
+
+Then, you should also fill:
+	- the __str__ method, that build the string returns to the player to display the game
+	- the getDataSize and getData methods, for the client to know the initial state of the game
+	- the getDictInformations, to display the game on webpages
+
+
+"""
+
+from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
+from CGSserver.Game import Game
+from random import seed
+
+# import here your training players
+from .CrashTestPlayer import TemplateTrainingPlayer
+
+
+class TemplateGame(Game):
+	"""
+	class TemplateGame
+
+	Inherits from Game
+	- _players: tuple of the two players
+	- _logger: logger to use to log infos, debug, ...
+	- _name: name of the game
+	- _whoPlays: number of the player who should play now (0 or 1)
+	- _waitingPlayer: Event used to wait for the players
+	- _lastMove, _last_return_code: string and returning code corresponding to the last move
+
+	Add here your own properties
+	- ...
+	"""
+
+	# dictionary of the possible training Players (name-> class)
+	type_dict = {"MY_TRAINING_PLAYER": TemplateTrainingPlayer}
+
+
+
+	def __init__(self, player1, player2, **options):
+		"""
+		Create a game
+		:param player1: 1st Player
+		:param player2: 2nd Player
+		:param options: dictionary of options (the options 'seed' and 'timeout' are managed by the Game class)
+		"""
+		#
+		# insert your code here to create your game (its data, etc.)...
+		#
+
+
+		# Each player may or may not own one or some:
+		#	-bonus(es)
+		#	-prestige point(s) (<20 otherwise it's a win)
+		#	-crown(s) (<10, same reason)
+		#	-jewellery card(s) (it's the standard cards, =/= the 4 crown cards)
+		#		(side note: <10 prestige point per gemstone (otherwise, win))
+		#	-crown card(s) (you can obtain one whenever you hit 3 and 6 crowns)
+		#	-gemstone (token(s))
+		#	-perl (token(s))
+		#	-gold (token(s))
+		#	-sleep (token) (they don't, but you can listen to ST, I'm just a fooling around a little :) )
+		#	-0 to 3 privileges/benefits
+		# I believe that's it?
+
+		# Player inventories of the things listed above, in the same order.
+		# Player1 then Player2
+		self.inventories = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]]
+
+
+		# To use when distributing the gemstone tokens on the board
+		# get a seed if the seed is not given; seed the random numbers generator
+		if 'seed' in options:
+			seed(int(options['seed']))
+
+
+		# Every turn, you have an optional move, then a mandatory one.
+		# You may skip the optional moves (duh)
+		#	optional (choose among the following):
+		#		-Use a privilege to take a gemstone or a pearl (not a gold token though) (privilege required)
+		#
+		#		-Redistribute the tokens. As a consequence, your opponent gets a privilege.
+		#		 /!\ If you have three privileges, yours gets taken away for their profit /!\
+		#
+		#	mandatory:
+		#		-Take 1 to 3 gemstone/pearl tokens from the board
+		#			conditions: -Only vertical, horizontal and diagonal
+		#						-No gold token
+		#						-No space between two tokens
+		#						-If you choose three identical gemstones or two pearls in one move,
+		#						your opponent gets a privilege. Same goes here:
+		#						/!\ If you have three privileges, yours gets taken away for their profit /!\
+		#
+		#		-Book a jewellery card (the opponent isn't supposed to see it anymore,
+		#		though they can memorize it (not really relevant to this computer version))
+		#			conditions: -You have to take a gold token from the board.
+		#						-If there isn't one anymore, this is an illegal move
+		#						(which means a grand total of 3 booked cards at the same time?)
+		#						-You do not need to buy any of the cards you booked
+		#
+		#		-Buy a card with a gold token (which requires you to have one ofc)
+		# 	Once you have 3 or 6 crowns, you have to take a crown card, but it doesn't account
+		# for a mandatory nor an optional move.
+		#
+		# Probably one method per move?
+
+		#cartes à distribuer !!!!
+
+		self._board = [
+						[0,0,0,0,0], # 5*5 matrix. Each member of the matrix represents a case of the board.
+					   	[0,0,0,0,0], # On each case of the board, there will be a token distributed (1st turn),
+					   	[0,0,0,0,0], # then a little less etc. depending on player decisions each move.
+					   	[0,0,0,0,0], # TODO: Requires getter + setter ?
+					   	[0,0,0,0,0]
+					   ] 			# TODO! How do we represent each token on the matrix?
+									# 0 when empty, others with char/strings?
+									# 2 pearls, 3 gold, 4 for each gemstone.
+									# Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
+									# Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
+
+		# call the superclass constructor (only at the end, because the superclass constructor launches
+		# the players and they will immediately require some Labyrinth's properties)
+		##side note: there's no labyrinth here, right?
+		super().__init__(player1, player2, **options)
+
+"""
+		# BOARD COMPLETION MAP - will be useful for 
+		# to cast into n-tuples?
+		[
+			[E, E, E, E, S],	# North
+			[N, E, E, S, S],	# South
+			[N, N, S, S, S],	# East
+			[N, N, W, S, S],	# West
+			[N, W, W, W, 0]		# 0 when complete (index (4,4)), beginning at index(2,2)
+		]
+"""
+
+
+
+
+	def HTMLrepr(self):
+		"""Returns an HTML representation of your game"""
+		# this, or something you want...
+		return "<A href='/game/%s'>%s</A>" % (self.name, self.name)
+
+	def getDictInformations(self, firstTime=False):
+		"""
+		Returns a dictionary for HTML display
+		- firstTime is True when this is called for the 1st time by a websocket
+		:return:
+		"""
+		#
+		# insert your code here...
+		#
+
+		return {}
+
+	def __str__(self):
+		"""
+		Convert a Game into string (to be send to clients, and display)
+		"""
+		# create your display (with datas of your game, players' name, etc.)
+		# the comments are managed by the Game class
+
+		#
+		# insert your code here...
+		#
+
+		return ""
+
+
+	def updateGame(self, move):
+		"""
+		update the game by playing a move
+		- move: a string
+		Return a tuple (move_code, msg) OR (move_code, msg, msgOppenent), where
+		- move_code: (integer) 0 if the game continues after this move, >0 if it's a winning move, -1 otherwise (illegal move)
+		- msg: a message to send to the players, explaining why the game is ending, it may contain data
+		- msgOpponnent: (OPTIONAL) a message sent to the opponent, IF the opponent should not receive the same data
+		"""
+		# parse the move and check if it's in correct form
+		# returns the tuple (LOOSING_MOVE, "The move is not in correct form  !") if not valid
+
+		# check if the move is possible
+		# returns (LOOSING_MOVE, "explanations....") if not valid (give the full reason why it is not valid)
+
+		# move the player
+		# update the intern data
+		# use self._whoPlays to get who plays (0 or 1)
+
+		# if won, returns the tuple (WINNING_MOVE, "congratulation message!")
+		# otherwise, just returns (NORMAL_MOVE, "")
+		# an optional 3rd parameter is possible (if the message is used to send data)
+		return NORMAL_MOVE, ""
+
+
+	def getDataSize(self):
+		"""
+		Returns the size of the datas send by getData
+		(for example sizes of arrays, so that the arrays could be allocated before calling getData)
+		"""
+		#
+		# insert your code here...
+		#
+		return ""
+
+
+
+	def getData(self, player):
+		"""
+		Return the datas of the game (when ask with the GET_GAME_DATA message)
+		"""
+		#
+		# insert your code here...
+		#
+		return ""
+
+
+
+
+	def getNextPlayer(self):
+		"""
+		Change the player who plays
+
+		Returns the next player (but do not update self._whoPlays)
+		"""
+		#
+		# insert your code here...
+		#
+		return 1 - self._whoPlays       # in a tour-by-tour game, it's the opponent to play
