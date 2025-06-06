@@ -144,7 +144,7 @@ class SplendorDual(Game):
 		##side note: there's no labyrinth here, right?
 		super().__init__(player1, player2, **options)
 
-"""
+	"""
 		# BOARD COMPLETION MAP - will be useful
 		# to cast into n-tuples?
 		[
@@ -154,7 +154,7 @@ class SplendorDual(Game):
 			[N, N, W, S, S],	# West
 			[N, W, W, W, 0]		# 0 when complete (index (4,4)), beginning at index(2,2)
 		]
-"""
+	"""
 
 
 
