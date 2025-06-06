@@ -19,10 +19,10 @@ from CGSserver.Game import Game
 from random import seed
 
 # import here your training players
-from .CrashTestPlayer import TemplateTrainingPlayer
+from .SplendorVegetablePlayer import SplendorVegetablePlayer
 
 
-class TemplateGame(Game):
+class SplendorDual(Game):
 	"""
 	class TemplateGame
 
@@ -39,7 +39,7 @@ class TemplateGame(Game):
 	"""
 
 	# dictionary of the possible training Players (name-> class)
-	type_dict = {"MY_TRAINING_PLAYER": TemplateTrainingPlayer}
+	type_dict = {"MY_TRAINING_PLAYER": SplendorVegetablePlayer}
 
 
 
@@ -88,7 +88,7 @@ class TemplateGame(Game):
 		#		-Redistribute the tokens. As a consequence, your opponent gets a privilege.
 		#		 /!\ If you have three privileges, yours gets taken away for their profit /!\
 		#
-		#	mandatory:
+		#	mandatory (choose one of the three):
 		#		-Take 1 to 3 gemstone/pearl tokens from the board
 		#			conditions: -Only vertical, horizontal and diagonal
 		#						-No gold token
@@ -99,18 +99,33 @@ class TemplateGame(Game):
 		#
 		#		-Book a jewellery card (the opponent isn't supposed to see it anymore,
 		#		though they can memorize it (not really relevant to this computer version))
-		#			conditions: -You have to take a gold token from the board.
-		#						-If there isn't one anymore, this is an illegal move
-		#						(which means a grand total of 3 booked cards at the same time?)
+		#			conditions:	-You either take one from the pyramid or one from the three stacks (level 1, 2 or 3)
+		#						-You have to take a gold token from the board.
+		#						-Illegal if there isn't one anymore
+		#						-Illegal if you already have three booked cards
 		#						-You do not need to buy any of the cards you booked
 		#
-		#		-Buy a card with a gold token (which requires you to have one ofc)
+		#		-Buy a jewellery card
+		#			conditions:	-You need enough gemstones to buy one card
+		#							e.g. a card requires 2 rubies and 3 blue sapphires.
+		#							You then need that amount of tokens, minus the ones from the jewellery cards you
+		#							already own. So if you have two blue sapphire tokens, a blue sapphire cards and two
+		#							ruby tokens, you can buy that card. You will lose the tokens, not the jewellery
+		#							cards, and get this card in your inventory.
+		#						-Gold token can substitute any other gemstone or pearl.
+		#							e.g. a card requires two pearls and two obsidian tokens.
+		#							You own a pearl, a gold, two obsidian tokens and an obsidian jewellery card.
+		#							You can then buy the card. You will lose your pearl, your gold and an obsidian token
+		#
 		# 	Once you have 3 or 6 crowns, you have to take a crown card, but it doesn't account
-		# for a mandatory nor an optional move.
+		# 	for a mandatory nor an optional move.
+		#
 		#
 		# Probably one method per move?
 
-		#cartes à distribuer !!!!
+		#
+		#	Jewellery cards have different levels: one, two, and three.
+		#	We display a pyramid of them. 5 cards are level 1, 4 cards are level 2, 3 cards are level 3.
 
 		self._board = [
 						[0,0,0,0,0], # 5*5 matrix. Each member of the matrix represents a case of the board.
@@ -130,7 +145,7 @@ class TemplateGame(Game):
 		super().__init__(player1, player2, **options)
 
 """
-		# BOARD COMPLETION MAP - will be useful for 
+		# BOARD COMPLETION MAP - will be useful
 		# to cast into n-tuples?
 		[
 			[E, E, E, E, S],	# North
