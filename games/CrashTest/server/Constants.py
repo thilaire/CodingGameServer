@@ -5,7 +5,7 @@
 |                       |
 * --------------------- *
 
-Authors: B. Lamon, based on T. Hilaire & J. Bajard's template file.
+Authors: B. Lamon, based on T. Hilaire & J. Brajard's template file.
 Licence: GPL
 
 File: Constants.py
