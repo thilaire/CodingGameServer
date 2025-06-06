@@ -21,6 +21,7 @@ Copyright 2025 B. Lamon
 
 # Represents the different tokens
 tokenTypes = [
+    "None"              # Not sure yet if it's useful
     "Pearl",            # Pearl token
     "Gold",             # Gold token
     "Blue Sapphire",    # Blue gemstone token
@@ -29,6 +30,22 @@ tokenTypes = [
     "Ruby",             # Red gemstone token
     "Obsidian"          # Black gemstone token
 ]
+# I should've probably enumerated them and given them int numbers...
+# would've been like this:  PEARL = 0
+#                           GOLD = 1
+#                           BLUE_SAPPHIRE = 2
+#                           ...
+# ehhh i'll do this
+
+NONE = 0
+PEARL = 1
+GOLD = 2
+BLUE_SAPPHIRE = 3
+DIAMOND = 4
+EMERALD = 5
+RUBY = 6
+OBSIDIAN = 7
+
 
 tokenAmounts = dict()
 """
@@ -43,9 +60,10 @@ for element in tokenTypes:
 """
 # pretty (dictionary comprehension, but with a weird synthax caus I can read it better)
 tokenAmounts = {
-    token: (2 if i == 0         # 2 pearls
-            else 3 if i == 1    # 3 gold tokens
-            else 4)             # 4 gemstone tokens
+    token: ( 0 if token == "None"
+            else 2 if token == "Pearl"       # 2 pearls
+            else 3 if token == "Gold"   # 3 gold tokens
+            else 4)                     # 4 gemstone tokens
             for i,token in enumerate(tokenTypes)
 }
 

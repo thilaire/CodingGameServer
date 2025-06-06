@@ -139,6 +139,18 @@ class SplendorDual(Game):
 									# Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
 									# Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
 
+
+		# As a player, what's useful to know? (thinking to make an ascii representation for players)
+		# What's on the pyramid
+		# How many Prestige points both have (player and opponent)
+		# How many crowns
+		# How many prestige points in a single color your opponent has
+		#	therefore in every color...
+		# how many privileges both have
+		# how many tokens both have
+		# how many jewellery cards per color both have
+
+
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately require some Labyrinth's properties)
 		##side note: there's no labyrinth here, right?
