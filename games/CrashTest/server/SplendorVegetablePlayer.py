@@ -15,7 +15,7 @@ File: SplendorVegetablePlayer.py
 
 Copyright 2025 B. Lamon
 """
-
+from random import randint
 from CGSserver.Player import TrainingPlayer
 
 
@@ -37,7 +37,11 @@ class SplendorVegetablePlayer(TrainingPlayer):
 
 		You may use the options dictionary
 		"""
-		super().__init__('Do_nothing')
+		# Randomly choose a name from a list of vegetables
+		vegList = ["Carrot", "Broccoli", "Spinach", "Cabbage", "Zucchini", "Eggplant", "Cucumber", "Lettuce", "Radish", "Potato"]
+		vegetableName = vegList[randint(0, len(vegList))]
+		# init super class w/ vegetable name
+		super().__init__(vegetableName)
 		#
 		# insert your code here to get/validate/store the options...
 		#
