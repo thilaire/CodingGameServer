@@ -51,9 +51,11 @@ class SDGameHandler:
 
         #same as Memo ? + privilege
         #OR, we may represent inventories this way:
-        # [[Jewel cards , Tokens], [Jewel cards , Tokens], ... , [Jewel cards , Tokens], Priv_Scrolls, crowns,
-        self.inventoryP1 = []
-        self.inventoryP2 = []
+        # [None, [Jewel cards , Tokens], [Jewel cards , Tokens], ... , [Jewel cards , Tokens], Priv_Scrolls, crowns]
+        #   (None is used to sync the indices)
+        #   Anything else needed?
+        self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+        self.inventoryP2 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
 
 
 
@@ -78,9 +80,17 @@ class SDGameHandler:
 
             -> returns a list with all available tokens (will be used to redistribute)
         """
+        countedTokens = [None,0,0,0,0,0,0,0]
+        #TODO: run through all the board, count every token into a list
+        bank = [None, 2, 3, 4, 4, 4, 4, 4]
 
-
-        return []
+        for i in range(len(countedTokens)):
+            if countedTokens[i] > 4:
+                #big error, never supposed to happen!!
+                # TODO: how to handle an error?
+                print(f"ERROR: too many {tokenTypes[i]} tokens!") # tokenTypes: see Constants.py
+            bank[i] -= countedTokens[i]
+        return bank
 
     def redistribute(self):
         toShuffle = self.bank()
@@ -92,5 +102,3 @@ class SDGameHandler:
         #we go to the next (then the next and whatnot) until we get to an available token.
         #If there's not available token, the distribution is done
         # TODO: how do we detect that?
-
-
