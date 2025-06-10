@@ -50,7 +50,7 @@ OBSIDIAN = 7
 
 
 tokenColors = [
-    Fore.RESET,                                 #
+    Fore.RESET,                                 # NONE
     Fore.MAGENTA + Style.BRIGHT + Back.BLACK,   # PEARL
     Fore.YELLOW + Style.BRIGHT + Back.BLACK,    # GOLD
     Fore.BLUE + Style.NORMAL + Back.BLACK,      # SAPPHIRE
@@ -86,7 +86,7 @@ crownCards = list()
 Abilities = ["PlayAgain",
              "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
              "TakeAToken",          # On the board
-             "GetAPrivilegeScroll",         # If none available, steal from the opponent
+             "GetAPrivilegeScroll", # If none available, steal from the opponent
              "TakeGemstonePearl"]   # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
 
 

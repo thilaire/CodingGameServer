@@ -127,17 +127,6 @@ class SplendorDuel(Game):
 		#	Jewel cards have different levels: one, two, and three.
 		#	We display a pyramid of them. 5 cards are level 1, 4 cards are level 2, 3 cards are level 3.
 
-		self._board = [
-						[None,None,None,None,None], # 5*5 matrix. Each member of the matrix represents a case of the board.
-					   	[None,None,None,None,None], # On each case of the board, there will be a token distributed (1st turn),
-					   	[None,None,None,None,None], # then a little less etc. depending on player decisions each move.
-					   	[None,None,None,None,None], # TODO: Requires getter + setter ?
-					   	[None,None,None,None,None]
-					   ] 			# TODO! How do we represent each token on the matrix?
-									# None when empty, others with char/strings?
-									# 2 pearls, 3 gold, 4 for each gemstone.
-									# Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
-									# Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
 
 
 		# As a player, what's useful to know? (thinking to make an ascii representation for players)
@@ -159,19 +148,6 @@ class SplendorDuel(Game):
 		# the players and they will immediately require some Labyrinth's properties)
 		##side note: there's no labyrinth here, right?
 		super().__init__(player1, player2, **options)
-
-	"""
-		# BOARD COMPLETION MAP - will be useful?
-		# Says where to put the next token
-		# to cast into n-tuples?
-		[
-			[E, E, E, E, S],	# North
-			[N, E, E, S, S],	# South
-			[N, N, S, S, S],	# East
-			[N, N, W, S, S],	# West
-			[N, W, W, W, None]	# None when complete (index (4,4)), beginning at index (2,2)
-		]
-	"""
 
 
 
