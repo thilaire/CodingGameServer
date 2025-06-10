@@ -39,7 +39,7 @@ tokenTypes = [
 #                           ...
 # ehhh i'll do this
 
-NONE = 0
+NONE = None
 PEARL = 1
 GOLD = 2
 BLUE_SAPPHIRE = 3
@@ -62,10 +62,12 @@ tokenColors = [
 
 
 
-# Maximum token amounts. They're the ones we're going to display on the board.
-# (side note: how are we going to display that on a console screen?)
+
+#Probably useless since we'll manage the game with a sort of bank... we'll see.
+    # Maximum token amounts. They're the ones we're going to display on the board.
+    # (side note: how are we going to display that on a console screen?)
 maxTokenAmounts = {
-    token: ( 0 if token == "None"
+    token: ( None if token == "None"
             else 2 if token == "Pearl"       # 2 pearls
             else 3 if token == "Gold"   # 3 gold tokens
             else 4)                     # 4 gemstone tokens
@@ -75,16 +77,16 @@ maxTokenAmounts = {
 
 # Card decks
 # TODO: list every card of the decks
-lvl1JewelleryCards = list()
-lvl2JewelleryCards = list()
-lvl3JewelleryCards = list()
+lvl1JewelCards = list()
+lvl2JewelCards = list()
+lvl3JewelCards = list()
 crownCards = list()
 
 # Abilities ?
 Abilities = ["PlayAgain",
              "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
              "TakeAToken",          # On the board
-             "GetABenefit",         # If none available, steal from the opponent
+             "GetAPrivilegeScroll",         # If none available, steal from the opponent
              "TakeGemstonePearl"]   # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
 
 

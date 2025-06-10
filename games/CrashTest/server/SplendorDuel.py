@@ -22,7 +22,7 @@ from random import seed
 from .SplendorVegetablePlayer import SplendorVegetablePlayer
 
 
-class SplendorDual(Game):
+class SplendorDuel(Game):
 	"""
 	class TemplateGame
 
@@ -59,14 +59,14 @@ class SplendorDual(Game):
 		#	-bonus(es)
 		#	-prestige point(s) (<20 otherwise it's a win)
 		#	-crown(s) (<10, same reason)
-		#	-jewellery card(s) (it's the standard cards, =/= the 4 crown cards)
+		#	-Jewel card(s) (it's the standard cards, =/= the 4 crown cards)
 		#		(side note: <10 prestige point per gemstone (otherwise, win))
-		#	-crown card(s) (you can obtain one whenever you hit 3 and 6 crowns)
+		#	-royal card(s) (you can obtain one whenever you hit 3 and 6 crowns)
 		#	-gemstone (token(s))
 		#	-perl (token(s))
 		#	-gold (token(s))
 		#	-sleep (token) (they don't, but you can listen to ST, I'm just a fooling around a little :) )
-		#	-0 to 3 privileges/benefits
+		#	-0 to 3 privilege scroll(s)
 		# I believe that's it?
 
 		# Player inventories of the things listed above, in the same order.
@@ -80,13 +80,13 @@ class SplendorDual(Game):
 			seed(int(options['seed']))
 
 
-		# Every turn, you have an optional move, then a mandatory one.
+		# Every turn, you have an optional move/action, then a mandatory one.
 		# You may skip the optional moves (duh)
 		#	optional (choose among the following):
-		#		-Use a privilege to take a gemstone or a pearl (not a gold token though) (privilege required)
+		#		-Use a privilege scroll to take a gemstone or a pearl (not a gold token though) (privilege scroll required, obviously)
 		#
-		#		-Redistribute the tokens. As a consequence, your opponent gets a privilege.
-		#		 /!\ If you have three privileges, yours gets taken away for their profit /!\
+		#		-Redistribute the tokens. As a consequence, your opponent gets a privilege scroll.
+		#		 /!\ If you have three privilege scrolls, yours gets taken away for their profit /!\
 		#
 		#	mandatory (choose one of the three):
 		#		-Take 1 to 3 gemstone/pearl tokens from the board
@@ -94,10 +94,10 @@ class SplendorDual(Game):
 		#						-No gold token
 		#						-No space between two tokens
 		#						-If you choose three identical gemstones or two pearls in one move,
-		#						your opponent gets a privilege. Same goes here:
-		#						/!\ If you have three privileges, yours gets taken away for their profit /!\
+		#						your opponent gets a privilege scroll. Same goes here:
+		#						/!\ If you have three privilege scrolls, yours gets taken away for their profit /!\
 		#
-		#		-Book a jewellery card (the opponent isn't supposed to see it anymore,
+		#		-Book a Jewel card (the opponent isn't supposed to see it anymore,
 		#		though they can memorize it (not really relevant to this computer version))
 		#			conditions:	-You either take one from the pyramid or one from the three stacks (level 1, 2 or 3)
 		#						-You have to take a gold token from the board.
@@ -105,36 +105,36 @@ class SplendorDual(Game):
 		#						-Illegal if you already have three booked cards
 		#						-You do not need to buy any of the cards you booked
 		#
-		#		-Buy a jewellery card
+		#		-Buy a Jewel card
 		#			conditions:	-You need enough gemstones to buy one card
 		#							e.g. a card requires 2 rubies and 3 blue sapphires.
-		#							You then need that amount of tokens, minus the ones from the jewellery cards you
+		#							You then need that amount of tokens, minus the ones from the Jewel cards you
 		#							already own. So if you have two blue sapphire tokens, a blue sapphire cards and two
-		#							ruby tokens, you can buy that card. You will lose the tokens, not the jewellery
+		#							ruby tokens, you can buy that card. You will lose the tokens, not the Jewel
 		#							cards, and get this card in your inventory.
 		#						-Gold token can substitute any other gemstone or pearl.
 		#							e.g. a card requires two pearls and two obsidian tokens.
-		#							You own a pearl, a gold, two obsidian tokens and an obsidian jewellery card.
+		#							You own a pearl, a gold, two obsidian tokens and an obsidian Jewel card.
 		#							You can then buy the card. You will lose your pearl, your gold and an obsidian token
 		#
-		# 	Once you have 3 or 6 crowns, you have to take a crown card, but it doesn't account
+		# 	Once you have 3 or 6 crowns, you have to take a royal card, but it doesn't account
 		# 	for a mandatory nor an optional move.
 		#
 		#
 		# Probably one method per move?
 
 		#
-		#	Jewellery cards have different levels: one, two, and three.
+		#	Jewel cards have different levels: one, two, and three.
 		#	We display a pyramid of them. 5 cards are level 1, 4 cards are level 2, 3 cards are level 3.
 
 		self._board = [
-						[0,0,0,0,0], # 5*5 matrix. Each member of the matrix represents a case of the board.
-					   	[0,0,0,0,0], # On each case of the board, there will be a token distributed (1st turn),
-					   	[0,0,0,0,0], # then a little less etc. depending on player decisions each move.
-					   	[0,0,0,0,0], # TODO: Requires getter + setter ?
-					   	[0,0,0,0,0]
+						[None,None,None,None,None], # 5*5 matrix. Each member of the matrix represents a case of the board.
+					   	[None,None,None,None,None], # On each case of the board, there will be a token distributed (1st turn),
+					   	[None,None,None,None,None], # then a little less etc. depending on player decisions each move.
+					   	[None,None,None,None,None], # TODO: Requires getter + setter ?
+					   	[None,None,None,None,None]
 					   ] 			# TODO! How do we represent each token on the matrix?
-									# 0 when empty, others with char/strings?
+									# None when empty, others with char/strings?
 									# 2 pearls, 3 gold, 4 for each gemstone.
 									# Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
 									# Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
@@ -146,10 +146,14 @@ class SplendorDual(Game):
 		# How many crowns
 		# How many prestige points in a single color your opponent has
 		#	therefore in every color...
-		# how many privileges both have
+		# how many privilege scrolls both have
 		# how many tokens both have
-		# how many jewellery cards per color both have
+		# how many Jewel cards per color both have
 
+		#TODO: ILLEGAL TO HAVE MORE THAN TEN GEMS PER PLAYER
+		#e.g. Let a player w/ 10 gems who chooses to to take tokens on the board.
+		#In one turn, they have to chose which token they choose + which token they give back to the "bank"?
+		#N.B. the "bank" represents the tokens which are going to be redistributed on the board when needed.
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
 		# the players and they will immediately require some Labyrinth's properties)
@@ -157,14 +161,15 @@ class SplendorDual(Game):
 		super().__init__(player1, player2, **options)
 
 	"""
-		# BOARD COMPLETION MAP - will be useful
+		# BOARD COMPLETION MAP - will be useful?
+		# Says where to put the next token
 		# to cast into n-tuples?
 		[
 			[E, E, E, E, S],	# North
 			[N, E, E, S, S],	# South
 			[N, N, S, S, S],	# East
 			[N, N, W, S, S],	# West
-			[N, W, W, W, 0]		# 0 when complete (index (4,4)), beginning at index(2,2)
+			[N, W, W, W, None]	# None when complete (index (4,4)), beginning at index (2,2)
 		]
 	"""
 
