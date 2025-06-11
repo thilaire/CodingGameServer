@@ -74,7 +74,7 @@ class SDGameHandler:
 
     # all the tokens are here
     #TODO
-    def bank(self, countedTokens):
+    def bank(self):
         """
         Defines the bank aka where all the tokens to distribute belong.
         So we'll use this method whenever a player chooses to redistribute the tokens on the board
@@ -82,7 +82,7 @@ class SDGameHandler:
 
             -> returns a list with all available tokens (will be used to redistribute)
         """
-        #countedTokens = [None,0,0,0,0,0,0,0]
+        countedTokens = [None,0,0,0,0,0,0,0]
         #TODO: run through all the board, count every token into a list
 
         # NEVER MIND THAT'S NOT HOW YOU COUNT THE TOKENS TO REDISTRIBUTE
