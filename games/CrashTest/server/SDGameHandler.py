@@ -16,7 +16,7 @@ Copyright 2025 B. Lamon
 """
 
 from .Constants import *
-from typing import Tuple
+from typing import Tuple, List
 
 class SDGameHandler:
     def __init__(self):
@@ -73,7 +73,7 @@ class SDGameHandler:
         x,y = position
         self._board[x][y] = value
 
-    def nextPosition(self, currentPosition: Tuple[int,int]):
+    def nextPosition(self, currentPosition: List[int]):
         """
         returns the position of the next element to check?
         Memo: x is the row, y the column...
@@ -90,7 +90,7 @@ class SDGameHandler:
             nextPosition = [x, y - 1]
         else:
             nextPosition = [-1,-1]
-        return tuple(nextPosition)
+        return nextPosition
 
 
 
@@ -109,7 +109,42 @@ class SDGameHandler:
         #first position index: (2,2)
         #then we run following the board?
         #maybe implement a method which gives the next position?
-        # -> done, need to be checked tho
+        # -> done
+        # N.B. can't use "if x == None:", should use "if x is None:"
+
+        #while the next is != None,
+
+        # run through all the board, starting at the center
+        coords = [2,2]
+        # While the position is within the board
+        while coords != [-1,-1]:
+            #go to the board, add the current thing to the list
+            x, y = coords
+            match self.board[x][y]:
+                case None:
+                    #go to the next position on the board
+                    pass
+                case 1:
+                    countedTokens[PEARL] += 1
+                case 2:
+                    countedTokens[GOLD] += 1
+                case 3:
+                    countedTokens[BLUE_SAPPHIRE] += 1
+                case 4:
+                    countedTokens[DIAMOND] += 1
+                case 5:
+                    countedTokens[EMERALD] += 1
+                case 6:
+                    countedTokens[RUBY] += 1
+                case 7:
+                    countedTokens[OBSIDIAN] += 1
+                case _:
+                    #TODO: raise an error?
+                    print("ERROR: couldn't count a token on the board (Not a token nor \"None\")")
+            coords = self.nextPosition(coords)
+        #out of the while cdt
+
+
 
 
 
@@ -140,8 +175,6 @@ class SDGameHandler:
                     print(f"ERROR: counted too many {tokenTypes[i]} tokens!") # tokenTypes: see Constants.py
 
             bank[i] -= countedTokens[i]
-        print(bank)
-        print(countedTokens)
         return bank
 
 
