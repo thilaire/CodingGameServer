@@ -23,13 +23,14 @@ class SDGameHandler:
         # BOARD COMPLETION MAP - will be useful?
         # Says where to put the next token
         # to cast into n-tuples?
-        self._boardCompletion = (
+        self.boardCompletion = (
             ("E", "E", "E", "E", "S"),	# North
             ("N", "E", "E", "S", "S"),	# South
             ("N", "N", "S", "S", "S"),	# East
             ("N", "N", "W", "S", "S"),	# West
             ("N", "W", "W", "W", None)	# None when complete (index (4,4)), beginning at index (2,2)
         )
+
         self._board = [
             [None, None, None, None, None],  # 5*5 matrix. Each member of the matrix represents a case of the board.
             [None, None, None, None, None],  # On each case of the board, there will be a token distributed (1st turn),
@@ -72,6 +73,27 @@ class SDGameHandler:
         x,y = position
         self._board[x][y] = value
 
+    def nextPosition(self, currentPosition: Tuple[int,int]):
+        """
+        returns the position of the next element to check?
+        Memo: x is the row, y the column...
+        """
+        x,y = currentPosition
+
+        if self.boardCompletion[x][y] == "N":
+            nextPosition = [x - 1, y]
+        elif self.boardCompletion[x][y] == "S":
+            nextPosition = [x + 1, y]
+        elif self.boardCompletion[x][y] == "E":
+            nextPosition = [x, y + 1]
+        elif self.boardCompletion[x][y] == "W":
+            nextPosition = [x, y - 1]
+        else:
+            nextPosition = [-1,-1]
+        return tuple(nextPosition)
+
+
+
     # all the tokens are here
     #TODO
     def bank(self):
@@ -84,6 +106,12 @@ class SDGameHandler:
         """
         countedTokens = [None,0,0,0,0,0,0,0]
         #TODO: run through all the board, count every token into a list
+        #first position index: (2,2)
+        #then we run following the board?
+        #maybe implement a method which gives the next position?
+        # -> done, need to be checked tho
+
+
 
         # NEVER MIND THAT'S NOT HOW YOU COUNT THE TOKENS TO REDISTRIBUTE
         # We need to count the token each player has + the tokens on the board. That gives us the tokens we can NOT
