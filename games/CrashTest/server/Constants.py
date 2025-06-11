@@ -50,6 +50,8 @@ DIAMOND = 4
 EMERALD = 5
 RUBY = 6
 OBSIDIAN = 7
+PRIVILEGE = 8
+CROWN = 9
 
 
 tokenColors = [
@@ -91,8 +93,3 @@ abilities = ["PlayAgain",
              "TakeAToken",          # On the board
              "GetAPrivilegeScroll", # If none available, steal from the opponent
              "TakeGemstonePearl"]   # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
-
-
-# inventories ?
-
-#

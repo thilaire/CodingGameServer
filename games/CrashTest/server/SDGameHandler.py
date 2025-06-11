@@ -35,9 +35,9 @@ class SDGameHandler:
             [None, None, None, None, None],  # 5*5 matrix. Each member of the matrix represents a case of the board.
             [None, None, None, None, None],  # On each case of the board, there will be a token distributed (1st turn),
             [None, None, None, None, None],  # then a little less etc. depending on player decisions each move.
-            [None, None, None, None, None],  # TODO: Requires getter + setter ?
+            [None, None, None, None, None],
             [None, None, None, None, None]
-        ]                   # TODO! How do we represent each token on the matrix?
+        ]
 
         # Memo
 
@@ -94,8 +94,7 @@ class SDGameHandler:
 
 
 
-    # all the tokens are here
-    #TODO
+    # all the tokens are here in the beginning, caus nobody has any, nor does the board
     def bank(self):
         """
         Defines the bank aka where all the tokens to distribute belong.
@@ -105,26 +104,24 @@ class SDGameHandler:
             -> returns a list with all available tokens (will be used to redistribute)
         """
         countedTokens = [None,0,0,0,0,0,0,0]
-        #TODO: run through all the board, count every token into a list
         #first position index: (2,2)
-        #then we run following the board?
-        #maybe implement a method which gives the next position?
+        #then we run following the board
+        #maybe implement a method which gives the next position
         # -> done
-        # N.B. can't use "if x == None:", should use "if x is None:"
-
-        #while the next is != None,
 
         # run through all the board, starting at the center
         coords = [2,2]
-        # While the position is within the board
+        # While the position isn't outside the board
         while coords != [-1,-1]:
             #go to the board, add the current thing to the list
             x, y = coords
             match self.board[x][y]:
                 case None:
-                    #go to the next position on the board
+                    #No token here, we shall go to the next position on the board
                     pass
-                case 1:
+                case 1: # Can't replace 1 by PEARL (and whatnot) unless I create a class with the names it seems... bruh thenk pytton very cool 👍
+                        # source: https://stackoverflow.com/questions/67525257/capture-makes-remaining-patterns-unreachable
+                        # maybe will do, waste of time for now
                     countedTokens[PEARL] += 1
                 case 2:
                     countedTokens[GOLD] += 1
@@ -142,10 +139,6 @@ class SDGameHandler:
                     #TODO: raise an error?
                     print("ERROR: couldn't count a token on the board (Not a token nor \"None\")")
             coords = self.nextPosition(coords)
-        #out of the while cdt
-
-
-
 
 
         # NEVER MIND THAT'S NOT HOW YOU COUNT THE TOKENS TO REDISTRIBUTE
@@ -153,6 +146,16 @@ class SDGameHandler:
         # redistribute. Then we just subtract those to the max amount and voilà, we have the amount of available tokens.
 
         #TODO: Run through the inventories of the two players, count every token into the list previously incremented
+
+        #self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+        #jewel card ; token
+        for i in range(1,8):
+            countedTokens[i] += self.inventoryP1[i][1]
+            countedTokens[i] += self.inventoryP2[i][1]
+
+        #...yeah I think it's as easy as that. what's harder is to check whether it works or not :/
+        #would require setters for inventories, right?
+        #TODO: setters for inventories
 
         bank = [None, 2, 3, 4, 4, 4, 4, 4]
 
@@ -177,7 +180,83 @@ class SDGameHandler:
             bank[i] -= countedTokens[i]
         return bank
 
+    def setInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1):
+        """
+        Set an item of the inventory, with a certain amount
 
+        By default, if we want a player to have one diamond, it'll be a token, unless 0 is specified as isToken,
+        which case it is certain the player bought a jewel card of the type.
+        """
+        # Jewel Card
+        # Token
+        # Crown
+        #   !! when reaching 3 or 6 crowns
+        # Privilege Scrolls
+
+        # I believe this creates copies of the inventories instead of pointers/references...
+        # I do now know how to manage them so if I figure out how to create one, I'll do so because it looks cleaner
+        selectedPlayer = list()
+        if player == 1:
+            selectedPlayer = self.inventoryP1
+        elif player == 2:
+            selectedPlayer = self.inventoryP2
+
+        # NONE = None
+        # PEARL = 1
+        # GOLD = 2
+        # BLUE_SAPPHIRE = 3
+        # DIAMOND = 4
+        # EMERALD = 5
+        # RUBY = 6
+        # OBSIDIAN = 7
+        # PRIVILEGE = 8
+        # CROWN = 9
+        # self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+
+        #TODO: implement checks in case we surpass the max amount of a certain item (especially tokens)
+        match _type:
+            case 1: # PEARL
+                if isToken:
+                    self.selectedPlayer[1][1] += amount
+                else:
+                    self.selectedPlayer[1][0] += amount
+            case 2: # GOLD
+                if isToken:
+                    self.selectedPlayer[2][1] += amount
+                else:
+                    self.selectedPlayer[2][0] += amount
+            case 3: # BLUE_SAPPHIRE
+                if isToken:
+                    self.selectedPlayer[3][1] += amount
+                else:
+                    self.selectedPlayer[3][0] += amount
+            case 4: # DIAMOND
+                if isToken:
+                    self.selectedPlayer[4][1] += amount
+                else:
+                    self.selectedPlayer[4][0] += amount
+            case 5: # EMERALD
+                if isToken:
+                    self.selectedPlayer[5][1] += amount
+                else:
+                    self.selectedPlayer[5][0] += amount
+            case 6: # RUBY
+                if isToken:
+                    self.selectedPlayer[6][1] += amount
+                else:
+                    self.selectedPlayer[6][0] += amount
+            case 7: # OBSIDIAN
+                if isToken:
+                    self.selectedPlayer[7][1] += amount
+                else:
+                    self.selectedPlayer[7][0] += amount
+            case 8:
+                self.selectedPlayer[8] += amount
+            case 9:
+                self.selectedPlayer[9] += amount
+            case _:
+                # raise ValueError?
+                print("ERROR: not an inventory item")
 
 
     def redistribute(self):
