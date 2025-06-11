@@ -16,6 +16,7 @@ Copyright 2025 B. Lamon
 """
 
 from .Constants import *
+from typing import Tuple
 
 class SDGameHandler:
     def __init__(self):
@@ -49,7 +50,7 @@ class SDGameHandler:
         #OBSIDIAN = 7
         self.tokens = [0,0,0,0,0,0,0,0]
 
-        #same as Memo ? + privilege
+        #same as Memo ? + privilege + crown. What else?
         #OR, we may represent inventories this way:
         # [None, [Jewel cards , Tokens], [Jewel cards , Tokens], ... , [Jewel cards , Tokens], Priv_Scrolls, crowns]
         #   (None is used to sync the indices)
@@ -67,12 +68,13 @@ class SDGameHandler:
         return self._board
 
     # setter for the board
-    def update_board(self, value: int, x: int, y: int):
+    def update_board(self, value: int, position: Tuple[int,int]):
+        x,y = position
         self._board[x][y] = value
 
     # all the tokens are here
     #TODO
-    def bank(self):
+    def bank(self, countedTokens):
         """
         Defines the bank aka where all the tokens to distribute belong.
         So we'll use this method whenever a player chooses to redistribute the tokens on the board
@@ -80,17 +82,42 @@ class SDGameHandler:
 
             -> returns a list with all available tokens (will be used to redistribute)
         """
-        countedTokens = [None,0,0,0,0,0,0,0]
+        #countedTokens = [None,0,0,0,0,0,0,0]
         #TODO: run through all the board, count every token into a list
+
+        # NEVER MIND THAT'S NOT HOW YOU COUNT THE TOKENS TO REDISTRIBUTE
+        # We need to count the token each player has + the tokens on the board. That gives us the tokens we can NOT
+        # redistribute. Then we just subtract those to the max amount and voilà, we have the amount of available tokens.
+
+        #TODO: Run through the inventories of the two players, count every token into the list previously incremented
+
         bank = [None, 2, 3, 4, 4, 4, 4, 4]
 
-        for i in range(len(countedTokens)):
-            if countedTokens[i] > 4:
-                #big error, never supposed to happen!!
-                # TODO: how to handle an error?
-                print(f"ERROR: too many {tokenTypes[i]} tokens!") # tokenTypes: see Constants.py
+        #Checking if there's too many token, which shouldn't happen
+        # TODO: how to handle an error?
+        #  should I create a class that inherits from ValueError then raises it, or should I just raise a ValueError?
+
+        # Max amount of pearls = 2
+        if countedTokens[1] > 2:
+            print(f"ERROR: counted too many {tokenTypes[1]} tokens!")  # tokenTypes: see Constants.py
+        # Max amount of gold = 3
+        if countedTokens[2] > 3:
+            print(f"ERROR: counted too many {tokenTypes[2]} tokens!")  # tokenTypes: see Constants.py
+
+        for i in range(1,len(countedTokens)):
+            #we already did the first two cases, so we pass them
+            if i > 2:
+                #the rest of the tokens aren't supposed to exceed 4
+                if countedTokens[i] > 4:
+                    print(f"ERROR: counted too many {tokenTypes[i]} tokens!") # tokenTypes: see Constants.py
+
             bank[i] -= countedTokens[i]
+        print(bank)
+        print(countedTokens)
         return bank
+
+
+
 
     def redistribute(self):
         toShuffle = self.bank()

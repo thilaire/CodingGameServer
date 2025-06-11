@@ -17,13 +17,16 @@ Copyright 2025 B. Lamon
 
 from colorama import Fore, Back, Style
 
+#list of everything (to make copy-pasting easier):
+#tokenTypes, NONE, PEARL, GOLD, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN, tokenColors, maxTokenAmounts, lvl1JewelCards, lvl2JewelCards, lvl3JewelCards, royalCards, abilities
+
 # 2 pearls, 3 gold, 4 for each gemstone.
 # Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
 # Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
 
 # Represents the different tokens
 tokenTypes = [
-    "None"              # Not sure yet if it's useful
+    "None",              # Not sure yet if it's useful
     "Pearl",            # Pearl token
     "Gold",             # Gold token
     "Blue Sapphire",    # Blue gemstone token
@@ -80,10 +83,10 @@ maxTokenAmounts = {
 lvl1JewelCards = list()
 lvl2JewelCards = list()
 lvl3JewelCards = list()
-crownCards = list()
+royalCards = list()
 
 # Abilities ?
-Abilities = ["PlayAgain",
+abilities = ["PlayAgain",
              "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
              "TakeAToken",          # On the board
              "GetAPrivilegeScroll", # If none available, steal from the opponent
