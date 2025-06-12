@@ -20,9 +20,8 @@ from typing import Tuple, List
 
 class SDGameHandler:
     def __init__(self):
-        # BOARD COMPLETION MAP - will be useful?
+        # BOARD COMPLETION MAP - will be useful
         # Says where to put the next token
-        # to cast into n-tuples?
         self.boardCompletion = (
             ("E", "E", "E", "E", "S"),	# North
             ("N", "E", "E", "S", "S"),	# South
@@ -40,7 +39,7 @@ class SDGameHandler:
         ]
 
         # Memo
-
+        #
         #NONE = None
         #PEARL = 1
         #GOLD = 2
@@ -60,23 +59,23 @@ class SDGameHandler:
         self.inventoryP2 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
 
 
-
-
-
     # getter for the board
     @property
     def board(self):
         return self._board
+
 
     # setter for the board
     def update_board(self, value: int, position: Tuple[int,int]):
         x,y = position
         self._board[x][y] = value
 
+
     def nextPosition(self, currentPosition: List[int]):
         """
         returns the position of the next element to check?
-        Memo: x is the row, y the column...
+        Memo:   - currentPosition = [x,y];
+                - x is the row, y the column.
         """
         x,y = currentPosition
 
@@ -88,13 +87,13 @@ class SDGameHandler:
             nextPosition = [x, y + 1]
         elif self.boardCompletion[x][y] == "W":
             nextPosition = [x, y - 1]
-        else:
+        elif self.boardCompletion[x][y] is None:
             nextPosition = [-1,-1]
+        else:
+            print("ERROR: no location on the board completion map!")
         return nextPosition
 
 
-
-    # all the tokens are here in the beginning, caus nobody has any, nor does the board
     def bank(self):
         """
         Defines the bank aka where all the tokens to distribute belong.
@@ -103,11 +102,11 @@ class SDGameHandler:
 
             -> returns a list with all available tokens (will be used to redistribute)
         """
-        countedTokens = [None,0,0,0,0,0,0,0]
+        # all the tokens are here in the beginning, caus nobody has any, nor does the board
+        bank = [None, 2, 3, 4, 4, 4, 4, 4]
+        countedTokens = [None, 0, 0, 0, 0, 0, 0, 0]
         #first position index: (2,2)
-        #then we run following the board
-        #maybe implement a method which gives the next position
-        # -> done
+        #then we run following the board by using nextPosition((x,y))
 
         # run through all the board, starting at the center
         coords = [2,2]
@@ -119,7 +118,7 @@ class SDGameHandler:
                 case None:
                     #No token here, we shall go to the next position on the board
                     pass
-                case 1: # Can't replace 1 by PEARL (and whatnot) unless I create a class with the names it seems... bruh thenk pytton very cool 👍
+                case 1: # Can't replace 1 by PEARL (etc.) unless I create a class with the names it seems... bruh thenk pytton very cool 👍
                         # source: https://stackoverflow.com/questions/67525257/capture-makes-remaining-patterns-unreachable
                         # maybe will do, waste of time for now
                     countedTokens[PEARL] += 1
@@ -136,55 +135,43 @@ class SDGameHandler:
                 case 7:
                     countedTokens[OBSIDIAN] += 1
                 case _:
-                    #TODO: raise an error?
                     print("ERROR: couldn't count a token on the board (Not a token nor \"None\")")
             coords = self.nextPosition(coords)
 
-
-        # NEVER MIND THAT'S NOT HOW YOU COUNT THE TOKENS TO REDISTRIBUTE
-        # We need to count the token each player has + the tokens on the board. That gives us the tokens we can NOT
-        # redistribute. Then we just subtract those to the max amount and voilà, we have the amount of available tokens.
-
-        #TODO: Run through the inventories of the two players, count every token into the list previously incremented
+        # We need to count the token each player has + the tokens on the board. That gives us the unavailable tokens.
+        # Then we just subtract those to the max amount and voilà, we have the amount of tokens in the bank.
 
         #self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
-        #jewel card ; token
-        for i in range(1,8):
-            countedTokens[i] += self.inventoryP1[i][1]
-            countedTokens[i] += self.inventoryP2[i][1]
+        # [jewel_card , token]
+        for gemstone in range(1,8):
+            countedTokens[gemstone] += self.inventoryP1[gemstone][1]
+            countedTokens[gemstone] += self.inventoryP2[gemstone][1]
 
-        #...yeah I think it's as easy as that. what's harder is to check whether it works or not :/
-        #would require setters for inventories, right?
-        #TODO: setters for inventories
-
-        bank = [None, 2, 3, 4, 4, 4, 4, 4]
-
-        #Checking if there's too many token, which shouldn't happen
-        # TODO: how to handle an error?
+        #Checking if there's too many tokens, which shouldn't happen
+        # TODO: how to handle an error? (side-note)
         #  should I create a class that inherits from ValueError then raises it, or should I just raise a ValueError?
 
         # Max amount of pearls = 2
-        if countedTokens[1] > 2:
-            print(f"ERROR: counted too many {tokenTypes[1]} tokens!")  # tokenTypes: see Constants.py
+        if countedTokens[PEARL] > 2:
+            print(f"ERROR: counted too many {tokenTypes[PEARL]} tokens!")  # tokenTypes: see Constants.py
         # Max amount of gold = 3
-        if countedTokens[2] > 3:
-            print(f"ERROR: counted too many {tokenTypes[2]} tokens!")  # tokenTypes: see Constants.py
+        if countedTokens[GOLD] > 3:
+            print(f"ERROR: counted too many {tokenTypes[PEARL]} tokens!")  # tokenTypes: see Constants.py
 
-        for i in range(1,len(countedTokens)):
+        for gemstone in range(1,len(countedTokens)):
             #we already did the first two cases, so we pass them
-            if i > 2:
+            if gemstone > 2:
                 #the rest of the tokens aren't supposed to exceed 4
-                if countedTokens[i] > 4:
-                    print(f"ERROR: counted too many {tokenTypes[i]} tokens!") # tokenTypes: see Constants.py
+                if countedTokens[gemstone] > 4:
+                    print(f"ERROR: counted too many {tokenTypes[gemstone]} tokens!") # tokenTypes: see Constants.py
+            bank[gemstone] -= countedTokens[gemstone]
 
-            bank[i] -= countedTokens[i]
         return bank
-
 
 
     def addToInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1):
         """
-        Adds an item in the inventory, with a specified amount
+        Adds an item in a player's inventory, with a specified amount
 
         By default, if we want a player to have one diamond, it'll be a token, unless 0 is specified as isToken,
         which case it is certain the player bought a jewel card of the type (unless I forgot a rule that specifies otherwise).
@@ -192,6 +179,7 @@ class SDGameHandler:
         # Jewel Card
         # Token
         # Crown
+        # TODO I guess
         #   !! when reaching 3 or 6 crowns
         # Privilege Scrolls
 
@@ -203,7 +191,7 @@ class SDGameHandler:
         elif player == 2:
             selectedPlayer = self.inventoryP2
         else:
-            print("ERROR: unrecognised player")
+            print("ERROR: unrecognised player (should be 1 or 2)")
         match _type:
             case 1: # PEARL
                 if isToken:
@@ -217,8 +205,7 @@ class SDGameHandler:
                     elif selectedPlayer[1][1] < 0:
                         print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl token!")    # ...otherwise, singular
                                                                                                     # (from what I know).
-                else:   # TODO: Kind of useless since there's no Pearl Jewel Card but eh, the structure is there for other cards
-                        #  oops, I guess I'll have to transform it into an error?
+                else:
                     print("ERROR: no pearl jewel card exist in the game!")
 
             case 2: # GOLD
@@ -309,19 +296,26 @@ class SDGameHandler:
                 print("ERROR: not an inventory item")
 
         #TODO
-        # just thought I could do the checks afterwards... eh maybe I'll change that in the future, i'll check whether it works first
+        # just thought I could do the checks afterwards, it'd be clearer... eh maybe I'll change that in the future
         for i in range(1,10):
             if i < 8: # gemstones+pearls+golds
                 #check whether they have enough jewellery card in a single gemstone
                 if selectedPlayer[i][0] >= 10:
                         print(f"Player {player} has {selectedPlayer[i][0]} jewel cards of {tokenTypes[i]} and won the game! Congratulations :)")
 
+        if player == 1:
+            self.inventoryP1 = selectedPlayer
+        elif player == 2:
+            self.inventoryP2 = selectedPlayer
+        else:
+            print("ERROR: unrecognised player (should be 1 or 2)")
+
 
     def redistribute(self):
         toShuffle = self.bank()
 
         #TODO: shuffle the tokens and redistribute them alongside what's already on the board
-        #Basically, we go on the board, we check if the first index. If it's already full, we go to the next (case given
+        #Basically, we go on the board, we check the first index. If it's already full, we go to the next (case given
         #by the self._boardCompletion map).
         #If a case is empty, we randomly choose one of the indices from the list of the bank. If the index is empty,
         #we go to the next (then the next and whatnot) until we get to an available token.
