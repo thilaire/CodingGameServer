@@ -17,6 +17,8 @@ Copyright 2025 B. Lamon
 
 from .Constants import *
 from typing import Tuple, List
+from random import randint
+
 
 class SDGameHandler:
     def __init__(self):
@@ -66,7 +68,7 @@ class SDGameHandler:
 
 
     # setter for the board
-    def update_board(self, value: int, position: Tuple[int,int]):
+    def update_board(self, value: int, position: Tuple[int]|List[int]):
         x,y = position
         self._board[x][y] = value
 
@@ -314,10 +316,36 @@ class SDGameHandler:
     def redistribute(self):
         toShuffle = self.bank()
 
-        #TODO: shuffle the tokens and redistribute them alongside what's already on the board
         #Basically, we go on the board, we check the first index. If it's already full, we go to the next (case given
         #by the self._boardCompletion map).
         #If a case is empty, we randomly choose one of the indices from the list of the bank. If the index is empty,
-        #we go to the next (then the next and whatnot) until we get to an available token.
-        #If there's not available token, the distribution is done
-        # TODO: how do we detect that?
+        #we choose another one until we get to an available token.
+        #If there's no available token, the distribution is done
+
+        # algorithm idea:
+        # while the next case isn't -1-1,
+        #   if the case isn't complete
+        #       take a random token from the bank,
+        #       put it on the board
+        #       subtract it to the bank
+        #   go to the next case
+
+        coords = [2,2]
+        bank = self.bank()
+        while coords != [-1,-1]:
+            x, y = coords
+            if self.board[x][y] is None:
+                #random token from the bank
+                #Can most likely be optimised.
+                #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
+                randomToken = randint(1,7)  #TODO: implement the seed for random generation!!!
+                while bank[randomToken] == 0:
+                    randomToken = randint(1,7)
+                self.update_board(randomToken, coords)
+                bank[randomToken] -= 1
+            coords = self.nextPosition(coords)
+        #need to check whether the bank is empty?
+        for token in range(1,7):
+            if bank[token] != 0:
+                print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]} = {bank[token]})")
+        #TODO: fix bug
