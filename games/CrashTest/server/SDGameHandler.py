@@ -219,11 +219,7 @@ class SDGameHandler:
                                                                                                     # (from what I know).
                 else:   # TODO: Kind of useless since there's no Pearl Jewel Card but eh, the structure is there for other cards
                         #  oops, I guess I'll have to transform it into an error?
-                    selectedPlayer[1][0] += amount
-                    #TODO:
-                    # perhaps implement a check for the amount of jewel card of a single gemstone to never be < 0 ?
-                    if selectedPlayer[1][0] < 0:
-                        print(f"ERROR: {selectedPlayer[1][0]} jewel cards of {tokenTypes[1]}!")
+                    print("ERROR: no pearl jewel card exist in the game!")
 
             case 2: # GOLD
                 if isToken:
@@ -232,10 +228,8 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold tokens!")
                     elif selectedPlayer[2][1] < 0:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold token!")
-                else:   #TODO: Same error as the pearls!
-                    selectedPlayer[2][0] += amount
-                    if selectedPlayer[2][0] < 0:
-                        print(f"ERROR: {selectedPlayer[2][0]} jewel cards of {tokenTypes[2]}!")
+                else:
+                    print("ERROR: no gold jewel card exist in the game!")
             case 3: # BLUE_SAPPHIRE
                 if isToken:
                     selectedPlayer[3][1] += amount
