@@ -180,12 +180,14 @@ class SDGameHandler:
             bank[i] -= countedTokens[i]
         return bank
 
-    def setInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1):
+
+
+    def addToInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1):
         """
-        Set an item of the inventory, with a certain amount
+        Adds an item in the inventory, with a specified amount
 
         By default, if we want a player to have one diamond, it'll be a token, unless 0 is specified as isToken,
-        which case it is certain the player bought a jewel card of the type.
+        which case it is certain the player bought a jewel card of the type (unless I forgot a rule that specifies otherwise).
         """
         # Jewel Card
         # Token
@@ -200,63 +202,113 @@ class SDGameHandler:
             selectedPlayer = self.inventoryP1
         elif player == 2:
             selectedPlayer = self.inventoryP2
-
-        # NONE = None
-        # PEARL = 1
-        # GOLD = 2
-        # BLUE_SAPPHIRE = 3
-        # DIAMOND = 4
-        # EMERALD = 5
-        # RUBY = 6
-        # OBSIDIAN = 7
-        # PRIVILEGE = 8
-        # CROWN = 9
-        # self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
-
-        #TODO: implement checks in case we surpass the max amount of a certain item (especially tokens)
+        else:
+            print("ERROR: unrecognised player")
         match _type:
             case 1: # PEARL
                 if isToken:
-                    self.selectedPlayer[1][1] += amount
+                    # We add the requested amount...
+                    selectedPlayer[1][1] += amount
+                    # ...then we check whether the values are in the good range (max/min token amount).
+                    # And we inform when there's an issue.
+                    if selectedPlayer[1][1] > 2 or selectedPlayer[1][1] < -2:
+                        # Plural
+                        print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl tokens!")   # Plural if x ∈ ℝ\{(-2;2)}...
+                    elif selectedPlayer[1][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl token!")    # ...otherwise, singular
+                                                                                                    # (from what I know).
                 else:
-                    self.selectedPlayer[1][0] += amount
+                    selectedPlayer[1][0] += amount
+                    #TODO:
+                    # perhaps implement a check for the amount of jewel card of a single gemstone to never be < 0 ?
+
             case 2: # GOLD
                 if isToken:
-                    self.selectedPlayer[2][1] += amount
+                    selectedPlayer[2][1] += amount
+                    if selectedPlayer[2][1] > 3 or selectedPlayer[2][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold tokens!")
+                    elif selectedPlayer[2][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold token!")
                 else:
-                    self.selectedPlayer[2][0] += amount
+                    selectedPlayer[2][0] += amount
             case 3: # BLUE_SAPPHIRE
                 if isToken:
-                    self.selectedPlayer[3][1] += amount
+                    selectedPlayer[3][1] += amount
+                    if selectedPlayer[3][1] > 4 or selectedPlayer[3][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[3][1]} blue sapphire tokens!")
+                    elif selectedPlayer[3][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[3][1]} blue sapphire token!")
                 else:
-                    self.selectedPlayer[3][0] += amount
+                    selectedPlayer[3][0] += amount
             case 4: # DIAMOND
                 if isToken:
-                    self.selectedPlayer[4][1] += amount
+                    selectedPlayer[4][1] += amount
+                    if selectedPlayer[4][1] > 4 or selectedPlayer[4][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[4][1]} diamond tokens!")
+                    elif selectedPlayer[4][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[4][1]} diamond token!")
                 else:
-                    self.selectedPlayer[4][0] += amount
+                    selectedPlayer[4][0] += amount
             case 5: # EMERALD
                 if isToken:
-                    self.selectedPlayer[5][1] += amount
+                    selectedPlayer[5][1] += amount
+                    if selectedPlayer[5][1] > 4 or selectedPlayer[5][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[5][1]} emerald tokens!")
+                    elif selectedPlayer[5][1] < -0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[5][1]} emerald token!")
                 else:
-                    self.selectedPlayer[5][0] += amount
+                    selectedPlayer[5][0] += amount
             case 6: # RUBY
                 if isToken:
-                    self.selectedPlayer[6][1] += amount
+                    selectedPlayer[6][1] += amount
+                    if selectedPlayer[6][1] > 4 or selectedPlayer[6][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[6][1]} ruby tokens!")
+                    elif selectedPlayer[6][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[6][1]} ruby token!")
                 else:
-                    self.selectedPlayer[6][0] += amount
+                    selectedPlayer[6][0] += amount
             case 7: # OBSIDIAN
                 if isToken:
-                    self.selectedPlayer[7][1] += amount
+                    selectedPlayer[7][1] += amount
+                    if selectedPlayer[7][1] > 4 or selectedPlayer[7][1] < -2:
+                        print(f"ERROR: Player {player} has {selectedPlayer[7][1]} obsidian tokens!")
+                    elif selectedPlayer[7][1] < 0:
+                        print(f"ERROR: Player {player} has {selectedPlayer[7][1]} obsidian token!")
+
                 else:
-                    self.selectedPlayer[7][0] += amount
-            case 8:
-                self.selectedPlayer[8] += amount
-            case 9:
-                self.selectedPlayer[9] += amount
+                    selectedPlayer[7][0] += amount
+            case 8: # PRIVILEGES
+                selectedPlayer[8] += amount
+                if selectedPlayer[8] > 3:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")
+                elif selectedPlayer[8] < -2:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")   # Plural if x ∈ ℝ\{(-2;2)}...
+                elif selectedPlayer[8] < 0:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privilege!")    # ...otherwise, singular
+                                                                                                # (from what I know).
+            case 9: # CROWNS
+                selectedPlayer[9] += amount
+                if selectedPlayer[9] >= 10:
+                    print(f"Player {player} has {selectedPlayer[9]} crowns and won the game! Congratulations :)")
+                elif selectedPlayer[9] < -2:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crowns!")    # Plural if x ∈ ℝ\{(-2;2)}...
+                elif selectedPlayer[9] < 0:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crown!")     # ...otherwise, singular
+                                                                                        # (even though we're working w/ ints)
             case _:
                 # raise ValueError?
                 print("ERROR: not an inventory item")
+
+        #TODO
+        # just thought I could do the checks afterwards... eh maybe I'll change that in the future, i'll check whether it works first
+        for i in range(1,10):
+            if i < 8: # gemstones+pearls+golds
+                #check whether they have enough jewellery card in a single gemstone
+                if selectedPlayer[i][0] >= 10:
+                    if i == 6: # Plural of "Ruby" is "Rubies" and not "Rubys", otherwise it'd be too easy :)))))))))
+                        print(f"Player {player} has {selectedPlayer[i][0]} Rubies and won the game! Congratulations :)")
+                    else:
+                        print(f"Player {player} has {selectedPlayer[i][0]} {tokenTypes[i]}s and won the game! Congratulations :)")
 
 
     def redistribute(self):
