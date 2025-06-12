@@ -217,10 +217,13 @@ class SDGameHandler:
                     elif selectedPlayer[1][1] < 0:
                         print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl token!")    # ...otherwise, singular
                                                                                                     # (from what I know).
-                else:
+                else:   # TODO: Kind of useless since there's no Pearl Jewel Card but eh, the structure is there for other cards
+                        #  oops, I guess I'll have to transform it into an error?
                     selectedPlayer[1][0] += amount
                     #TODO:
                     # perhaps implement a check for the amount of jewel card of a single gemstone to never be < 0 ?
+                    if selectedPlayer[1][0] < 0:
+                        print(f"ERROR: {selectedPlayer[1][0]} jewel cards of {tokenTypes[1]}!")
 
             case 2: # GOLD
                 if isToken:
@@ -229,8 +232,10 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold tokens!")
                     elif selectedPlayer[2][1] < 0:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold token!")
-                else:
+                else:   #TODO: Same error as the pearls!
                     selectedPlayer[2][0] += amount
+                    if selectedPlayer[2][0] < 0:
+                        print(f"ERROR: {selectedPlayer[2][0]} jewel cards of {tokenTypes[2]}!")
             case 3: # BLUE_SAPPHIRE
                 if isToken:
                     selectedPlayer[3][1] += amount
@@ -240,6 +245,8 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[3][1]} blue sapphire token!")
                 else:
                     selectedPlayer[3][0] += amount
+                    if selectedPlayer[3][0] < 0:
+                        print(f"ERROR: {selectedPlayer[3][0]} jewel cards of {tokenTypes[3]}!")
             case 4: # DIAMOND
                 if isToken:
                     selectedPlayer[4][1] += amount
@@ -249,6 +256,8 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[4][1]} diamond token!")
                 else:
                     selectedPlayer[4][0] += amount
+                    if selectedPlayer[4][0] < 0:
+                        print(f"ERROR: {selectedPlayer[4][0]} jewel cards of {tokenTypes[4]}!")
             case 5: # EMERALD
                 if isToken:
                     selectedPlayer[5][1] += amount
@@ -258,6 +267,8 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[5][1]} emerald token!")
                 else:
                     selectedPlayer[5][0] += amount
+                    if selectedPlayer[5][0] < 0:
+                        print(f"ERROR: {selectedPlayer[5][0]} jewel cards of {tokenTypes[5]}!")
             case 6: # RUBY
                 if isToken:
                     selectedPlayer[6][1] += amount
@@ -267,6 +278,8 @@ class SDGameHandler:
                         print(f"ERROR: Player {player} has {selectedPlayer[6][1]} ruby token!")
                 else:
                     selectedPlayer[6][0] += amount
+                    if selectedPlayer[6][0] < 0:
+                        print(f"ERROR: {selectedPlayer[6][0]} jewel cards of {tokenTypes[6]}!")
             case 7: # OBSIDIAN
                 if isToken:
                     selectedPlayer[7][1] += amount
@@ -277,15 +290,17 @@ class SDGameHandler:
 
                 else:
                     selectedPlayer[7][0] += amount
+                    if selectedPlayer[7][0] < 0:
+                        print(f"ERROR: {selectedPlayer[7][0]} jewel cards of {tokenTypes[7]}!")
             case 8: # PRIVILEGES
                 selectedPlayer[8] += amount
                 if selectedPlayer[8] > 3:
                     print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")
                 elif selectedPlayer[8] < -2:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")   # Plural if x ∈ ℝ\{(-2;2)}...
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")    # Plural if x ∈ ℝ\{(-2;2)}...
                 elif selectedPlayer[8] < 0:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privilege!")    # ...otherwise, singular
-                                                                                                # (from what I know).
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privilege!")     # ...otherwise, singular
+                                                                                            # (from what I know).
             case 9: # CROWNS
                 selectedPlayer[9] += amount
                 if selectedPlayer[9] >= 10:
@@ -305,10 +320,7 @@ class SDGameHandler:
             if i < 8: # gemstones+pearls+golds
                 #check whether they have enough jewellery card in a single gemstone
                 if selectedPlayer[i][0] >= 10:
-                    if i == 6: # Plural of "Ruby" is "Rubies" and not "Rubys", otherwise it'd be too easy :)))))))))
-                        print(f"Player {player} has {selectedPlayer[i][0]} Rubies and won the game! Congratulations :)")
-                    else:
-                        print(f"Player {player} has {selectedPlayer[i][0]} {tokenTypes[i]}s and won the game! Congratulations :)")
+                        print(f"Player {player} has {selectedPlayer[i][0]} jewel cards of {tokenTypes[i]} and won the game! Congratulations :)")
 
 
     def redistribute(self):
