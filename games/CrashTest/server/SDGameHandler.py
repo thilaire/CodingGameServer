@@ -377,6 +377,7 @@ class SDGameHandler:
                 print("ERROR: second coordinate should be next to the first!")
 
 
+#TODO: figure out whether the iterator works and how to use it.
 
 class PositionIterator:
     def __init__(self, coords: List[int]):
@@ -386,10 +387,25 @@ class PositionIterator:
             "E":(0,1),
             "W":(0,-1)
         }
+        self.boardCompletion = (
+            ("E", "E", "E", "E", "S"),	# North
+            ("N", "E", "E", "S", "S"),	# South
+            ("N", "N", "S", "S", "S"),	# East
+            ("N", "N", "W", "S", "S"),	# West
+            ("N", "W", "W", "W", None)	# None when complete (index (4,4)), beginning at index (2,2)
+        )
         self.current = coords
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.current is not None:
+        x,y = self.current
+        if self.boardCompletion[x][y] is None:
+            raise StopIteration
+        #boardCompletion[][] = direction letter
+        else:
+            x_f = x + self.directions[self.boardCompletion[x][y]][0] # x_f = x + directions [N,S,E,W][0] depending on coords (x,y)
+            y_f = y + self.directions[self.boardCompletion[x][y]][1] # almost same here: dir index = [1]
+            return [x_f,y_f]
+
