@@ -117,28 +117,8 @@ class SDGameHandler:
         while coords != [-1,-1]:
             #go to the board, add the current thing to the list
             x, y = coords
-            match self.board[x][y]:
-                case None:
-                    #No token here, we shall go to the next position on the board
-                    pass
-                case 1: # Can't replace 1 by PEARL (etc.) unless I create a class with the names it seems... bruh thenk pytton very cool 👍
-                        # source: https://stackoverflow.com/questions/67525257/capture-makes-remaining-patterns-unreachable
-                        # maybe will do, waste of time for now
-                    countedTokens[PEARL] += 1
-                case 2:
-                    countedTokens[GOLD] += 1
-                case 3:
-                    countedTokens[BLUE_SAPPHIRE] += 1
-                case 4:
-                    countedTokens[DIAMOND] += 1
-                case 5:
-                    countedTokens[EMERALD] += 1
-                case 6:
-                    countedTokens[RUBY] += 1
-                case 7:
-                    countedTokens[OBSIDIAN] += 1
-                case _:
-                    print("ERROR: couldn't count a token on the board (Not a token nor \"None\")")
+            if self.board[x][y] is not None:
+                countedTokens[self.board[x][y]] += 1
             coords = self.nextPosition(coords)
 
         # We need to count the token each player has + the tokens on the board. That gives us the unavailable tokens.
@@ -314,7 +294,6 @@ class SDGameHandler:
 
 
     def redistribute(self):
-        toShuffle = self.bank()
 
         #Basically, we go on the board, we check the first index. If it's already full, we go to the next (case given
         #by the self._boardCompletion map).
@@ -348,7 +327,6 @@ class SDGameHandler:
         for token in range(1,7):
             if bank[token] != 0:
                 print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]} = {bank[token]})")
-        #TODO: fix bug
         #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
         # TODO: choose tokens on the board
         # TODO
@@ -356,7 +334,7 @@ class SDGameHandler:
         #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
         #   uncompleted. If there's still not enough, then it's illegal.
 
-    def tokenCapture(self,coords: List[int], playerInventory):
+    def tokenCapture(self,coords: list[list], playerInventory):
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
         horizontal or diagonal).
@@ -364,3 +342,37 @@ class SDGameHandler:
         Then we check whether the three tokens are identical, or whether there's two pearls chosen, which case the
         opponent gets a privilege scroll.
         """
+
+        if len(coords) > 3:
+            print("ERROR: You can only capture 3 tokens at most!")
+            return
+        x1, y1 = coords[0]
+        x2, y2 = coords[1]
+        x3, y3 = coords[2]
+        #checking whether the second case is next to the first
+        firstCheck = [x1-x2, y1-y2]
+        match firstCheck:
+            case [1,1]: #top left
+                print("top left")
+            case [0,1]: #straight top
+                print("straight top")
+            case [-1,1]: #top right
+                print("top right")
+            case [1,0]: #straight left
+                print("straight left")
+            case [-1,1]: #straight right
+                print("straight right")
+            case [1,-1]: #bottom left
+                print("bottom left")
+            case [0,-1]: #straight bottom
+                print("straight bottom")
+            case [-1,-1]: #bottom right
+                print("bottom right")
+            case []: #nothing here so there shouldn't be anything afterwards
+                if coords[2]:
+                    print("ERROR: second chosen case should be at index 1!")
+            case [0,0]:
+                print("ERROR: coordinates 0 and 1 are the same!")
+            case _:
+                print("ERROR: second coordinate should be next to the first!")
+
