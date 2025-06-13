@@ -17,8 +17,9 @@ Copyright 2025 B. Lamon
 
 from .Constants import *
 from typing import Tuple, List
-from random import randint
+from random import randint, seed
 
+seed(1)
 
 class SDGameHandler:
     def __init__(self):
@@ -68,7 +69,7 @@ class SDGameHandler:
 
 
     # setter for the board
-    def update_board(self, value: int, position: Tuple[int]|List[int]):
+    def update_board(self, value: None|int, position: Tuple[int]|List[int]):
         x,y = position
         self._board[x][y] = value
 
@@ -150,8 +151,6 @@ class SDGameHandler:
             countedTokens[gemstone] += self.inventoryP2[gemstone][1]
 
         #Checking if there's too many tokens, which shouldn't happen
-        # TODO: how to handle an error? (side-note)
-        #  should I create a class that inherits from ValueError then raises it, or should I just raise a ValueError?
 
         # Max amount of pearls = 2
         if countedTokens[PEARL] > 2:
@@ -183,6 +182,7 @@ class SDGameHandler:
         # Crown
         # TODO I guess
         #   !! when reaching 3 or 6 crowns
+        #   call a new method, "chooseCrownCard()" or smth
         # Privilege Scrolls
 
         # I believe this creates copies of the inventories instead of pointers/references...
@@ -349,3 +349,18 @@ class SDGameHandler:
             if bank[token] != 0:
                 print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]} = {bank[token]})")
         #TODO: fix bug
+        #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
+        # TODO: choose tokens on the board
+        # TODO
+        #   Substitution of any token for a gold one (when buying a card for instance)
+        #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
+        #   uncompleted. If there's still not enough, then it's illegal.
+
+    def tokenCapture(self,coords: List[int], playerInventory):
+        """
+        checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
+        horizontal or diagonal).
+        Then we check whether there's a gold token, which case the move is illegal.
+        Then we check whether the three tokens are identical, or whether there's two pearls chosen, which case the
+        opponent gets a privilege scroll.
+        """
