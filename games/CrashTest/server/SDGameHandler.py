@@ -74,7 +74,7 @@ class SDGameHandler:
         self._board[x][y] = value
 
 
-    def nextPosition(self, currentPosition: List[int]):
+    def nextPosition(self, currentPosition: List[int]) -> List[int]:
         """
         returns the position of the next element to check?
         Memo:   - currentPosition = [x,y];
@@ -97,7 +97,7 @@ class SDGameHandler:
         return nextPosition
 
 
-    def bank(self):
+    def bank(self) -> List[int|None]:
         """
         Defines the bank aka where all the tokens to distribute belong.
         So we'll use this method whenever a player chooses to redistribute the tokens on the board
@@ -150,7 +150,7 @@ class SDGameHandler:
         return bank
 
 
-    def addToInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1):
+    def addToInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1) -> None:
         """
         Adds an item in a player's inventory, with a specified amount
 
@@ -293,7 +293,7 @@ class SDGameHandler:
             print("ERROR: unrecognised player (should be 1 or 2)")
 
 
-    def redistribute(self):
+    def redistribute(self) -> None:
 
         #Basically, we go on the board, we check the first index. If it's already full, we go to the next (case given
         #by the self._boardCompletion map).
@@ -326,7 +326,7 @@ class SDGameHandler:
         #need to check whether the bank is empty?
         for token in range(1,7):
             if bank[token] != 0:
-                print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]} = {bank[token]})")
+                print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]}: {bank[token]} in the bank)")
         #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
         # TODO: choose tokens on the board
         # TODO
@@ -334,7 +334,7 @@ class SDGameHandler:
         #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
         #   uncompleted. If there's still not enough, then it's illegal.
 
-    def tokenCapture(self,coords: list[list], playerInventory):
+    def tokenCapture(self,coords: list[list], playerInventory) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
         horizontal or diagonal).
@@ -376,3 +376,20 @@ class SDGameHandler:
             case _:
                 print("ERROR: second coordinate should be next to the first!")
 
+
+
+class PositionIterator:
+    def __init__(self, coords: List[int]):
+        self.directions = {
+            "N":(-1,0),
+            "S":(1,0),
+            "E":(0,1),
+            "W":(0,-1)
+        }
+        self.current = coords
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current is not None:
