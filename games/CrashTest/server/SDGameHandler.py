@@ -16,7 +16,7 @@ Copyright 2025 B. Lamon
 """
 
 from .Constants import *
-from typing import Tuple, List
+from typing import Tuple, List, Iterator
 from random import randint, seed
 
 seed(1)
@@ -292,6 +292,21 @@ class SDGameHandler:
         else:
             print("ERROR: unrecognised player (should be 1 or 2)")
 
+        #TODO: we can probably factorise this into something like:
+        #                 if isToken:
+        #                     selectedPlayer[_type][1] += amount
+        #                     if selectedPlayer[_type][1] > MAX_TYPE_AMOUNT or selectedPlayer[_type][1] < -2:
+        #                         print(f"ERROR: Player {player} has {selectedPlayer[_type][1]} blue sapphire tokens!") # Plural if x ∈ ℝ\{(-2;2)}...
+        #                     elif selectedPlayer[_type][1] < 0:
+        #                         print(f"ERROR: Player {player} has {selectedPlayer[_type][1]} blue sapphire token!")  # ...otherwise, singular
+        #                                                                                                               # (from what I know).
+        #                 else:
+        #                     selectedPlayer[_type][0] += amount
+        #                     if selectedPlayer[_type][0] < 0:
+        #                         print(f"ERROR: {selectedPlayer[_type][0]} jewel cards of {tokenTypes[_type]}!")
+        # Though we have to take into account the three types of tokens (pearl, gold, other gems) + crowns + privilege scrolls.
+        # Still, it'd be shorter & easier to read (~3 conditions (+ 3 within the tokens))
+
 
     def redistribute(self) -> None:
 
@@ -311,22 +326,46 @@ class SDGameHandler:
 
         coords = [2,2]
         bank = self.bank()
-        while coords != [-1,-1]:
-            x, y = coords
+        #TODO: replace w/ pos iterator
+        # while coords != [-1,-1]:
+        #     x, y = coords
+        #     if self.board[x][y] is None:
+        #         #random token from the bank
+        #         #Can most likely be optimised.
+        #         #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
+        #         randomToken = randint(1,7)  #TODO: implement the seed for random generation!!!
+        #
+        #         #wait until we're in a case which is not full
+        #         while bank[randomToken] == 0:
+        #             randomToken = randint(1,7)
+        #
+        #         self.update_board(randomToken, coords)
+        #         bank[randomToken] -= 1
+        #     coords = self.nextPosition(coords)
+
+        for position in PositionIterator(coords):
+            x, y = position
+
             if self.board[x][y] is None:
                 #random token from the bank
                 #Can most likely be optimised.
                 #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
-                randomToken = randint(1,7)  #TODO: implement the seed for random generation!!!
+                randomToken = randint(1,7)  # TODO: implement the seed for random generation!!!
+
+                #wait until we're in a case which is not full
                 while bank[randomToken] == 0:
                     randomToken = randint(1,7)
-                self.update_board(randomToken, coords)
+
+                self.update_board(randomToken, (x,y))
                 bank[randomToken] -= 1
-            coords = self.nextPosition(coords)
+
         #need to check whether the bank is empty?
         for token in range(1,7):
             if bank[token] != 0:
                 print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]}: {bank[token]} in the bank)")
+
+
+
         #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
         # TODO: choose tokens on the board
         # TODO
@@ -376,9 +415,6 @@ class SDGameHandler:
             case _:
                 print("ERROR: second coordinate should be next to the first!")
 
-
-#TODO: figure out whether the iterator works and how to use it.
-
 class PositionIterator:
     def __init__(self, coords: List[int]):
         self.directions = {
@@ -395,17 +431,40 @@ class PositionIterator:
             ("N", "W", "W", "W", None)	# None when complete (index (4,4)), beginning at index (2,2)
         )
         self.current = coords
+        self.started = False
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[List[int]]:
         return self
 
     def __next__(self):
+        if not self.started:
+            self.started = True
+            return self.current #returns first position (= [2,2] here)
+
         x,y = self.current
-        if self.boardCompletion[x][y] is None:
+        _next = self.boardCompletion[x][y]
+        if _next is None: #either out of indices (I guess?? or mb IndexError would be raised?) or last index
             raise StopIteration
         #boardCompletion[][] = direction letter
-        else:
-            x_f = x + self.directions[self.boardCompletion[x][y]][0] # x_f = x + directions [N,S,E,W][0] depending on coords (x,y)
-            y_f = y + self.directions[self.boardCompletion[x][y]][1] # almost same here: dir index = [1]
-            return [x_f,y_f]
+
+        #calc next position
+        dx,dy = self.directions[_next]
+        x_f = x + dx
+        y_f = y + dy
+
+        #check whether the next position is valid. Stop iteration if not (will most likely result in an error which is
+        #outside the scope of the iterator though).
+        # if x ∉ [0;length(board)], stop
+        if not (0 <= x_f or x_f < len(self.boardCompletion)):
+            raise StopIteration
+        # if y ∉ [0;length(board)], stop
+        if not (0 <= y_f or y_f < len(self.boardCompletion)):
+            raise StopIteration
+
+        #return the next position
+        self.current = [x_f,y_f]
+        return self.current
+
+
+
 
