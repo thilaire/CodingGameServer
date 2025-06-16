@@ -360,30 +360,26 @@ class SDGameHandler:
         x3, y3 = coords[2]
         #checking whether the second case is next to the first
         firstCheck = [x1-x2, y1-y2]
-        match firstCheck:
-            case [1,1]: #top left
-                print("top left")
-            case [0,1]: #straight top
-                print("straight top")
-            case [-1,1]: #top right
-                print("top right")
-            case [1,0]: #straight left
-                print("straight left")
-            case [-1,1]: #straight right
-                print("straight right")
-            case [1,-1]: #bottom left
-                print("bottom left")
-            case [0,-1]: #straight bottom
-                print("straight bottom")
-            case [-1,-1]: #bottom right
-                print("bottom right")
-            case []: #nothing here so there shouldn't be anything afterwards
-                if coords[2]:
-                    print("ERROR: second chosen case should be at index 1!")
-            case [0,0]:
-                print("ERROR: coordinates 0 and 1 are the same!")
-            case _:
-                print("ERROR: second coordinate should be next to the first!")
+
+        # We should check whether a move is legal (inline + within board + no gold and whatnot)
+
+        directionsList = [
+            [1,1], #TOP LEFT
+            [0,1], #STRAIGHT LEFT
+            [-1,1],#BOTTOM LEFT
+            [1,0], #STRAIGHT TOP
+            [-1,0],#STRAIGHT BOTTOM
+            [1,-1],#TOP RIGHT
+            [0,-1],#STRAIGHT RIGHT
+            [-1,-1]#BOTTOM RIGHT
+        ]
+
+        # if the directions aren't next to each other & if the last isn't empty:
+        if (not firstCheck in directionsList) | ([x1 - x2, y1 - y2] != [x2 - x3, y2 - y3]) | (x3 != 0 & y3 != 0):
+            print("ERROR: chosen cases are not allowed!")
+
+
+
 
 # Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())
 class PositionIterator:
