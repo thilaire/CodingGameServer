@@ -60,6 +60,7 @@ class SDGameHandler:
         #   Anything else needed?
         self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
         self.inventoryP2 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+        self.temp = [0,0]
 
 
     # getter for the board
@@ -174,6 +175,8 @@ class SDGameHandler:
             selectedPlayer = self.inventoryP2
         else:
             print("ERROR: unrecognised player (should be 1 or 2)")
+
+        #add stuff to the inventory (we'll check afterwards)
         match _type:
             case 1: # PEARL
                 if isToken:
@@ -181,131 +184,113 @@ class SDGameHandler:
                     selectedPlayer[1][1] += amount
                     # ...then we check whether the values are in the good range (max/min token amount).
                     # And we inform when there's an issue.
-                    if selectedPlayer[1][1] > 2 or selectedPlayer[1][1] < -2:
+                    if selectedPlayer[1][1] > 2 or selectedPlayer[1][1] <= -2:
                         # Plural
-                        print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl tokens!")   # Plural if x ∈ ℝ\{(-2;2)}...
+                        print(
+                            f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl tokens!")  # Plural if x ∈ ℝ\{(-2;2)}...
                     elif selectedPlayer[1][1] < 0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl token!")    # ...otherwise, singular
-                                                                                                    # (from what I know).
+                        print(f"ERROR: Player {player} has {selectedPlayer[1][1]} pearl token!")  # ...otherwise, singular
+                        # (from what I know).
                 else:
                     print("ERROR: no pearl jewel card exist in the game!")
 
             case 2: # GOLD
                 if isToken:
                     selectedPlayer[2][1] += amount
-                    if selectedPlayer[2][1] > 3 or selectedPlayer[2][1] < -2:
+                    if selectedPlayer[2][1] > 3 or selectedPlayer[2][1] <= -2:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold tokens!")
                     elif selectedPlayer[2][1] < 0:
                         print(f"ERROR: Player {player} has {selectedPlayer[2][1]} gold token!")
                 else:
                     print("ERROR: no gold jewel card exist in the game!")
-            case 3: # BLUE_SAPPHIRE
-                if isToken:
-                    selectedPlayer[3][1] += amount
-                    if selectedPlayer[3][1] > 4 or selectedPlayer[3][1] < -2:
-                        print(f"ERROR: Player {player} has {selectedPlayer[3][1]} blue sapphire tokens!")
-                    elif selectedPlayer[3][1] < 0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[3][1]} blue sapphire token!")
-                else:
-                    selectedPlayer[3][0] += amount
-                    if selectedPlayer[3][0] < 0:
-                        print(f"ERROR: {selectedPlayer[3][0]} jewel cards of {tokenTypes[3]}!")
-            case 4: # DIAMOND
-                if isToken:
-                    selectedPlayer[4][1] += amount
-                    if selectedPlayer[4][1] > 4 or selectedPlayer[4][1] < -2:
-                        print(f"ERROR: Player {player} has {selectedPlayer[4][1]} diamond tokens!")
-                    elif selectedPlayer[4][1] < 0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[4][1]} diamond token!")
-                else:
-                    selectedPlayer[4][0] += amount
-                    if selectedPlayer[4][0] < 0:
-                        print(f"ERROR: {selectedPlayer[4][0]} jewel cards of {tokenTypes[4]}!")
-            case 5: # EMERALD
-                if isToken:
-                    selectedPlayer[5][1] += amount
-                    if selectedPlayer[5][1] > 4 or selectedPlayer[5][1] < -2:
-                        print(f"ERROR: Player {player} has {selectedPlayer[5][1]} emerald tokens!")
-                    elif selectedPlayer[5][1] < -0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[5][1]} emerald token!")
-                else:
-                    selectedPlayer[5][0] += amount
-                    if selectedPlayer[5][0] < 0:
-                        print(f"ERROR: {selectedPlayer[5][0]} jewel cards of {tokenTypes[5]}!")
-            case 6: # RUBY
-                if isToken:
-                    selectedPlayer[6][1] += amount
-                    if selectedPlayer[6][1] > 4 or selectedPlayer[6][1] < -2:
-                        print(f"ERROR: Player {player} has {selectedPlayer[6][1]} ruby tokens!")
-                    elif selectedPlayer[6][1] < 0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[6][1]} ruby token!")
-                else:
-                    selectedPlayer[6][0] += amount
-                    if selectedPlayer[6][0] < 0:
-                        print(f"ERROR: {selectedPlayer[6][0]} jewel cards of {tokenTypes[6]}!")
-            case 7: # OBSIDIAN
-                if isToken:
-                    selectedPlayer[7][1] += amount
-                    if selectedPlayer[7][1] > 4 or selectedPlayer[7][1] < -2:
-                        print(f"ERROR: Player {player} has {selectedPlayer[7][1]} obsidian tokens!")
-                    elif selectedPlayer[7][1] < 0:
-                        print(f"ERROR: Player {player} has {selectedPlayer[7][1]} obsidian token!")
 
-                else:
-                    selectedPlayer[7][0] += amount
-                    if selectedPlayer[7][0] < 0:
-                        print(f"ERROR: {selectedPlayer[7][0]} jewel cards of {tokenTypes[7]}!")
             case 8: # PRIVILEGES
                 selectedPlayer[8] += amount
-                if selectedPlayer[8] > 3:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")
-                elif selectedPlayer[8] < -2:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")    # Plural if x ∈ ℝ\{(-2;2)}...
-                elif selectedPlayer[8] < 0:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privilege!")     # ...otherwise, singular
-                                                                                            # (from what I know).
+                print(selectedPlayer)
+
             case 9: # CROWNS
                 selectedPlayer[9] += amount
-                if selectedPlayer[9] >= 10:
-                    print(f"Player {player} has {selectedPlayer[9]} crowns and won the game! Congratulations :)")
-                elif selectedPlayer[9] < -2:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crowns!")    # Plural if x ∈ ℝ\{(-2;2)}...
-                elif selectedPlayer[9] < 0:
-                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crown!")     # ...otherwise, singular
-                                                                                        # (even though we're working w/ ints)
-            case _:
-                # raise ValueError?
-                print("ERROR: not an inventory item")
 
-        #TODO
-        # just thought I could do the checks afterwards, it'd be clearer... eh maybe I'll change that in the future
+            case _:
+                if 8 > _type > 2: # GEMSTONES
+                    if isToken:
+                        selectedPlayer[_type][1] += amount
+                    else:
+                        selectedPlayer[_type][0] += amount
+
+                else:
+                    print("ERROR: not a token nor a valid object (should be unreachable)!")
+
+
+        # checking whether it's a legal move or not
         for i in range(1,10):
             if i < 8: # gemstones+pearls+golds
                 #check whether they have enough jewellery card in a single gemstone
                 if selectedPlayer[i][0] >= 10:
-                        print(f"Player {player} has {selectedPlayer[i][0]} jewel cards of {tokenTypes[i]} and won the game! Congratulations :)")
+                    print(f"Player {player} has {selectedPlayer[i][0]} jewel cards of {tokenTypes[i]} and won the game! Congratulations :)")
+                #negative amount of a gemstone jewel card
+                if selectedPlayer[i][0] <= -2:
+                    print(f"ERROR: {player} has {selectedPlayer[i][0]} jewel cards of {tokenTypes[i]}!")  # plural
+                elif selectedPlayer[i][0] < 0:
+                    print(f"ERROR: {player} has {selectedPlayer[i][0]} jewel card of {tokenTypes[i]}!") #singular
+
+                #incorrect amount of tokens
+                if selectedPlayer[i][1] > 4 or selectedPlayer[i][1] <= -2:
+                    print(f"ERROR: Player {player} has {selectedPlayer[i][1]} {tokenTypes[i]} tokens!") # Plural if x ∈ ℝ\{(-2;2)}...
+                elif selectedPlayer[i][1] < 0:
+                    print(f"ERROR: Player {player} has {selectedPlayer[i][1]} {tokenTypes[i]} token!")  # ...otherwise, singular
+
+            #privilege checks
+            if i == 8:
+                if selectedPlayer[8] > 3:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")
+                elif selectedPlayer[8] <= -2:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privileges!")    # Plural if x ∈ ℝ\{(-2;2)}...
+                elif selectedPlayer[8] < 0:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} privilege!")     # ...otherwise, singular
+                                                                                            # (from what I know).
+            #crown checks
+            if i == 9:
+                if selectedPlayer[9] >= 10:
+                    print(f"Player {player} has {selectedPlayer[9]} crowns and won the game! Congratulations :)")
+                elif selectedPlayer[9] <= -2:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crowns!")    # Plural if x ∈ ℝ\{(-2;2)}...
+                elif selectedPlayer[9] < 0:
+                    print(f"ERROR: Player {player} has {selectedPlayer[8]} crown!")     # ...otherwise, singular
+                                                                                        # (even though we're working w/ ints)
+                elif selectedPlayer[9] == 3 or selectedPlayer[9] == 6:
+                    #TODO
+                    # should probably implement something to know whether they've already chosen a crown card
+                    self.pickCrownCard(player)
 
         if player == 1:
             self.inventoryP1 = selectedPlayer
+            #print(selectedPlayer)
         elif player == 2:
             self.inventoryP2 = selectedPlayer
+            #print(selectedPlayer)
         else:
             print("ERROR: unrecognised player (should be 1 or 2)")
 
-        #TODO: we can probably factorise this into something like:
-        #                 if isToken:
-        #                     selectedPlayer[_type][1] += amount
-        #                     if selectedPlayer[_type][1] > MAX_TYPE_AMOUNT or selectedPlayer[_type][1] < -2:
-        #                         print(f"ERROR: Player {player} has {selectedPlayer[_type][1]} blue sapphire tokens!") # Plural if x ∈ ℝ\{(-2;2)}...
-        #                     elif selectedPlayer[_type][1] < 0:
-        #                         print(f"ERROR: Player {player} has {selectedPlayer[_type][1]} blue sapphire token!")  # ...otherwise, singular
-        #                                                                                                               # (from what I know).
-        #                 else:
-        #                     selectedPlayer[_type][0] += amount
-        #                     if selectedPlayer[_type][0] < 0:
-        #                         print(f"ERROR: {selectedPlayer[_type][0]} jewel cards of {tokenTypes[_type]}!")
-        # Though we have to take into account the three types of tokens (pearl, gold, other gems) + crowns + privilege scrolls.
-        # Still, it'd be shorter & easier to read (~3 conditions (+ 3 within the tokens))
+    def pickCrownCard(self, player):
+        #copy of player inventory
+        selectedPlayer = list()
+        if player == 1:
+            selectedPlayer = self.inventoryP1
+        elif player == 2:
+            selectedPlayer = self.inventoryP2
+        else:
+            print("ERROR: unrecognised player (should be 1 or 2)")
+
+        if selectedPlayer[8] == 3 or selectedPlayer[8] == 6:
+            #temp represents whether they've chosen a card or not
+            if self.temp[player-1] == 0:
+                print(f"Player {player} shall pick a crown card {Fore.GREEN} (TODO){Fore.RESET}.")
+            elif self.temp[player-1] == 1:
+                print(f"ERROR: Player {player} should've picked a crown card {Fore.RED} (TODO){Fore.RESET}.")
+        else:
+            print(f"ERROR: Player {player} shouldn't have chosen a crown card!")
+        self.temp[player-1] = 1
 
 
     def redistribute(self) -> None:
@@ -326,23 +311,8 @@ class SDGameHandler:
 
         coords = [2,2]
         bank = self.bank()
-        #TODO: replace w/ pos iterator
-        # while coords != [-1,-1]:
-        #     x, y = coords
-        #     if self.board[x][y] is None:
-        #         #random token from the bank
-        #         #Can most likely be optimised.
-        #         #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
-        #         randomToken = randint(1,7)  #TODO: implement the seed for random generation!!!
-        #
-        #         #wait until we're in a case which is not full
-        #         while bank[randomToken] == 0:
-        #             randomToken = randint(1,7)
-        #
-        #         self.update_board(randomToken, coords)
-        #         bank[randomToken] -= 1
-        #     coords = self.nextPosition(coords)
 
+        # browse the board
         for position in PositionIterator(coords):
             x, y = position
 
@@ -415,6 +385,7 @@ class SDGameHandler:
             case _:
                 print("ERROR: second coordinate should be next to the first!")
 
+# Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())
 class PositionIterator:
     def __init__(self, coords: List[int]):
         self.directions = {
