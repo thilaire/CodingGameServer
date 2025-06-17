@@ -58,9 +58,14 @@ class SDGameHandler:
         # [None, [Jewel cards , Tokens], [Jewel cards , Tokens], ... , [Jewel cards , Tokens], Priv_Scrolls, crowns]
         #   (None is used to sync the indices)
         #   Anything else needed?
+
+        #legacy inventories, to be deleted
         self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
         self.inventoryP2 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
-        self.temp = [0,0]
+
+        #
+        self.inventories = [{}] #I honestly have no clue how to deal with inventories...
+        self.temp = [0,0] #temporary, will be deleted.
 
 
     # getter for the board
@@ -125,11 +130,11 @@ class SDGameHandler:
         # We need to count the token each player has + the tokens on the board. That gives us the unavailable tokens.
         # Then we just subtract those to the max amount and voilà, we have the amount of tokens in the bank.
 
-        #self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+        # [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
         # [jewel_card , token]
         for gemstone in range(1,8):
-            countedTokens[gemstone] += self.inventoryP1[gemstone][1]
-            countedTokens[gemstone] += self.inventoryP2[gemstone][1]
+            countedTokens[gemstone] += self.inventories[0][gemstone][1]
+            countedTokens[gemstone] += self.inventories[1][gemstone][1]
 
         #Checking if there's too many tokens, which shouldn't happen
 
@@ -150,7 +155,7 @@ class SDGameHandler:
 
         return bank
 
-
+    #TODO: update w/ new inventories
     def addToInventory(self, player: int, _type: int, amount: int = 0, isToken: int = 1) -> None:
         """
         Adds an item in a player's inventory, with a specified amount
@@ -355,11 +360,22 @@ class SDGameHandler:
         if len(coords) > 3:
             print("ERROR: You can only capture 3 tokens at most!")
             return
+
         x1, y1 = coords[0]
-        x2, y2 = coords[1]
-        x3, y3 = coords[2]
+
+        try:
+            x2, y2 = coords[1] #Try/Catch IndexError or smth?
+        except IndexError:
+            x2,y2 = -1,-1
+
+        try:
+            x3, y3 = coords[2] #same idea here?
+        except IndexError:
+            x3, y3 = -1, -1
+
+
         #checking whether the second case is next to the first
-        firstCheck = [x1-x2, y1-y2]
+        d_coords = [x1-x2, y1-y2]
 
         # We should check whether a move is legal (inline + within board + no gold and whatnot)
 
@@ -374,9 +390,37 @@ class SDGameHandler:
             [-1,-1]#BOTTOM RIGHT
         ]
 
-        # if the directions aren't next to each other & if the last isn't empty:
-        if (not firstCheck in directionsList) | ([x1 - x2, y1 - y2] != [x2 - x3, y2 - y3]) | (x3 != 0 & y3 != 0):
-            print("ERROR: chosen cases are not allowed!")
+        #-1: Error (shouldn't happen); 1: p1 is given; 2: p1 & p2 are given; 3: all are given
+        _case = -1
+
+        # if the directions isn't in the list, or when
+        if x3 == -1 & y3 == -1:
+            if x2 == -1 & y2 == -1:
+                #check for p1 not to be a gold, not to be in an empty case
+                if self.board[x1][y1] is None:
+                    print("ERROR: empty case!")
+                elif self.board[x1][y1] == 2:
+                    print("ERROR: gold token!")
+
+
+            #when p1 & p2 are given
+            if not d_coords in directionsList:
+                print("ERROR: chosen cases should be aligned!")
+            else:
+                if (self.board[x1][y1] is None) or (self.board[x2][y2] is None):
+                    print("ERROR: empty case!")
+                elif (self.board[x1][y1] == 2) or (self.board[x2][y2] == 2):
+                    print("ERROR: gold token!")
+
+        #direction between p1 and p2 (= p1-p2) isn't the same as p2 and p3 (=p2-p3)
+        elif [x1 - x2, y1 - y2] != [x2 - x3, y2 - y3]:
+            print("ERROR: chosen cases should be aligned!")
+
+
+
+            #print("ERROR: chosen cases are not allowed!")
+            #(x3 != 0 & y3 != 0)
+            #(not d_coords in directionsList) |
 
 
 
