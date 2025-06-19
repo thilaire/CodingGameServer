@@ -35,7 +35,7 @@ class Inventory:
         pops jewelCardsList[index] to add it to the inventory.
         jewelCardsList is either the level 1, 2  or 3 deck.
         """
-        temp = jewelCardsList.pop(index)d
+        temp = jewelCardsList.pop(index)
         self.jewelCards[tokenTypesDict[temp.tokenType]].append(temp)
 
 
