@@ -34,6 +34,8 @@ tokenTypes = [
     "Emerald",          # Green gemstone token
     "Ruby",             # Red gemstone token
     "Obsidian"          # Black gemstone token
+    "Any"               # Not really relevant for tokens. Used for jewel cards.
+                        # really needed though? not sure.
 ]
 # I should've probably enumerated them and given them int numbers...
 # would've been like this:  PEARL = 0
@@ -41,6 +43,18 @@ tokenTypes = [
 #                           BLUE_SAPPHIRE = 2
 #                           ...
 # ehhh i'll do this
+
+tokenTypesDict = {
+    "None": None,
+    "Pearl": 1,
+    "Gold": 2,
+    "Blue Sapphire":3,
+    "Diamond": 4,
+    "Emerald": 5,
+    "Ruby": 6,
+    "Obsidian": 7,
+    "Any" : 8
+}
 
 NONE = None
 PEARL = 1
@@ -50,8 +64,8 @@ DIAMOND = 4
 EMERALD = 5
 RUBY = 6
 OBSIDIAN = 7
-PRIVILEGE = 8
-CROWN = 9
+
+tokenTypesInt = [NONE,PEARL,GOLD,BLUE_SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]
 
 
 tokenColors = [
@@ -73,6 +87,7 @@ tokenColors = [
     # (side note: how are we going to display that on a console screen?)
 maxTokenAmounts = {
     token: ( None if token == "None"
+            else None if token == "Any"
             else 2 if token == "Pearl"       # 2 pearls
             else 3 if token == "Gold"   # 3 gold tokens
             else 4)                     # 4 gemstone tokens
