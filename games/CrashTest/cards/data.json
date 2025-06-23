@@ -1,0 +1,96 @@
+{
+   "level1":[
+      {
+         "tokenType":"Blue Sapphire",
+         "nbJewel":1,
+         "nbPrestige":0,
+         "nbCrowns":1,
+         "abilities":["None"],
+         "requirements":[0, 0, 0, 2, 0, 0]
+      },
+      {
+         "tokenType":"Ruby",
+         "nbJewel":1,
+         "nbPrestige":1,
+         "nbCrowns":0,
+         "abilities":["None"],
+         "requirements":[0, 3, 2, 0, 0, 0]
+      },
+      {
+         "tokenType":"Ruby",
+         "nbJewel":1,
+         "nbPrestige":0,
+         "nbCrowns":1,
+         "abilities":["None"],
+         "requirements":[0, 1, 1, 1, 0, 1]
+      },
+      {
+         "tokenType":"Obsidian",
+         "nbJewel":1,
+         "nbPrestige":0,
+         "nbCrowns":1,
+         "abilities":["None"],
+         "requirements":[0, 0, 3, 0, 0, 0]
+      },
+      {
+         "tokenType":"Emerald",
+         "nbJewel":1,
+         "nbPrestige":0,
+         "nbCrowns":1,
+         "abilities":["None"],
+         "requirements":[0, 0, 0, 0, 3, 0]
+      }
+   ],
+   "level2":[
+      {
+         "tokenType":"None",
+         "nbJewel":0,
+         "nbPrestige":5,
+         "nbCrowns":0,
+         "abilities":["None"],
+         "requirements":[1, 6, 0, 0, 0, 0]
+      },
+      {
+         "tokenType":"Any",
+         "nbJewel":1,
+         "nbPrestige":0,
+         "nbCrowns":2,
+         "abilities":["ChooseGemstone"],
+         "requirements":[1, 6, 0, 0, 0, 0]
+      },
+      {
+         "tokenType":"Blue Sapphire",
+         "nbJewel":1,
+         "nbPrestige":1,
+         "nbCrowns":0,
+         "abilities":["StealGemstonePearl"],
+         "requirements":[0, 0, 0, 4, 0, 3]
+      },
+      {
+         "tokenType":"Blue Sapphire",
+         "nbJewel":2,
+         "nbPrestige":1,
+         "nbCrowns":0,
+         "abilities":["None"],
+         "requirements":[0, 0, 0, 5, 2, 0]
+      }
+   ],
+   "level3":[
+      {
+         "tokenType":"Any",
+         "nbJewel":1,
+         "nbPrestige":3,
+         "nbCrowns":0,
+         "abilities":["ChooseGemstone","PlayAgain"],
+         "requirements":[0, 0, 0, 0, 8, 0]
+      },
+      {
+         "tokenType":"Any",
+         "nbJewel":1,
+         "nbPrestige":3,
+         "nbCrowns":3,
+         "abilities":["None"],
+         "requirements":[0, 0, 0, 0, 0, 8]
+      }
+   ]
+}

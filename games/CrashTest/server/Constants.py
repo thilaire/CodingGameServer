@@ -26,7 +26,7 @@ from colorama import Fore, Back, Style
 
 # Represents the different tokens
 tokenTypes = [
-    "None",              # Not sure yet if it's useful
+    "None",             # Not sure yet if it's useful
     "Pearl",            # Pearl token
     "Gold",             # Gold token
     "Blue Sapphire",    # Blue gemstone token
