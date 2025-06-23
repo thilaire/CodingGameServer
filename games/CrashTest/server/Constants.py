@@ -17,9 +17,6 @@ Copyright 2025 B. Lamon
 
 from colorama import Fore, Back, Style
 
-#list of everything (to make copy-pasting easier):
-#tokenTypes, NONE, PEARL, GOLD, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN, tokenColors, maxTokenAmounts, lvl1JewelCards, lvl2JewelCards, lvl3JewelCards, royalCards, abilities
-
 # 2 pearls, 3 gold, 4 for each gemstone.
 # Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
 # Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
@@ -37,59 +34,47 @@ tokenTypes = [
     "Any"               # Not really relevant for tokens. Used for jewel cards.
                         # really needed though? not sure.
 ]
-# I should've probably enumerated them and given them int numbers...
-# would've been like this:  PEARL = 0
-#                           GOLD = 1
-#                           BLUE_SAPPHIRE = 2
-#                           ...
-# ehhh i'll do this
 
-NONE = None
-PEARL = 1
-GOLD = 2
+NONE =          None
+PEARL =         1
+GOLD =          2
 BLUE_SAPPHIRE = 3
-DIAMOND = 4
-EMERALD = 5
-RUBY = 6
-OBSIDIAN = 7
-
+DIAMOND =       4
+EMERALD =       5
+RUBY =          6
+OBSIDIAN =      7
 
 tokenTypesDict = {
-    "None": None,
-    "Pearl": PEARL,
-    "Gold": GOLD,
-    "Blue Sapphire": BLUE_SAPPHIRE,
-    "Diamond": DIAMOND,
-    "Emerald": EMERALD,
-    "Ruby": RUBY,
-    "Obsidian": OBSIDIAN,
+    "None"          :    None,
+    "Pearl"         :    PEARL,
+    "Gold"          :    GOLD,
+    "Blue Sapphire" :    BLUE_SAPPHIRE,
+    "Diamond"       :    DIAMOND,
+    "Emerald"       :    EMERALD,
+    "Ruby"          :    RUBY,
+    "Obsidian"      :    OBSIDIAN,
 }
-
-
 
 tokenTypesInt = [NONE,PEARL,GOLD,BLUE_SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]
 
 
 tokenColors = [
-    Fore.RESET,                                 # NONE
-    Fore.MAGENTA + Style.BRIGHT + Back.BLACK,   # PEARL
-    Fore.YELLOW + Style.BRIGHT + Back.BLACK,    # GOLD
-    Fore.BLUE + Style.NORMAL + Back.BLACK,      # SAPPHIRE
-    Fore.WHITE + Style.NORMAL + Back.BLACK,     # DIAMOND
-    Fore.GREEN + Style.NORMAL + Back.BLACK,     # EMERALD
-    Fore.RED + Style.NORMAL + Back.BLACK,       # RUBY
-    Fore.WHITE + Style.DIM + Back.BLACK         # OBSIDIAN
+    Fore.RESET,                                     # NONE
+    Fore.MAGENTA    + Style.BRIGHT  + Back.BLACK,   # PEARL
+    Fore.YELLOW     + Style.BRIGHT  + Back.BLACK,   # GOLD
+    Fore.BLUE       + Style.NORMAL  + Back.BLACK,   # SAPPHIRE
+    Fore.WHITE      + Style.NORMAL  + Back.BLACK,   # DIAMOND
+    Fore.GREEN      + Style.NORMAL  + Back.BLACK,   # EMERALD
+    Fore.RED        + Style.NORMAL  + Back.BLACK,   # RUBY
+    Fore.WHITE      + Style.DIM     + Back.BLACK    # OBSIDIAN
 ]
-
-
 
 
 #Probably useless since we'll manage the game with a sort of bank... we'll see.
     # Maximum token amounts. They're the ones we're going to display on the board.
     # (side note: how are we going to display that on a console screen?)
 maxTokenAmounts = {
-    token: ( None if token == "None"
-            else None if token == "Any"
+    token: (  None if token == "None"
             else 2 if token == "Pearl"       # 2 pearls
             else 3 if token == "Gold"   # 3 gold tokens
             else 4)                     # 4 gemstone tokens
@@ -97,16 +82,23 @@ maxTokenAmounts = {
 }
 
 
-# Card decks
-# TODO: list every card of the decks
-lvl1JewelCards = list()
-lvl2JewelCards = list()
-lvl3JewelCards = list()
-royalCards = list()
-
-# Abilities ?
+# Abilities
 abilities = ["PlayAgain",
              "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
              "TakeAToken",          # On the board
              "GetAPrivilegeScroll", # If none available, steal from the opponent
              "StealGemstonePearl"]  # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
+
+PLAY_AGAIN      =   1
+CHOOSE_GEMSTONE =   2
+TAKE_A_TOKEN    =   3
+GET_PRIVILEGE   =   4
+STEAL_GEMSTONE  =   5
+
+abilitiesDictionary = {
+    abilities[0]:   PLAY_AGAIN,
+    abilities[1]:   CHOOSE_GEMSTONE,
+    abilities[2]:   TAKE_A_TOKEN,
+    abilities[3]:   GET_PRIVILEGE,
+    abilities[4]:   STEAL_GEMSTONE
+}

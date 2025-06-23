@@ -38,7 +38,7 @@ class Inventory:
         """
         #TODO: pop OUTSIDE of the method
         temp = jewelCardsList.pop(index)
-        self.jewelCards[tokenTypesDict[temp.tokenType]].append(temp)
+        self.jewelCards[temp.tokenType].append(temp)
 
         # to be replaced w/ this (see todo just above) :
         # self.jewelCards[jewelCard.tokenType].append(jewelCard)

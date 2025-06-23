@@ -1,30 +1,36 @@
 from dataclasses import dataclass, field
+from typing import Optional
+
 from .Constants import *
 
 @dataclass
 class JewelCard:
     """Base class for Jewel Cards. Each jewel card will be an instance of this class."""
-    tokenType: int|None # see Constants.py
-    nbJewel: int        # 0,1,2
-    nbPrestige: int     # 0,1,2,5,6
-    nbCrowns: int       # 0,1,2,3
-    abilities: list[str] = field(default_factory = lambda : ["None"])    # maybe a list of strings would be better?
-                                                                        # Probably, there's an instance of a card w/ two abilities...
-    requirements: dict = field(default_factory = lambda : {     #Needed to buy said JewelCard
-        PEARL: 0, #PEARL
-        tokenTypes[3]: 0, #SAPPHIRE
-        tokenTypes[4]: 0, #DIAMOND,
-        tokenTypes[5]: 0, #EMERALD,
-        tokenTypes[6]: 0, #RUBY,
-        tokenTypes[7]: 0  #OBSIDIAN
+    tokenType   : int|None  # see Constants.py
+    nbJewel     : int       # 0,1,2
+    nbPrestige  : int       # 0,1,2,5,6
+    nbCrowns    : int       # 0,1,2,3
+    abilities   : list[str] = field(default_factory = lambda : ["None"])    # maybe a list of strings would be better?
+                                                                            # Probably, there's an instance of a card w/ two abilities...
+    requirements: dict = field(default_factory = lambda : {     #Required gemstones/jewels to buy this instance of JewelCard
+        PEARL:          0,  # PEARL,
+        BLUE_SAPPHIRE:  0,  # SAPPHIRE,
+        DIAMOND:        0,  # DIAMOND,
+        EMERALD:        0,  # EMERALD,
+        RUBY:           0,  # RUBY,
+        OBSIDIAN:       0   # OBSIDIAN
     })
+    _comment: Optional[str] = None
 
 
     def __post_init__(self):
-        #
+        # Allow ourselves to not only use (ints | None) for tokenType (though it's what's inside JewelCard), but
+        # to also use names of the gemstones (in strings, which are all in tokenTypes & tokenTypesDict).
         if not (isinstance(self.tokenType, int) or self.tokenType is None):
             try:
                 self.tokenType = tokenTypesDict[self.tokenType]
             except KeyError:
                 print("Invalid tokenType !!")
+
+        # Abilities stuff
 

@@ -11,13 +11,13 @@ from .Constants import *
 if __name__ == "__main__":
     #checking whether we can update the board ✅
     game = SDGameHandler()
-    for i in range(5):
-        print(game.board[i])
+    # for i in range(5):
+    #     print(game.board[i])
     print("")
     game.update_board(5,(0,0))
     game.update_board(6, (4,4))
-    for i in range(5):
-        print(game.board[i])
+    # for i in range(5):
+    #     print(game.board[i])
     print("")
 
 
@@ -147,15 +147,17 @@ if __name__ == "__main__":
     #   print(position)
 
 
-    print(maxTokenAmounts)
+    # print(maxTokenAmounts)
 
-    #tokenType, nbJewels, nbPrestige, nbCrowns
-    carte0 = JewelCard(BLUE_SAPPHIRE, 2, 2, 0, ["None"])
-    carte1 = JewelCard(RUBY, 2, 2, 2)
-    carte2 = JewelCard(RUBY, 2, 3, 1)
-    carte3 = JewelCard(RUBY,6,5,3)
 
-    cards = [carte0,carte1,carte2,carte3]
+    # #add cards to inventory ✅
+    # #tokenType, nbJewels, nbPrestige, nbCrowns
+    # carte0 = JewelCard(BLUE_SAPPHIRE, 2, 2, 0, ["None"])
+    # carte1 = JewelCard(RUBY, 2, 2, 2)
+    # carte2 = JewelCard(RUBY, 2, 3, 1)
+    # carte3 = JewelCard(RUBY,6,5,3)
+    #
+    # cards = [carte0,carte1,carte2,carte3]
 
     #probably need this later in some other file, mb even in this one
     gemCards = [NONE, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN]
@@ -163,120 +165,59 @@ if __name__ == "__main__":
     #dict init
     jewel_cards_dict = { gem: [] for gem in gemCards}
 
-    #auto fetch + add card to dict
-    for card in cards:
-        jewel_cards_dict[card.tokenType].append(card)
+    # #auto fetch + add card to dict
+    # for card in cards:
+    #     jewel_cards_dict[card.tokenType].append(card)
 
     inv = Inventory(_nbPrivileges = 0, jewelCards = jewel_cards_dict)
 
 
-    print(inv)
+    #check for errors ✅
+    # print(inv)
+    # print()
+    # inv.addToken(None, 3)
+    # inv.addToken(1,3)
+    # inv.addToken(2,4)
+    # inv.addToken(3,5)
+    # inv.addToken(4,4)
+    # print()
+    # print(inv)
+    # print()
 
-    inv.addToken(None, 3)
-    inv.addToken(1,3)
-    inv.addToken(2,4)
-    inv.addToken(3,5)
-    inv.addToken(4,4)
-
-    print(inv)
-
+    #Parse JSON data✅
     with open("cards/data.json", "r") as file:
         data = json.load(file)
 
+    print("Level 1 :")
     lvl1cards = [JewelCard(**card) for card in data["level1"]]
-    # lvl1cards = [
-    #     JewelCard(
-    #         tokenType = card["tokenType"],
-    #         nbJewel = card["nbJewel"],
-    #         nbPrestige = card["nbPrestige"],
-    #         nbCrowns = card["nbCrowns"],
-    #         abilities = card["abilities"],
-    #         requirements=dict(zip(
-    #             [tokenTypes[i] for i in [1, 3, 4, 5, 6, 7]],
-    #             card["requirements"]
-    #         ))
-    #     )
-    #     for card in data["level1"]
-    # ]
-
     for x in lvl1cards:
         print(x)
 
-    lvl2cards = [
-        JewelCard(
-            tokenType = card["tokenType"],
-            nbJewel = card["nbJewel"],
-            nbPrestige = card["nbPrestige"],
-            nbCrowns = card["nbCrowns"],
-            abilities = card["abilities"],
-            requirements=dict(zip(
-                [tokenTypes[i] for i in [1, 3, 4, 5, 6, 7]],
-                card["requirements"]
-            ))
-        )
-        for card in data["level2"]
-    ]
-    #for x in lvl2cards:
-    #    print(x)
+    print()
+    print("Level 2: ")
+    lvl2cards = [JewelCard(**card) for card in data["level2"]]
+    for x in lvl2cards:
+        print(x)
 
-    lvl3cards = [
-        JewelCard(
-            tokenType = card["tokenType"],
-            nbJewel = card["nbJewel"],
-            nbPrestige = card["nbPrestige"],
-            nbCrowns = card["nbCrowns"],
-            abilities = card["abilities"],
-            requirements = dict(zip(
-                [tokenTypes[i] for i in [1, 3, 4, 5, 6, 7]],
-                card["requirements"]
-            ))
-        )
-        for card in data["level3"]
-    ]
+    print()
+    print("Level 3: ")
+    lvl3cards = [JewelCard(**card)for card in data["level3"]]
+    for x in lvl3cards:
+        print(x)
 
     #could probably do a list of 3 lists of JCard instances, would've been prettier.
 
-    #for x in lvl3cards:
-    #    print(x)
-    print("before")
+    print()
+    print("Inventory before adding lvl1cards[1]:")
     print(inv.jewelCards)
     inv.addJewelCard(lvl1cards, 1) #1 more prestige point
-    print("after")
+    print("Inventory after")
     print(inv.jewelCards)
 
-    for x in lvl1cards:
-        print(x)
+    print(f"lvl1cards[1] : {lvl1cards[1]}")
 
-    print(inv.nbPrestige(-1))
-    print(inv.nbPrestige(6))
-    print(inv.nbPrestige(9))
-# NONE = None
-# PEARL = 1
-# GOLD = 2
-# BLUE_SAPPHIRE = 3
-# DIAMOND = 4
-# EMERALD = 5
-# RUBY = 6
-# OBSIDIAN = 7
-# PRIVILEGE = 8
-# CROWN = 9
-# self.inventoryP1 = [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
+    #checking for errors ✅
+    # print(inv.nbPrestige(-1))
+    # print(inv.nbPrestige(6))
+    # print(inv.nbPrestige(9))
 
-
-
-    req = {     #Needed to buy said JewelCard
-        tokenTypes[1]: 0, #PEARL
-        tokenTypes[3]: 0, #SAPPHIRE
-        tokenTypes[4]: 0, #DIAMOND,
-        tokenTypes[5]: 0, #EMERALD,
-        tokenTypes[6]: 0, #RUBY,
-        tokenTypes[7]: 0  #OBSIDIAN
-    }
-
-    listToDict = [0,1,2,3,4,5]
-
-
-    for key,val in zip(req.keys(),listToDict):
-        req[key] = val
-
-    print(req)

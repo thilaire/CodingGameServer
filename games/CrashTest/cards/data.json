@@ -6,57 +6,64 @@
          "nbPrestige":0,
          "nbCrowns":1,
          "abilities":[],
-         "requirements":{"Emerald": 3}//---> choix
+         "requirements":[0, 0, 0, 3, 0, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Ruby",
          "nbJewel":1,
          "nbPrestige":1,
          "nbCrowns":0,
-         "abilities":["None"],
-         "requirements":[0, 3, 2, 0, 0, 0]
+         "abilities":[],
+         "requirements":[0, 3, 2, 0, 0, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Ruby",
          "nbJewel":1,
          "nbPrestige":0,
          "nbCrowns":1,
-         "abilities":["None"],
-         "requirements":[0, 1, 1, 1, 0, 1]
+         "abilities":[],
+         "requirements":[0, 1, 1, 1, 0, 1],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Obsidian",
          "nbJewel":1,
          "nbPrestige":0,
          "nbCrowns":1,
-         "abilities":["None"],
-         "requirements":[0, 0, 3, 0, 0, 0]
+         "abilities":[],
+         "requirements":[0, 0, 3, 0, 0, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Emerald",
          "nbJewel":1,
          "nbPrestige":0,
          "nbCrowns":1,
-         "abilities":["None"],
-         "requirements":[0, 0, 0, 0, 3, 0]
+         "abilities":[],
+         "requirements":[0, 0, 0, 0, 3, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       }
    ],
    "level2":[
       {
-         "tokenType":"None",
+         "tokenType":null,
          "nbJewel":0,
          "nbPrestige":5,
          "nbCrowns":0,
-         "abilities":["None"],
-         "requirements":[1, 6, 0, 0, 0, 0]
+         "abilities":[],
+         "requirements":[1, 6, 0, 0, 0, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
-         "tokenType":"Any",
+         "tokenType":null,
          "nbJewel":1,
          "nbPrestige":0,
          "nbCrowns":2,
          "abilities":["ChooseGemstone"],
-         "requirements":[1, 6, 0, 0, 0, 0]
+         "requirements":[1, 6, 0, 0, 0, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Blue Sapphire",
@@ -64,33 +71,37 @@
          "nbPrestige":1,
          "nbCrowns":0,
          "abilities":["StealGemstonePearl"],
-         "requirements":[0, 0, 0, 4, 0, 3]
+         "requirements":[0, 0, 0, 4, 0, 3],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
          "tokenType":"Blue Sapphire",
          "nbJewel":2,
          "nbPrestige":1,
          "nbCrowns":0,
-         "abilities":["None"],
-         "requirements":[0, 0, 0, 5, 2, 0]
+         "abilities":[],
+         "requirements":[0, 0, 0, 5, 2, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       }
    ],
    "level3":[
       {
-         "tokenType":"Any",
+         "tokenType":null,
          "nbJewel":1,
          "nbPrestige":3,
          "nbCrowns":0,
          "abilities":["ChooseGemstone","PlayAgain"],
-         "requirements":[0, 0, 0, 0, 8, 0]
+         "requirements":[0, 0, 0, 0, 8, 0],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       },
       {
-         "tokenType":"Any",
+         "tokenType":null,
          "nbJewel":1,
          "nbPrestige":3,
          "nbCrowns":3,
-         "abilities":["None"],
-         "requirements":[0, 0, 0, 0, 0, 8]
+         "abilities":[],
+         "requirements":[0, 0, 0, 0, 0, 8],
+         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
       }
    ]
 }
