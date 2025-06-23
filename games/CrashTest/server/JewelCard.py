@@ -19,3 +19,12 @@ class JewelCard:
         tokenTypes[7]: 0  #OBSIDIAN
     })
 
+
+    def __post_init__(self):
+        #
+        if not (isinstance(self.tokenType, int) or self.tokenType is None):
+            try:
+                self.tokenType = tokenTypesDict[self.tokenType]
+            except KeyError:
+                print("Invalid tokenType !!")
+

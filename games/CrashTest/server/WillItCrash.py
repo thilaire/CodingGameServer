@@ -180,23 +180,25 @@ if __name__ == "__main__":
 
     print(inv)
 
-    with open("/home/nepal/PycharmProjects/CodingGameServer/games/CrashTest/cards/data.json", "r") as file:
+    with open("cards/data.json", "r") as file:
         data = json.load(file)
 
-    lvl1cards = [
-        JewelCard(
-            tokenType = card["tokenType"],
-            nbJewel = card["nbJewel"],
-            nbPrestige = card["nbPrestige"],
-            nbCrowns = card["nbCrowns"],
-            abilities = card["abilities"],
-            requirements=dict(zip(
-                [tokenTypes[i] for i in [1, 3, 4, 5, 6, 7]],
-                card["requirements"]
-            ))
-        )
-        for card in data["level1"]
-    ]
+    lvl1cards = [JewelCard(**card) for card in data["level1"]]
+    # lvl1cards = [
+    #     JewelCard(
+    #         tokenType = card["tokenType"],
+    #         nbJewel = card["nbJewel"],
+    #         nbPrestige = card["nbPrestige"],
+    #         nbCrowns = card["nbCrowns"],
+    #         abilities = card["abilities"],
+    #         requirements=dict(zip(
+    #             [tokenTypes[i] for i in [1, 3, 4, 5, 6, 7]],
+    #             card["requirements"]
+    #         ))
+    #     )
+    #     for card in data["level1"]
+    # ]
+
     for x in lvl1cards:
         print(x)
 

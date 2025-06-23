@@ -44,18 +44,6 @@ tokenTypes = [
 #                           ...
 # ehhh i'll do this
 
-tokenTypesDict = {
-    "None": None,
-    "Pearl": 1,
-    "Gold": 2,
-    "Blue Sapphire":3,
-    "Diamond": 4,
-    "Emerald": 5,
-    "Ruby": 6,
-    "Obsidian": 7,
-    "Any" : 8
-}
-
 NONE = None
 PEARL = 1
 GOLD = 2
@@ -64,6 +52,20 @@ DIAMOND = 4
 EMERALD = 5
 RUBY = 6
 OBSIDIAN = 7
+
+
+tokenTypesDict = {
+    "None": None,
+    "Pearl": PEARL,
+    "Gold": GOLD,
+    "Blue Sapphire": BLUE_SAPPHIRE,
+    "Diamond": DIAMOND,
+    "Emerald": EMERALD,
+    "Ruby": RUBY,
+    "Obsidian": OBSIDIAN,
+}
+
+
 
 tokenTypesInt = [NONE,PEARL,GOLD,BLUE_SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]
 

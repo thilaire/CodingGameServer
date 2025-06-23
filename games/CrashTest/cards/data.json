@@ -5,8 +5,8 @@
          "nbJewel":1,
          "nbPrestige":0,
          "nbCrowns":1,
-         "abilities":["None"],
-         "requirements":[0, 0, 0, 2, 0, 0]
+         "abilities":[],
+         "requirements":{"Emerald": 3}//---> choix
       },
       {
          "tokenType":"Ruby",
