@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from .Constants import *
 
 @dataclass
 class JewelCard:
@@ -7,7 +8,14 @@ class JewelCard:
     nbJewel: int        # 0,1,2
     nbPrestige: int     # 0,1,2,5,6
     nbCrowns: int       # 0,1,2,3
-    #abilities: str     # maybe a list of strings would be better? Probably, there's an instance of a card w/ two abilities...
-    #requirements: list[int|None] = field(default_factory = lambda : [0, 0, 0, 0, 0, 0])    #[None, Sapphire, diamond, emerald, ruby, obsidian]
-                                                                                            #should be replaced w/ a dict?
+    abilities: list[str] = field(default_factory = lambda : ["None"])    # maybe a list of strings would be better?
+                                                                        # Probably, there's an instance of a card w/ two abilities...
+    requirements: dict = field(default_factory = lambda : {     #Needed to buy said JewelCard
+        tokenTypes[1]: 0, #PEARL
+        tokenTypes[3]: 0, #SAPPHIRE
+        tokenTypes[4]: 0, #DIAMOND,
+        tokenTypes[5]: 0, #EMERALD,
+        tokenTypes[6]: 0, #RUBY,
+        tokenTypes[7]: 0  #OBSIDIAN
+    })
 

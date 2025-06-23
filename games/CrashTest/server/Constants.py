@@ -33,7 +33,7 @@ tokenTypes = [
     "Diamond",          # Clear gemstone token
     "Emerald",          # Green gemstone token
     "Ruby",             # Red gemstone token
-    "Obsidian"          # Black gemstone token
+    "Obsidian",         # Black gemstone token
     "Any"               # Not really relevant for tokens. Used for jewel cards.
                         # really needed though? not sure.
 ]
