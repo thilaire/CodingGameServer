@@ -30,13 +30,20 @@ class Inventory:
         Returns the amount of tokens of a specified type.
         """
 
-    def addJewelCard(self, jewelCardsList, index):
+    def addJewelCard(self, #jewelCard):
+                     jewelCardsList, index):
         """
         pops jewelCardsList[index] to add it to the inventory.
         jewelCardsList is either the level 1, 2  or 3 deck.
         """
+        #TODO: pop OUTSIDE of the method
         temp = jewelCardsList.pop(index)
         self.jewelCards[tokenTypesDict[temp.tokenType]].append(temp)
+
+        # to be replaced w/ this (see todo just above) :
+        # self.jewelCards[jewelCard.tokenType].append(jewelCard)
+
+
 
 
     def addToken(self, idToken, amount):
@@ -57,23 +64,25 @@ class Inventory:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
                 #TODO: token management
 
-    #TODO : write that again due tu re-building the structure of jewelCards
+
     def nbPrestige(self, _type: int) -> int:
         """
         Returns the amount of prestige points.
         To get all the prestige points, _type should be -1.
         """
+        #run through all the jewelCards colors;
+        #run through all the cards;
+        #sum up all the prestige points
+
         if _type == -1:
-            return sum(x.nbPrestige for x in self.jewelCards)
-        elif type(_type) is str:
-            return sum(x.nbPrestige for x in self.jewelCards if x == _type)
-            #print(f"ERROR: type {_type} unrecognised!")
-            #return -1
-        elif type(_type) is int:
-            return sum(x.nbPrestige for x in self.jewelCards if x.tokenType == _type)
+            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList)
         else:
-            print(f"ERROR: type {_type} not str (should use tokenType[{_type}])!")
-            return -1
+            try:
+                return sum(card.nbPrestige for card in self.jewelCards[_type])
+            except KeyError:
+                print(f"ERROR: No such Jewel Card type ({_type}) exists!")
+                return -1
+
 
     @property
     def nbPrivileges(self):

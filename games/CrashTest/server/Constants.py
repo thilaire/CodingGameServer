@@ -107,4 +107,4 @@ abilities = ["PlayAgain",
              "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
              "TakeAToken",          # On the board
              "GetAPrivilegeScroll", # If none available, steal from the opponent
-             "TakeGemstonePearl"]   # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
+             "StealGemstonePearl"]  # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
