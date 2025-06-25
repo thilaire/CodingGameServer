@@ -35,14 +35,14 @@ tokenTypes = [
                         # really needed though? not sure.
 ]
 
-NONE =          None
-PEARL =         1
-GOLD =          2
-BLUE_SAPPHIRE = 3
-DIAMOND =       4
-EMERALD =       5
-RUBY =          6
-OBSIDIAN =      7
+NONE            =   None
+PEARL           =   1
+GOLD            =   2
+BLUE_SAPPHIRE   =   3
+DIAMOND         =   4
+EMERALD         =   5
+RUBY            =   6
+OBSIDIAN        =   7
 
 tokenTypesDict = {
     "None"          :    None,

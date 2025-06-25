@@ -10,15 +10,17 @@ class JewelCard:
     nbJewel     : int       # 0,1,2
     nbPrestige  : int       # 0,1,2,5,6
     nbCrowns    : int       # 0,1,2,3
-    abilities   : list[str] = field(default_factory = lambda : ["None"])    # maybe a list of strings would be better?
-                                                                            # Probably, there's an instance of a card w/ two abilities...
+    abilities   : list[int] = field(default_factory = lambda :
+        ["None"])           # maybe a list of strings would be better?
+                            # Probably, there's an instance of a card w/ two abilities...
+                            # update: we have int constants now which is what we'll use (will be easier w/ the API since it'll be written in C)
     requirements: dict = field(default_factory = lambda : {     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL:          0,  # PEARL,
-        BLUE_SAPPHIRE:  0,  # SAPPHIRE,
-        DIAMOND:        0,  # DIAMOND,
-        EMERALD:        0,  # EMERALD,
-        RUBY:           0,  # RUBY,
-        OBSIDIAN:       0   # OBSIDIAN
+        PEARL           :   0,  # PEARL,
+        BLUE_SAPPHIRE   :   0,  # SAPPHIRE,
+        DIAMOND         :   0,  # DIAMOND,
+        EMERALD         :   0,  # EMERALD,
+        RUBY            :   0,  # RUBY,
+        OBSIDIAN        :   0   # OBSIDIAN
     })
     _comment: Optional[str] = None
 
@@ -30,7 +32,23 @@ class JewelCard:
             try:
                 self.tokenType = tokenTypesDict[self.tokenType]
             except KeyError:
-                print("Invalid tokenType !!")
+                print("ERROR: Invalid tokenType. Check data.json or JewelCard instance")
 
         # Abilities stuff
+        if not (isinstance(self.abilities, list)):
+            print("ERROR: Invalid abilities. Check data.json or JewelCard instance")
+        else:
+
+            # "translate" strs to ints
+            for x in self.abilities:
+                for i in range(5):
+                    if x == abilities[i]:
+                        x = i + 1
+                if not ((isinstance(x, int)) | 0 < x < 6):
+                    print(f"ERROR: ability {x} is unknown. Check data.json or JewelCard instance")
+
+
+            # Only two ints in abilities. We just take the two first, or replace them with zeros.
+            self.abilities.extend([0, 0])
+            self.abilities = self.abilities[:2]
 
