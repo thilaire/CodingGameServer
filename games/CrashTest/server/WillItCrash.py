@@ -240,12 +240,42 @@ if __name__ == "__main__":
     # print(inv.nbPrestige(9))
 
     # #-----------------------------------------------------------------------------------------------------------------
-    # # checking inventory.addJewelCard() & ability translation ✅
+    # # checking inventory.addJewelCard() & ability translation
     # #-----------------------------------------------------------------------------------------------------------------
     print("Inventory before adding anything :")
     print(inv)
     inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
     print("Inventory after adding this jewel card:")
     print(inv)
+
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking inventory.buyJewelCard()
+    # #-----------------------------------------------------------------------------------------------------------------
+    # adding tokens
+    inv.addToken(GOLD, 1)
+    inv.addToken(BLUE_SAPPHIRE, 1)
+    inv.addToken(EMERALD,3)
+
+    # card to purchase
+    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+        PEARL           :   1,  # PEARL,
+        BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
+        DIAMOND         :   0,  # DIAMOND,
+        EMERALD         :   3,  # EMERALD,
+        RUBY            :   0,  # RUBY,
+        OBSIDIAN        :   0   # OBSIDIAN
+    })
+
+    print()
+    print('The following is "inv.buyJewelCard(toBuy)": ')
+    #TODO: further testing.
+    # -> Breakpoint/debug stuff,
+    #   ->see how many tokens there's left, could we have used less ?
+    # -> test of different cases where it shouldn't work
+    #   -> not enough tokens
+    #   -> not enough tokens but enough jewel cards
+    #   -> not enough jewel cards
+
+    print(inv.buyJewelCard(toBuy))
 
 

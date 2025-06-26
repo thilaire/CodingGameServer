@@ -46,7 +46,8 @@ class Inventory:
         # to be replaced w/ this (see just above) :
         self.jewelCards[jewelCard.tokenType].append(jewelCard)
 
-    def buyJewelCard(self, player: int, card: JewelCard):
+    def buyJewelCard(self, # player: int, #Nope, "player" selector will be in SDGameHandler
+                     card: JewelCard):
         #Side-note: I've mixed "special moves" and "abilities" in last commits.
         #I've tried to "standardise" everything and use only "ability" / "special ability", but if there's one that
         #I didn't catch yet, or you're looking into previous commits, you now know.
@@ -73,7 +74,7 @@ class Inventory:
             if cardType is None:
                 pass  # type none exists in jewel cards, not in requirements.
             else:
-                dictSum[cardType] = sum(card.nbJewel for card in cardType)
+                dictSum[cardType] = sum(card.nbJewel for card in self.jewelCards[cardType])
 
         #check requirements for card (aka for each requirement of the card)
         #for each jewel of the card
@@ -109,7 +110,7 @@ class Inventory:
                 #otherwise we good
         #yeah thats it, we can add it to the inventory
 
-        self.addJewelCard()
+        self.addJewelCard(card)
         #then we should check for special ability and return them
         firstReturn = False
         if card.abilities[0] == PLAY_AGAIN | card.abilities[1] == PLAY_AGAIN:
