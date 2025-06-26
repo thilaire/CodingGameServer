@@ -9,7 +9,9 @@ from .Inventory import Inventory
 from .Constants import *
 
 if __name__ == "__main__":
+    # #-----------------------------------------------------------------------------------------------------------------
     #checking whether we can update the board ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     game = SDGameHandler()
     # for i in range(5):
     #     print(game.board[i])
@@ -22,7 +24,9 @@ if __name__ == "__main__":
 
 
 
+    # #-----------------------------------------------------------------------------------------------------------------
     #checking whether the bank works. ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     #Just add "countedTokens" as an argument to the bank() method in SDGameHandler.py, then comment it a few lines below.
     # countedTokens = [None, 0, 0, 0, 0, 0, 0, 0]
     # game.bank(countedTokens)                    # shouldn't print anything
@@ -31,8 +35,9 @@ if __name__ == "__main__":
 
 
 
-
+    # #-----------------------------------------------------------------------------------------------------------------
     #checking next position ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     # used this in order to figure out i used x and y the other way around:
     # self.testBoardCompletion = (
     #     ("A", "B", "C", "D", "E"),  # North
@@ -54,10 +59,12 @@ if __name__ == "__main__":
     # print("")
     # print(game.nextPosition((4, 4))) # None, (-1, -1) ?
 
+    # #-----------------------------------------------------------------------------------------------------------------
     # #count tokens in the bank ✅
     # ##count the tokens on the board✅
     # print(game.bank())
     # ##count the tokens in the player inventories✅
+    # #-----------------------------------------------------------------------------------------------------------------
     # print("#add items to P1 inventory")
     # game.addToInventory(1,1,1,1)
     # game.addToInventory(1,4,3,1)
@@ -96,13 +103,17 @@ if __name__ == "__main__":
 
 
 
+    # #-----------------------------------------------------------------------------------------------------------------
     # fill the board ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     #game.redistribute()
     # for i in range(5):
     #     print(game.board[i])
     # print(game.bank())
 
+    # #-----------------------------------------------------------------------------------------------------------------
     #check for a banking error ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     # game.addToInventory(2, 5, 4, 1)
     # game.addToInventory(2, 6, 5, 1)
     # game.addToInventory(2, 3, -1, 0)
@@ -142,15 +153,19 @@ if __name__ == "__main__":
     # which is convenient since we can not only test the 3 gemstone condition (7 & 3 here),
     # we can also check for the pearls condition
 
+    # #-----------------------------------------------------------------------------------------------------------------
     # iterator stuff ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     #for position in PositionIterator([2,2]):
     #   print(position)
 
 
     # print(maxTokenAmounts)
 
-
+    # #-----------------------------------------------------------------------------------------------------------------
     # #add cards to inventory ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+
     # #tokenType, nbJewels, nbPrestige, nbCrowns
     # carte0 = JewelCard(BLUE_SAPPHIRE, 2, 2, 0, ["None"])
     # carte1 = JewelCard(RUBY, 2, 2, 2)
@@ -171,8 +186,9 @@ if __name__ == "__main__":
 
     inv = Inventory(_nbPrivileges = 0, jewelCards = jewel_cards_dict)
 
-
+    #-------------------------------------------------------------------------------------------------------------------
     #check for errors ✅
+    #-------------------------------------------------------------------------------------------------------------------
     # print(inv)
     # print()
     # inv.addToken(None, 3)
@@ -185,39 +201,51 @@ if __name__ == "__main__":
     # print()
 
     #Parse JSON data✅
-    with open("cards/data.json", "r") as file:
-        data = json.load(file)
+    # with open("cards/data.json", "r") as file:
+    #     data = json.load(file)
+    #
+    # print("Level 1 :")
+    # lvl1cards = [JewelCard(**card) for card in data["level1"]]
+    # for x in lvl1cards:
+    #     print(x)
+    #
+    # print()
+    # print("Level 2: ")
+    # lvl2cards = [JewelCard(**card) for card in data["level2"]]
+    # for x in lvl2cards:
+    #     print(x)
+    #
+    # print()
+    # print("Level 3: ")
+    # lvl3cards = [JewelCard(**card)for card in data["level3"]]
+    # for x in lvl3cards:
+    #     print(x)
+    #
+    # #could probably do a list of 3 lists of JCard instances, would've been prettier.
+    #
+    # print()
+    # print("Inventory before adding lvl1cards[1]:")
+    # print(inv.jewelCards)
+    # inv.addJewelCard(lvl1cards, 1) #1 more prestige point
+    # print("Inventory after")
+    # print(inv.jewelCards)
+    #
+    # print(f"lvl1cards[1] : {lvl1cards[1]}")
 
-    print("Level 1 :")
-    lvl1cards = [JewelCard(**card) for card in data["level1"]]
-    for x in lvl1cards:
-        print(x)
-
-    print()
-    print("Level 2: ")
-    lvl2cards = [JewelCard(**card) for card in data["level2"]]
-    for x in lvl2cards:
-        print(x)
-
-    print()
-    print("Level 3: ")
-    lvl3cards = [JewelCard(**card)for card in data["level3"]]
-    for x in lvl3cards:
-        print(x)
-
-    #could probably do a list of 3 lists of JCard instances, would've been prettier.
-
-    print()
-    print("Inventory before adding lvl1cards[1]:")
-    print(inv.jewelCards)
-    inv.addJewelCard(lvl1cards, 1) #1 more prestige point
-    print("Inventory after")
-    print(inv.jewelCards)
-
-    print(f"lvl1cards[1] : {lvl1cards[1]}")
-
+    # #-----------------------------------------------------------------------------------------------------------------
     #checking for errors ✅
+    # #-----------------------------------------------------------------------------------------------------------------
     # print(inv.nbPrestige(-1))
     # print(inv.nbPrestige(6))
     # print(inv.nbPrestige(9))
+
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking inventory.addJewelCard() & ability translation ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+    print("Inventory before adding anything :")
+    print(inv)
+    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
+    print("Inventory after adding this jewel card:")
+    print(inv)
+
 

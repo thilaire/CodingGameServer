@@ -33,20 +33,31 @@ class Inventory:
         Returns the amount of tokens of a specified type.
         """
 
-    def addJewelCard(self, #jewelCard):
-                     jewelCardsList, index):
+    def addJewelCard(self, jewelCard):
+                     #jewelCardsList, index):
         """
         pops jewelCardsList[index] to add it to the inventory.
         jewelCardsList is either the level 1, 2  or 3 deck.
         """
-        #TODO: pop OUTSIDE of the method
-        temp = jewelCardsList.pop(index)
-        self.jewelCards[temp.tokenType].append(temp)
+        # #need to pop OUTSIDE the method
+        # temp = jewelCardsList.pop(index)
+        # self.jewelCards[temp.tokenType].append(temp)
 
-        # to be replaced w/ this (see todo just above) :
-        # self.jewelCards[jewelCard.tokenType].append(jewelCard)
+        # to be replaced w/ this (see just above) :
+        self.jewelCards[jewelCard.tokenType].append(jewelCard)
 
     def buyJewelCard(self, player: int, card: JewelCard):
+        #Side-note: I've mixed "special moves" and "abilities" in last commits.
+        #I've tried to "standardise" everything and use only "ability" / "special ability", but if there's one that
+        #I didn't catch yet, or you're looking into previous commits, you now know.
+        """
+        Just checks whether we can add the card to the inventory.
+        Returns a list in the following format: [playAgain: bool ; specialMove: int]
+        playAgain   : whether we're playing again or not
+        specialAbility : which one of the 5, if any. 0 if no special ability, -1 if acquiring failed (which case, error).
+
+        (We'll handle the card special ability in either SDGameHandler or SplendorDuel, not sure yet.)
+        """
         # Sum every jewel from the cards we own
         dictSum = {
             # We'll sum up every jewel in a dict that's close to JewelCard.requirements to then add stuff into the former dict.
@@ -64,7 +75,6 @@ class Inventory:
             else:
                 dictSum[cardType] = sum(card.nbJewel for card in cardType)
 
-
         #check requirements for card (aka for each requirement of the card)
         #for each jewel of the card
         for reqJewel in card.requirements:
@@ -72,8 +82,25 @@ class Inventory:
                 # if they're not enough, we sum up the tokens & the jewels
                 # and if they're still not enough, we raise an error
                 if card.requirements[reqJewel] > dictSum[reqJewel] + self.tokens[reqJewel]:
-                    print(f"ERROR: Not enough {tokenTypes[reqJewel]} jewels & tokens to buy JewelCard!")
-                    return -1
+                    # We don't own enough tokens & jewels, so we're checking whether there's a gold token, which case we'll
+                    # substitute the requirement for a gold token.
+                    if card.requirements[reqJewel] > dictSum[reqJewel] + self.tokens[reqJewel] + self.tokens[GOLD]:
+                        print(f"ERROR: Not enough {tokenTypes[reqJewel]} jewels & tokens to buy JewelCard!")
+                        return [False,-1]
+                    else:
+                        #this should be negative I believe?
+                        self.tokens[reqJewel] -= card.requirements[reqJewel] - dictSum[reqJewel]
+
+                        # which case we add the negative number to the gold tokens, then put it to zero, then check whether
+                        # there's anything in the tokens < 0 ?
+                        self.tokens[GOLD] += self.tokens[reqJewel]
+                        self.tokens[reqJewel] = 0
+                        #check
+                        for x in self.tokens:
+                            if x is None:
+                                pass
+                            elif x < 0:
+                                print("big error caus you dunno how to count bud")
                 #in the other case, we just subtract the amount of tokens needed to purchase the card
                 else:
                     self.tokens[reqJewel] -= card.requirements[reqJewel] - dictSum[reqJewel]
@@ -81,32 +108,53 @@ class Inventory:
             #else:
                 #otherwise we good
         #yeah thats it, we can add it to the inventory
-        #nvm, we should check for special moves
-        #first special move
 
         self.addJewelCard()
+        #then we should check for special ability and return them
+        firstReturn = False
+        if card.abilities[0] == PLAY_AGAIN | card.abilities[1] == PLAY_AGAIN:
+            firstReturn = True
+
+        #There's a play again, but we don't know whether it's in the first or second index in the list
+        if firstReturn:
+            if card.abilities[0] == PLAY_AGAIN:
+                return [firstReturn,card.abilities[1]]
+            else:
+                return [firstReturn,card.abilities[0]]
+
+        # No play again ability, therefore the ability, if any, should be in the first index.
+        else:
+            return [firstReturn,card.abilities[0]]
+
 
     def runAbility(self, ability: int):
-        match ability:
-            #0 i.e. nothing:
-            case 0:
-                #skip everything, don't even bother looking at the second index
-                pass
-            #Choose token:
-            case CHOOSE_GEMSTONE:
-                #we'll pop the JewelCard instance, change it, then add it to the inventory
-            #Play again:
-            case PLAY_AGAIN:
-                #just call the play method/return the play code or smth, idk
-            #Take a token:
-            case TAKE_A_TOKEN:
-                #something similar to SDGameHandler.tokenCapture()
-            #Get a privilege:
-            case GET_PRIVILEGE:
-                #call the method, I believe the get a privilege stuff works the same regardless of the way you get one
-            #steal token:
-            case STEAL_GEMSTONE
-                #check the opponents inventory, if the chosen token is there we subtract it, if not there'll be an error
+        """
+        Will probably be done in SpendorDuel or SDGameHandler.
+        It'll stay here for now until as a basis for the future implementation.
+        """
+        #TODO: write the code in the right file (see above)
+        pass
+
+        # match ability:
+        #     #0 i.e. nothing:
+        #     case 0:
+        #         #skip everything, don't even bother looking at the second index
+        #         pass
+        #     #Choose token:
+        #     case CHOOSE_GEMSTONE:
+        #         #we'll pop the JewelCard instance, change it, then add it to the inventory
+        #     #Play again:
+        #     case PLAY_AGAIN:
+        #         #just call the play method/return the play code or smth, idk
+        #     #Take a token:
+        #     case TAKE_A_TOKEN:
+        #         #something similar to SDGameHandler.tokenCapture()
+        #     #Get a privilege:
+        #     case GET_PRIVILEGE:
+        #         #call the method, I believe the get a privilege stuff works the same regardless of the way you get one
+        #     #steal token:
+        #     case STEAL_GEMSTONE
+        #         #check the opponents inventory, if the chosen token is there we subtract it, if not there'll be an error
 
     def chooseGemstone(self):
         #should it be in SDGameHandler?
