@@ -113,7 +113,7 @@ class Inventory:
         self.addJewelCard(card)
         #then we should check for special ability and return them
         firstReturn = False
-        if card.abilities[0] == PLAY_AGAIN | card.abilities[1] == PLAY_AGAIN:
+        if card.abilities[0] == PLAY_AGAIN or card.abilities[1] == PLAY_AGAIN:
             firstReturn = True
 
         #There's a play again, but we don't know whether it's in the first or second index in the list
