@@ -96,12 +96,6 @@ class Inventory:
                         # there's anything in the tokens < 0 ?
                         self.tokens[GOLD] += self.tokens[reqJewel]
                         self.tokens[reqJewel] = 0
-                        #check
-                        for x in self.tokens:
-                            if x is None:
-                                pass
-                            elif x < 0:
-                                print("big error caus you dunno how to count bud")
                 #in the other case, we just subtract the amount of tokens needed to purchase the card
                 else:
                     self.tokens[reqJewel] -= card.requirements[reqJewel] - dictSum[reqJewel]
@@ -109,6 +103,15 @@ class Inventory:
             #else:
                 #otherwise we good
         #yeah thats it, we can add it to the inventory
+
+        # checking whether we have a negative amount of any token
+        for i in range(len(self.tokens)):
+            if self.tokens[i] is None:
+                pass
+            elif self.tokens[i] < 0:
+                print(f"ERROR: Negative amount of token! ({tokenTypes[i]} = {self.tokens[i]}")
+                return [False, -1]
+
 
         self.addJewelCard(card)
         #then we should check for special ability and return them
