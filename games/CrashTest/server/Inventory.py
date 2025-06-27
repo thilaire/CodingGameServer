@@ -184,7 +184,6 @@ class Inventory:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
                 #TODO: token management
 
-
     def nbPrestige(self, _type: int) -> int:
         """
         Returns the amount of prestige points.
@@ -202,6 +201,12 @@ class Inventory:
             except KeyError:
                 print(f"ERROR: No such Jewel Card type ({_type}) exists!")
                 return -1
+
+    def nbCrowns(self):
+        """
+        Returns the total amount of crowns in the inventory.
+        """
+        return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
 
 
     @property

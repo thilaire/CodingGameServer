@@ -248,147 +248,154 @@ if __name__ == "__main__":
     print("Inventory after adding this jewel card:")
     print(inv)
 
-    # #-----------------------------------------------------------------------------------------------------------------
-    # # checking inventory.buyJewelCard()
-    # #-----------------------------------------------------------------------------------------------------------------
-    # adding tokens
-    inv.addToken(GOLD, 1)
-    inv.addToken(BLUE_SAPPHIRE, 1)
-    inv.addToken(EMERALD,3)
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # # checking inventory.buyJewelCard()
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # adding tokens
+    # inv.addToken(GOLD, 1)
+    # inv.addToken(BLUE_SAPPHIRE, 1)
+    # inv.addToken(EMERALD,3)
+    #
+    # # card to purchase
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   1,  # PEARL,
+    #     BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
+    #     DIAMOND         :   0,  # DIAMOND,
+    #     EMERALD         :   3,  # EMERALD,
+    #     RUBY            :   0,  # RUBY,
+    #     OBSIDIAN        :   0   # OBSIDIAN
+    # })
+    #
+    # print()
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # #further testing.
+    # # -> Breakpoint/debug stuff,
+    # #   ->see how many tokens there's left, could we have used less ? (nope) ✅
+    # # -> test of different cases where it shouldn't work
+    # #   -> not enough tokens ✅
+    # #   -> not enough tokens but enough jewel cards ✅
+    # #   -> not enough jewel cards but enough tokens ✅
+    # #   -> not enough tokens nor jewel cards ✅
+    # #   -> not enough tokens but enough gold ✅
+    #
+    # print(inv.buyJewelCard(toBuy))
+    #
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # At this point, we have zero token in our inventory.
+    # # Though we have one SAPPHIRE jewel card (w/ 1 gem)
+    #
+    # # card to purchase (NOT ENOUGH PEARL TOKEN) ✅
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   1,  # PEARL,
+    #     BLUE_SAPPHIRE   :   1,  # SAPPHIRE,
+    #     DIAMOND         :   0,  # DIAMOND,
+    #     EMERALD         :   0,  # EMERALD,
+    #     RUBY            :   0,  # RUBY,
+    #     OBSIDIAN        :   0   # OBSIDIAN
+    # })
+    # print("Card to purchase without enough tokens:")
+    # print(toBuy)
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # print(inv.buyJewelCard(toBuy))
+    #
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # At this point, we have zero token in our inventory.
+    # # Though we have one SAPPHIRE jewel card (w/ 1 gem)
+    #
+    # # card to purchase (NO TOKEN, JUST A JEWEL CARD) ✅
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   0,  # PEARL,
+    #     BLUE_SAPPHIRE   :   1,  # SAPPHIRE,
+    #     DIAMOND         :   0,  # DIAMOND,
+    #     EMERALD         :   0,  # EMERALD,
+    #     RUBY            :   0,  # RUBY,
+    #     OBSIDIAN        :   0   # OBSIDIAN
+    # })
+    # print()
+    # print("Card to purchase with just enough jewels (no token though):")
+    # print(toBuy)
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # print(inv.buyJewelCard(toBuy))
+    #
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # At this point, we have zero token in our inventory.
+    # # Though we have one SAPPHIRE jewel card (w/ 1 gem)
+    #
+    # # card to purchase (not enough jewel cards but enough tokens)
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   2,  # PEARL,
+    #     BLUE_SAPPHIRE   :   4,  # SAPPHIRE,
+    #     DIAMOND         :   4,  # DIAMOND,
+    #     EMERALD         :   4,  # EMERALD,
+    #     RUBY            :   4,  # RUBY,
+    #     OBSIDIAN        :   4   # OBSIDIAN
+    # })
+    # #max out inventory EXCEPT for sapphire
+    # inv.addToken(PEARL, 2)
+    # inv.addToken(BLUE_SAPPHIRE, 3)
+    # inv.addToken(DIAMOND, 4)
+    # inv.addToken(EMERALD, 4)
+    # inv.addToken(RUBY, 4)
+    # inv.addToken(OBSIDIAN, 4)
+    #
+    # #TODO
+    # # ok that shouldn't be possible to buy such a card, we need to cap the tokens to 10 and raise an error instead of a warning...
+    # # (yes I know they're only 'print' statements for now)
+    #
+    # print()
+    # print("Card to purchase with just enough jewels (no token though):")
+    # print(toBuy)
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # print(inv.buyJewelCard(toBuy))
+    # print(inv.tokens)
+    # # works for now + we have no tokens in the inventory anymore
+    #
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # At this point, we have zero token in our inventory.
+    # # Though we have one SAPPHIRE jewel card (w/ 1 gem)
+    #
+    # # card to purchase (not enough tokens nor jewel cards) ✅
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   1,  # PEARL,
+    #     BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
+    #     DIAMOND         :   0,  # DIAMOND,
+    #     EMERALD         :   0,  # EMERALD,
+    #     RUBY            :   0,  # RUBY,
+    #     OBSIDIAN        :   0   # OBSIDIAN
+    # })
+    # print()
+    # print("Card to purchase with just enough jewels (no token though):")
+    # print(toBuy)
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # print(inv.buyJewelCard(toBuy))
+    #
+    # # #-----------------------------------------------------------------------------------------------------------------
+    # # At this point, we have zero token in our inventory.
+    # # Though we have one SAPPHIRE jewel card (w/ 1 gem)
+    #
+    # # card to purchase (not enough tokens but enough gold) ✅
+    # toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
+    #     PEARL           :   1,  # PEARL,
+    #     BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
+    #     DIAMOND         :   1,  # DIAMOND,
+    #     EMERALD         :   0,  # EMERALD,
+    #     RUBY            :   0,  # RUBY,
+    #     OBSIDIAN        :   0   # OBSIDIAN
+    # })
+    # inv.addToken(GOLD, 3)
+    #
+    # print()
+    # print("Card to purchase with just enough jewels (no token though):")
+    # print(toBuy)
+    # print('The following is "inv.buyJewelCard(toBuy)": ')
+    # print(inv.buyJewelCard(toBuy))
 
-    # card to purchase
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   1,  # PEARL,
-        BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
-        DIAMOND         :   0,  # DIAMOND,
-        EMERALD         :   3,  # EMERALD,
-        RUBY            :   0,  # RUBY,
-        OBSIDIAN        :   0   # OBSIDIAN
-    })
-
+    #-----------------------------------------------------------------------------------------------------------------
+    # checking Inventory.nbCrowns()
+    #-----------------------------------------------------------------------------------------------------------------
     print()
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    #TODO: further testing.
-    # -> Breakpoint/debug stuff,
-    #   ->see how many tokens there's left, could we have used less ? (nope) ✅
-    # -> test of different cases where it shouldn't work
-    #   -> not enough tokens ✅
-    #   -> not enough tokens but enough jewel cards ✅
-    #   -> not enough jewel cards but enough tokens ✅
-    #   -> not enough tokens nor jewel cards ✅
-    #   -> not enough tokens but enough gold ✅
-
-    print(inv.buyJewelCard(toBuy))
-
-    # #-----------------------------------------------------------------------------------------------------------------
-    # At this point, we have zero token in our inventory.
-    # Though we have one SAPPHIRE jewel card (w/ 1 gem)
-
-    # card to purchase (NOT ENOUGH PEARL TOKEN) ✅
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   1,  # PEARL,
-        BLUE_SAPPHIRE   :   1,  # SAPPHIRE,
-        DIAMOND         :   0,  # DIAMOND,
-        EMERALD         :   0,  # EMERALD,
-        RUBY            :   0,  # RUBY,
-        OBSIDIAN        :   0   # OBSIDIAN
-    })
-    print("Card to purchase without enough tokens:")
-    print(toBuy)
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    print(inv.buyJewelCard(toBuy))
-
-    # #-----------------------------------------------------------------------------------------------------------------
-    # At this point, we have zero token in our inventory.
-    # Though we have one SAPPHIRE jewel card (w/ 1 gem)
-
-    # card to purchase (NO TOKEN, JUST A JEWEL CARD) ✅
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   0,  # PEARL,
-        BLUE_SAPPHIRE   :   1,  # SAPPHIRE,
-        DIAMOND         :   0,  # DIAMOND,
-        EMERALD         :   0,  # EMERALD,
-        RUBY            :   0,  # RUBY,
-        OBSIDIAN        :   0   # OBSIDIAN
-    })
-    print()
-    print("Card to purchase with just enough jewels (no token though):")
-    print(toBuy)
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    print(inv.buyJewelCard(toBuy))
-
-    # #-----------------------------------------------------------------------------------------------------------------
-    # At this point, we have zero token in our inventory.
-    # Though we have one SAPPHIRE jewel card (w/ 1 gem)
-
-    # card to purchase (not enough jewel cards but enough tokens)
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   2,  # PEARL,
-        BLUE_SAPPHIRE   :   4,  # SAPPHIRE,
-        DIAMOND         :   4,  # DIAMOND,
-        EMERALD         :   4,  # EMERALD,
-        RUBY            :   4,  # RUBY,
-        OBSIDIAN        :   4   # OBSIDIAN
-    })
-    #max out inventory EXCEPT for sapphire
-    inv.addToken(PEARL, 2)
-    inv.addToken(BLUE_SAPPHIRE, 3)
-    inv.addToken(DIAMOND, 4)
-    inv.addToken(EMERALD, 4)
-    inv.addToken(RUBY, 4)
-    inv.addToken(OBSIDIAN, 4)
-
-    #TODO
-    # ok that shouldn't be possible to buy such a card, we need to cap the tokens to 10 and raise an error instead of a warning...
-    # (yes I know they're only 'print' statements for now)
-
-    print()
-    print("Card to purchase with just enough jewels (no token though):")
-    print(toBuy)
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    print(inv.buyJewelCard(toBuy))
-    print(inv.tokens)
-    # works for now + we have no tokens in the inventory anymore
-
-    # #-----------------------------------------------------------------------------------------------------------------
-    # At this point, we have zero token in our inventory.
-    # Though we have one SAPPHIRE jewel card (w/ 1 gem)
-
-    # card to purchase (not enough tokens nor jewel cards) ✅
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   1,  # PEARL,
-        BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
-        DIAMOND         :   0,  # DIAMOND,
-        EMERALD         :   0,  # EMERALD,
-        RUBY            :   0,  # RUBY,
-        OBSIDIAN        :   0   # OBSIDIAN
-    })
-    print()
-    print("Card to purchase with just enough jewels (no token though):")
-    print(toBuy)
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    print(inv.buyJewelCard(toBuy))
-
-    # #-----------------------------------------------------------------------------------------------------------------
-    # At this point, we have zero token in our inventory.
-    # Though we have one SAPPHIRE jewel card (w/ 1 gem)
-
-    # card to purchase (not enough tokens but enough gold) ✅
-    toBuy = JewelCard(None, 0, 3, 2, [PLAY_AGAIN, CHOOSE_GEMSTONE], requirements={     #Required gemstones/jewels to buy this instance of JewelCard
-        PEARL           :   1,  # PEARL,
-        BLUE_SAPPHIRE   :   2,  # SAPPHIRE,
-        DIAMOND         :   1,  # DIAMOND,
-        EMERALD         :   0,  # EMERALD,
-        RUBY            :   0,  # RUBY,
-        OBSIDIAN        :   0   # OBSIDIAN
-    })
-    inv.addToken(GOLD, 3)
-
-    print()
-    print("Card to purchase with just enough jewels (no token though):")
-    print(toBuy)
-    print('The following is "inv.buyJewelCard(toBuy)": ')
-    print(inv.buyJewelCard(toBuy))
-
-
-
+    print("Inventory.nbCrowns() testing:\nAdding a few cards;")
+    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
+    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=2,nbPrestige=0,abilities=[]))
+    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=1,nbPrestige=0,abilities=[]))
+    print(f"inv.nbCrowns() is equal to: {inv.nbCrowns()} (<-- should be 3)")
