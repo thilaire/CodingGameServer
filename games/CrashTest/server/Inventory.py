@@ -17,10 +17,41 @@ class Inventory:
         RUBY            : list[JewelCard],
         OBSIDIAN        : list[JewelCard]
     })
+    bookedCards     : list[JewelCard] = field(default_factory = lambda :[]) #three booked cards at most                                 
 
 
+    #Getters & whatnot
+    def nbPrestige(self, _type: int) -> int:
+        """
+        Returns the amount of prestige points.
+        To get all the prestige points, _type should be -1.
+        """
+        #run through all the jewelCards colors;
+        #run through all the cards;
+        #sum up all the prestige points
 
-    #returns the number of jewels of a certain type
+        if _type == -1:
+            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList)
+        else:
+            try:
+                return sum(card.nbPrestige for card in self.jewelCards[_type])
+            except KeyError:
+                print(f"ERROR: No such Jewel Card type ({_type}) exists!")
+                return -1
+
+    def nbCrowns(self):
+        """
+        Returns the total amount of crowns in the inventory.
+        """
+        return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
+
+    @property
+    def nbPrivileges(self):
+        """
+        returns the amount of privileges
+        """
+        return self._nbPrivileges
+
     def nbJewelCards(self, _type) -> int:
         """
         Returns the number of jewel cards of a specified type.
@@ -32,6 +63,14 @@ class Inventory:
         """
         Returns the amount of tokens of a specified type.
         """
+
+
+
+    #Setters & similar methods
+    
+    @nbPrivileges.setter
+    def nbPrivileges(self, val):
+        self._nbPrivileges = val
 
     def addJewelCard(self, jewelCard):
                      #jewelCardsList, index):
@@ -165,7 +204,6 @@ class Inventory:
         pass
 
 
-
     def addToken(self, idToken, amount):
         if idToken is None:
             print("ERROR: Token \"None\" does not exist!")
@@ -184,38 +222,26 @@ class Inventory:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
                 #TODO: token management
 
-    def nbPrestige(self, _type: int) -> int:
+    def canBookACard(self, bookedCard: JewelCard):
         """
-        Returns the amount of prestige points.
-        To get all the prestige points, _type should be -1.
+        Checks whether it's possible for this player's inventory to book a certain card.
         """
-        #run through all the jewelCards colors;
-        #run through all the cards;
-        #sum up all the prestige points
-
-        if _type == -1:
-            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList)
+        # The following was written in `SplendorDuel.py`:
+        #
+        #		-Book a Jewel card (the opponent isn't supposed to see it anymore,
+        #		though they can memorize it (not really relevant to this computer version))
+        #			conditions:	-You either take one from the pyramid or one from the three stacks (level 1, 2 or 3)
+        #						-You have to take a gold token from the board.
+        #						-Illegal if there isn't one anymore
+                                    #   -> Not handled here I guess?
+        #						-Illegal if you already have three booked cards
+        #						-You do not need to buy any of the cards you booked
+        #
+        
+        if len(self.bookedCards) >= 3:
+            print(f"ERROR: you already have {len(self.bookedCards)} cards! (3 at most)")
+            return -1
         else:
-            try:
-                return sum(card.nbPrestige for card in self.jewelCards[_type])
-            except KeyError:
-                print(f"ERROR: No such Jewel Card type ({_type}) exists!")
-                return -1
-
-    def nbCrowns(self):
-        """
-        Returns the total amount of crowns in the inventory.
-        """
-        return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
-
-
-    @property
-    def nbPrivileges(self):
-        """
-        returns the amount of privileges
-        """
-        return self._nbPrivileges
-
-    @nbPrivileges.setter
-    def nbPrivileges(self, val):
-        self._nbPrivileges = val
+            return 0
+            
+        
