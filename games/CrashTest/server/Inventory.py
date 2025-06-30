@@ -39,40 +39,41 @@ class Inventory:
                 print(f"ERROR: No such Jewel Card type ({_type}) exists!")
                 return -1
 
-    def nbCrowns(self):
+    def nbCrowns(self) -> int:
         """
         Returns the total amount of crowns in the inventory.
         """
         return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
 
     @property
-    def nbPrivileges(self):
+    def nbPrivileges(self) -> int:
         """
         returns the amount of privileges
         """
         return self._nbPrivileges
 
-    def nbJewelCards(self, _type) -> int:
+    def nbJewelCards(self, _type: int) -> int:
         """
         Returns the number of jewel cards of a specified type.
         """
         #go through all the cards, select every _type card, sum them.
         return sum(x.nbJewel for x in self.jewelCards if x.tokenType == _type)
 
-    def nbTokens(self, _type):
+    def nbTokens(self, _type: int) -> int:
         """
         Returns the amount of tokens of a specified type.
         """
+        return self.tokens[_type]
 
 
 
     #Setters & similar methods
     
     @nbPrivileges.setter
-    def nbPrivileges(self, val):
+    def nbPrivileges(self, val) -> None:
         self._nbPrivileges = val
 
-    def addJewelCard(self, jewelCard):
+    def addJewelCard(self, jewelCard) -> None:
                      #jewelCardsList, index):
         """
         pops jewelCardsList[index] to add it to the inventory.
@@ -86,7 +87,7 @@ class Inventory:
         self.jewelCards[jewelCard.tokenType].append(jewelCard)
 
     def buyJewelCard(self, # player: int, #Nope, "player" selector will be in SDGameHandler
-                     card: JewelCard):
+                     card: JewelCard) -> List[bool, int]:
         #Side-note: I've mixed "special moves" and "abilities" in last commits.
         #I've tried to "standardise" everything and use only "ability" / "special ability", but if there's one that
         #I didn't catch yet, or you're looking into previous commits, you now know.
@@ -203,8 +204,7 @@ class Inventory:
         #should it be in SDGameHandler?
         pass
 
-
-    def addToken(self, idToken, amount):
+    def addToken(self, idToken, amount) -> None:
         if idToken is None:
             print("ERROR: Token \"None\" does not exist!")
         else:
@@ -222,7 +222,8 @@ class Inventory:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
                 #TODO: token management
 
-    def canBookACard(self, bookedCard: JewelCard):
+    def canBookACard(self#, bookedCard: JewelCard): # Useless argument?
+                     ) -> int:
         """
         Checks whether it's possible for this player's inventory to book a certain card.
         """
@@ -243,5 +244,11 @@ class Inventory:
             return -1
         else:
             return 0
-            
+
+    def bookCard(self, card: JewelCard) -> int:
+        if self.canBookACard() == -1:
+            return -1
+        else:
+            self.bookedCards.append(card)
+            return 0
         
