@@ -10,10 +10,7 @@ class JewelCard:
     nbJewel     : int       # 0,1,2
     nbPrestige  : int       # 0,1,2,5,6
     nbCrowns    : int       # 0,1,2,3
-    abilities   : list[int] = field(default_factory = lambda :
-        ["None"])           # maybe a list of strings would be better?
-                            # Probably, there's an instance of a card w/ two abilities...
-                            # update: we have int constants now which is what we'll use (will be easier w/ the API since it'll be written in C)
+    abilities   : list[int] = field(default_factory = lambda : [0,0])
     requirements: dict = field(default_factory = lambda : {     #Required gemstones/jewels to buy this instance of JewelCard
         PEARL           :   0,  # PEARL,
         BLUE_SAPPHIRE   :   0,  # SAPPHIRE,

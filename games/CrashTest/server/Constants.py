@@ -102,3 +102,25 @@ abilitiesDictionary = {
     abilities[3]:   GET_PRIVILEGE,
     abilities[4]:   STEAL_GEMSTONE
 }
+
+# Items
+items = ["Token",
+         "Jewel Card",
+         "Booked Card",
+         "Crown Card",
+         "Privilege"
+        ]
+
+TOKEN = 0
+JEWEL_CARD = 1
+BOOKED_CARD = 2
+CROWN_CARD = 3
+PRIVILEGE = 4
+
+itemsDictionary = {
+    items[0] : TOKEN,
+    items[1] : JEWEL_CARD,
+    items[2] : BOOKED_CARD,
+    items[3] : CROWN_CARD,
+    items[4] : PRIVILEGE
+}
