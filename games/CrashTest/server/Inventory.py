@@ -1,37 +1,43 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from .Constants import * #really needed?
+from .Constants import *
 from .JewelCard import JewelCard
+from .RoyalCard import RoyalCard
 
 @dataclass
 class Inventory:
-    _nbPrivileges   : int
+    _nbPrivileges   : int = 0
     tokens          : list[int|None] = field(default_factory = lambda :
         [None, 0, 0, 0, 0, 0, 0, 0])
     jewelCards      : dict = field(default_factory = lambda :{
-        None            : list[JewelCard],
-        BLUE_SAPPHIRE   : list[JewelCard],
-        DIAMOND         : list[JewelCard],
-        EMERALD         : list[JewelCard],
-        RUBY            : list[JewelCard],
-        OBSIDIAN        : list[JewelCard]
+        None            : [], #list[JewelCard],
+        BLUE_SAPPHIRE   : [], #list[JewelCard],
+        DIAMOND         : [], #list[JewelCard],
+        EMERALD         : [], #list[JewelCard],
+        RUBY            : [], #list[JewelCard],
+        OBSIDIAN        : []  #list[JewelCard]
     })
-    bookedCards     : list[JewelCard] = field(default_factory = lambda :[]) #three booked cards at most                                 
+    bookedCards     : list[JewelCard] = field(default_factory = lambda: []) #three booked cards at most
+    royalCards      : list[RoyalCard] = field(default_factory = lambda: [])
+    thresholds      : list[bool] = field(init = False)
+
+    def __post_init__(self):
+        self.thresholds = [False, False]
 
 
     #Getters & whatnot
     def nbPrestige(self, _type: int) -> int:
         """
         Returns the amount of prestige points.
-        To get all the prestige points, _type should be -1.
+        To get all the prestige points (including the ones from royal cards), _type should be -1.
         """
         #run through all the jewelCards colors;
         #run through all the cards;
         #sum up all the prestige points
 
         if _type == -1:
-            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList)
+            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList) + sum(card.nbPrestige for card in self.royalCards)
         else:
             try:
                 return sum(card.nbPrestige for card in self.jewelCards[_type])
@@ -65,6 +71,9 @@ class Inventory:
         """
         return self.tokens[_type]
 
+    def nbRoyalCards(self) -> int:
+        return len(self.royalCards)
+
 
 
     #Setters & similar methods
@@ -86,11 +95,21 @@ class Inventory:
         # to be replaced w/ this (see just above) :
         self.jewelCards[jewelCard.tokenType].append(jewelCard)
 
-    def buyJewelCard(self, # player: int, #Nope, "player" selector will be in SDGameHandler
-                     card: JewelCard) -> List[bool, int]:
-        #Side-note: I've mixed "special moves" and "abilities" in last commits.
-        #I've tried to "standardise" everything and use only "ability" / "special ability", but if there's one that
-        #I didn't catch yet, or you're looking into previous commits, you now know.
+    def chooseRoyalCard(self, card: RoyalCard) -> None:
+        """
+        Choosing a Royal Card requires a player to pass either 3 or 6 crowns.
+        (Checking when someone passes 3 or 6 crowns will be done somewhere else?)
+        """
+        if self.nbCrowns() >= 3 and self.thresholds[0] == False:
+            self.thresholds[0] = True
+            self.royalCards.append(card)
+        elif self.nbCrowns() >= 6 and self.thresholds[1] == False:
+            self.thresholds[1] = True
+            self.royalCards.append(card)
+        else:
+            print(f"ERROR: shouldn't choose a royal card! ({self.nbCrowns()} crowns)")
+
+    def buyJewelCard(self, card: JewelCard) -> List[bool|int]:
         """
         Just checks whether we can add the card to the inventory.
         Returns a list in the following format: [playAgain: bool ; specialMove: int]
@@ -139,11 +158,6 @@ class Inventory:
                 #in the other case, we just subtract the amount of tokens needed to purchase the card
                 else:
                     self.tokens[reqJewel] -= card.requirements[reqJewel] - dictSum[reqJewel]
-                #otherwise we subtract the tokens (we'll add to inventory once every token has been subtracted)
-            #else:
-                #otherwise we good
-        #yeah thats it, we can add it to the inventory
-
         # checking whether we have a negative amount of any token
         for i in range(len(self.tokens)):
             if self.tokens[i] is None:
@@ -240,7 +254,7 @@ class Inventory:
         #
         
         if len(self.bookedCards) >= 3:
-            print(f"ERROR: you already have {len(self.bookedCards)} cards! (3 at most)")
+            print(f"ERROR: you already have {len(self.bookedCards)} booked cards! (3 at most)")
             return -1
         else:
             return 0

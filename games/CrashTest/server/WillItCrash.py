@@ -3,6 +3,7 @@ import json
 from pkg_resources import require
 
 from games.CrashTest.server.Constants import maxTokenAmounts
+from games.CrashTest.server.RoyalCard import RoyalCard
 from .SDGameHandler import SDGameHandler, PositionIterator
 from .JewelCard import JewelCard
 from .Inventory import Inventory
@@ -390,12 +391,47 @@ if __name__ == "__main__":
     # print('The following is "inv.buyJewelCard(toBuy)": ')
     # print(inv.buyJewelCard(toBuy))
 
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking Inventory.nbCrowns() ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+    # print()
+    # print("Inventory.nbCrowns() testing:\nAdding a few cards;")
+    # inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
+    # inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=2,nbPrestige=0,abilities=[]))
+    # inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=1,nbPrestige=0,abilities=[]))
+    # print(f"inv.nbCrowns() is equal to: {inv.nbCrowns()} (<-- should be 3)")
+
+
     #-----------------------------------------------------------------------------------------------------------------
-    # checking Inventory.nbCrowns()
+    # checking updated SDGameHandler.addToInventory()
     #-----------------------------------------------------------------------------------------------------------------
+    # addToInventory(self,  player: int,
+    #                       itemType: int,
+    #                       item: JewelCard | RoyalCard | int)
+    #               -> None:
     print()
-    print("Inventory.nbCrowns() testing:\nAdding a few cards;")
-    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
-    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=2,nbPrestige=0,abilities=[]))
-    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=1,nbPrestige=0,abilities=[]))
-    print(f"inv.nbCrowns() is equal to: {inv.nbCrowns()} (<-- should be 3)")
+    print("GAME INVENTORIES")
+    print(game.inventories[0])
+    print(game.inventories[1])
+    print("ADDING STUFF (player 1)")
+    JCardToAdd = JewelCard(None,0,3,3,[],{PEARL: 1},None)
+    RCardToAdd = RoyalCard(3,[], None)
+    game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
+    game.addToInventory(1,JEWEL_CARD,JCardToAdd)
+    game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
+    game.addToInventory(1,PRIVILEGE,2)
+    print("GAME INVENTORIES")
+    print(game.inventories[0])
+    print(game.inventories[1])
+    print()
+    print("ADDING TOO MUCH STUFF (player 1 still)")
+    game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,1])      #should result in an error (too many sapphire tokens)
+    game.addToInventory(1,ROYAL_CARD,RCardToAdd)        #error also here (not enough crowns)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd)       #error (too many booked cards)
+    game.addToInventory(1,PRIVILEGE,2)                  #error (too many privileges)
+
+
+
