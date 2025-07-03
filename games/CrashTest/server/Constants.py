@@ -96,11 +96,11 @@ GET_PRIVILEGE   =   4
 STEAL_GEMSTONE  =   5
 
 abilitiesDictionary = {
-    abilities[0]:   PLAY_AGAIN,
-    abilities[1]:   CHOOSE_GEMSTONE,
-    abilities[2]:   TAKE_A_TOKEN,
-    abilities[3]:   GET_PRIVILEGE,
-    abilities[4]:   STEAL_GEMSTONE
+    abilities[0]:   PLAY_AGAIN,     #🔄
+    abilities[1]:   CHOOSE_GEMSTONE,#💎
+    abilities[2]:   TAKE_A_TOKEN,   #🪙
+    abilities[3]:   GET_PRIVILEGE,  #🗞️
+    abilities[4]:   STEAL_GEMSTONE  #🫳
 }
 
 # Items
@@ -123,4 +123,13 @@ itemsDictionary = {
     items[2] : BOOKED_CARD,
     items[3] : ROYAL_CARD,
     items[4] : PRIVILEGE
+}
+
+#hopefully won't be useless
+itemsEmoji = {
+    items[0] : "🪙",
+    items[1] : "💎",
+    items[2] : "🎟️",
+    items[3] : "👑",
+    items[4] : "🗞️",
 }

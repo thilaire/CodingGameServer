@@ -177,18 +177,18 @@ class SDGameHandler:
 
         #add stuff to the inventory + checks
         match itemType:
-            case 0: #TOKEN
+            case 0: #TOKEN 🪙
                 if not isinstance(item, list):
                     print(f"ERROR: item wrongly formatted! (expected list[tokenType, tokenAmount], got {item})")
                 else:
                     self.inventories[player].addToken(item[0],item[1])
-            case 1: #JEWEL_CARD
+            case 1: #JEWEL_CARD 💎
                 self.inventories[player].buyJewelCard(item)
-            case 2: #BOOKED_CARD
+            case 2: #BOOKED_CARD 🎟️
                 self.inventories[player].bookCard(item)
-            case 3: #ROYAL_CARD
+            case 3: #ROYAL_CARD 👑
                 self.inventories[player].chooseRoyalCard(item)
-            case 4: #PRIVILEGE
+            case 4: #PRIVILEGE 🗞️
                 self.inventories[player].nbPrivileges += item
                 if self.inventories[player].nbPrivileges > 3:
                     print(f"ERROR: Player {player + 1} has {self.inventories[player].nbPrivileges} privileges!")
