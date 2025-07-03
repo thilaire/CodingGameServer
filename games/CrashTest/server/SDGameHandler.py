@@ -183,7 +183,7 @@ class SDGameHandler:
                 else:
                     self.inventories[player].addToken(item[0],item[1])
             case 1: #JEWEL_CARD
-                self.inventories[player].addJewelCard(item)
+                self.inventories[player].buyJewelCard(item)
             case 2: #BOOKED_CARD
                 self.inventories[player].bookCard(item)
             case 3: #ROYAL_CARD

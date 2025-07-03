@@ -414,7 +414,7 @@ if __name__ == "__main__":
     print(game.inventories[0])
     print(game.inventories[1])
     print("ADDING STUFF (player 1)")
-    JCardToAdd = JewelCard(None,0,3,3,[],{PEARL: 1},None)
+    JCardToAdd = JewelCard(None,0,3,3,[],{BLUE_SAPPHIRE: 1},None)
     RCardToAdd = RoyalCard(3,[], None)
     game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
     game.addToInventory(1,JEWEL_CARD,JCardToAdd)
@@ -426,12 +426,13 @@ if __name__ == "__main__":
     print(game.inventories[1])
     print()
     print("ADDING TOO MUCH STUFF (player 1 still)")
-    game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,1])      #should result in an error (too many sapphire tokens)
-    game.addToInventory(1,ROYAL_CARD,RCardToAdd)        #error also here (not enough crowns)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd)       #error (too many booked cards)
-    game.addToInventory(1,PRIVILEGE,2)                  #error (too many privileges)
+    game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
+    game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE,1])    #should result in an error (too many sapphire tokens)
+    game.addToInventory(1, ROYAL_CARD, RCardToAdd)      #error also here (not enough crowns)
+    game.addToInventory(1, BOOKED_CARD, JCardToAdd)
+    game.addToInventory(1, BOOKED_CARD, JCardToAdd)
+    game.addToInventory(1, BOOKED_CARD, JCardToAdd)     #error (too many booked cards)
+    game.addToInventory(1, PRIVILEGE, 2)                #error (too many privileges)
 
 
 
