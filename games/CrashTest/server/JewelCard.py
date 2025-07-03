@@ -41,7 +41,8 @@ class JewelCard:
                 for i in range(5):
                     if x == abilities[i]:
                         x = i + 1
-                        self.abilities[i] = i + 1
+                        #what on earth did i want to do w/ the next line
+                        # self.abilities[i] = i + 1
                 #0 if not good
                 if not ( isinstance(x, int) or not (0 < x < 6) ):
                     print(f"ERROR: ability {x} is unknown. Check data.json or JewelCard instance")

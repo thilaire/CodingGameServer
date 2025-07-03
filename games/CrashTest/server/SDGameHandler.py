@@ -164,41 +164,36 @@ class SDGameHandler:
 
         return bank
 
-    # UNTESTED
-    # ------------------------------------------------------------------------------------------------------------------
-    def getDecks(self):
-        #load json file
-        #parse json file
 
+    def loadDecks(self):
         # Taken from `WillItCrash.py`:
-
         with open("cards/data.json", "r") as file:
             data = load(file)
 
-        print("Level 1 :")
         self.decks[0] = [JewelCard(**card) for card in data["level1"]]
-        for x in self.decks[0]:
-            print(x)
-
-        print()
-        print("Level 2: ")
         self.decks[1] = [JewelCard(**card) for card in data["level2"]]
-        for x in self.decks[1]:
-            print(x)
-
-        print()
-        print("Level 3: ")
         self.decks[2] = [JewelCard(**card)for card in data["level3"]]
-        for x in self.decks[2]:
-            print(x)
-
         # will probably have to do the same for Royal Cards, something like:
-        print()
-        print("Royal: ")
-        self.royalCards = [JewelCard(**card)for card in data["royal"]]
-        for x in self.royalCards:
-            print(x)
+        self.royalCards = [RoyalCard(**card)for card in data["royal"]]
 
+
+        # # to print in debug, not in clear
+        # print()
+        # print("Level 1 :")
+        # for x in self.decks[0]:
+        #     print(x)
+        # print()
+        # print("Level 2: ")
+        # for x in self.decks[1]:
+        #     print(x)
+        # print()
+        # print("Level 3: ")
+        # for x in self.decks[2]:
+        #     print(x)
+        # print()
+        # print("Royal: ")
+        # for x in self.royalCards:
+        #     print(x)
 
     def shuffleDecks(self):
         shuffle(self.decks[0])
@@ -208,13 +203,12 @@ class SDGameHandler:
 
     def loadPyramid(self):
         for i in range(5):
-            self.pyramid[0][i] = self.decks[0].pop()
+            self.pyramid[0].append(self.decks[0].pop())
         for i in range(4):
-            self.pyramid[1][i] = self.decks[1].pop()
+            self.pyramid[1].append(self.decks[1].pop())
         for i in range(3):
-            self.pyramid[2][i] = self.decks[2].pop()
+            self.pyramid[2].append(self.decks[2].pop())
 
-    # ------------------------------------------------------------------------------------------------------------------
 
     #TODO: update w/ new inventories
     # wait how do i even do that

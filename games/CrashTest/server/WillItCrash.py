@@ -402,36 +402,64 @@ if __name__ == "__main__":
     # print(f"inv.nbCrowns() is equal to: {inv.nbCrowns()} (<-- should be 3)")
 
 
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking updated SDGameHandler.addToInventory() ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # addToInventory(self,  player: int,
+    # #                       itemType: int,
+    # #                       item: JewelCard | RoyalCard | int)
+    # #               -> None:
+    # print()
+    # print("GAME INVENTORIES")
+    # print(game.inventories[0])
+    # print(game.inventories[1])
+    # print("ADDING STUFF (player 1)")
+    # JCardToAdd = JewelCard(None,0,3,3,[],{BLUE_SAPPHIRE: 1},None)
+    # RCardToAdd = RoyalCard(3,[], None)
+    # game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
+    # game.addToInventory(1,JEWEL_CARD,JCardToAdd)
+    # game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    # game.addToInventory(1,BOOKED_CARD,JCardToAdd)
+    # game.addToInventory(1,PRIVILEGE,2)
+    # print("GAME INVENTORIES")
+    # print(game.inventories[0])
+    # print(game.inventories[1])
+    # print()
+    # print("ADDING TOO MUCH STUFF (player 1 still)")
+    # game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
+    # game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE,1])    #should result in an error (too many sapphire tokens)
+    # game.addToInventory(1, ROYAL_CARD, RCardToAdd)      #error also here (not enough crowns)
+    # game.addToInventory(1, BOOKED_CARD, JCardToAdd)
+    # game.addToInventory(1, BOOKED_CARD, JCardToAdd)
+    # game.addToInventory(1, BOOKED_CARD, JCardToAdd)     #error (too many booked cards)
+    # game.addToInventory(1, PRIVILEGE, 2)                #error (too many privileges)
+    # # game.addToInventory(3, PRIVILEGE, 2)                #error, not a player (works ✅)
+    # game.addToInventory(1, 5, JCardToAdd)   #error, not an itemType
+
     #-----------------------------------------------------------------------------------------------------------------
-    # checking updated SDGameHandler.addToInventory()
+    # checking pyramid & data import SDGameHandler.getDecks(), shuffleDecks() & loadPyramid() ✅
     #-----------------------------------------------------------------------------------------------------------------
-    # addToInventory(self,  player: int,
-    #                       itemType: int,
-    #                       item: JewelCard | RoyalCard | int)
-    #               -> None:
     print()
-    print("GAME INVENTORIES")
-    print(game.inventories[0])
-    print(game.inventories[1])
-    print("ADDING STUFF (player 1)")
-    JCardToAdd = JewelCard(None,0,3,3,[],{BLUE_SAPPHIRE: 1},None)
-    RCardToAdd = RoyalCard(3,[], None)
-    game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
-    game.addToInventory(1,JEWEL_CARD,JCardToAdd)
-    game.addToInventory(1,ROYAL_CARD,RCardToAdd)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
-    game.addToInventory(1,PRIVILEGE,2)
-    print("GAME INVENTORIES")
-    print(game.inventories[0])
-    print(game.inventories[1])
+    print(f"Game Handler Decks      : {game.decks}")
+    print(f"Game Handler Pyramid    : {game.pyramid}")
+    print(f"Game Handler Royal Cards: {game.royalCards}")
     print()
-    print("ADDING TOO MUCH STUFF (player 1 still)")
-    game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
-    game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE,1])    #should result in an error (too many sapphire tokens)
-    game.addToInventory(1, ROYAL_CARD, RCardToAdd)      #error also here (not enough crowns)
-    game.addToInventory(1, BOOKED_CARD, JCardToAdd)
-    game.addToInventory(1, BOOKED_CARD, JCardToAdd)
-    game.addToInventory(1, BOOKED_CARD, JCardToAdd)     #error (too many booked cards)
-    game.addToInventory(1, PRIVILEGE, 2)                #error (too many privileges)
-    # game.addToInventory(3, PRIVILEGE, 2)                #error, not a player (works ✅)
-    game.addToInventory(1, 5, JCardToAdd)   #error, not an itemType
+    print("Loading decks")
+    game.loadDecks()
+    print("Shuffling decks")
+    game.shuffleDecks()
+    print("Loading pyramid")
+    game.loadPyramid()
+    print()
+    print(f"Game Handler Decks:")
+    for x in game.decks:
+        print(f"{x}")
+    print()
+    print(f"Game Handler Pyramid:")
+    for x in game.pyramid:
+        print(f"{x}")
+    print()
+    print(f"Game Handler Royal Cards:")
+    for x in game.royalCards:
+        print(f"{x}")
+    print()
