@@ -435,7 +435,3 @@ if __name__ == "__main__":
     game.addToInventory(1, PRIVILEGE, 2)                #error (too many privileges)
     # game.addToInventory(3, PRIVILEGE, 2)                #error, not a player (works ✅)
     game.addToInventory(1, 5, JCardToAdd)   #error, not an itemType
-
-
-
-

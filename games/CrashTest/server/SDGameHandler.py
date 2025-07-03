@@ -17,7 +17,8 @@ Copyright 2025 B. Lamon
 
 from .Constants import *
 from typing import Tuple, List, Iterator
-from random import randint, seed
+from random import randint, seed, shuffle
+from json import load
 
 from .Inventory import Inventory
 from .JewelCard import JewelCard
@@ -64,6 +65,17 @@ class SDGameHandler:
         #   Anything else needed?
 
         self.inventories = [Inventory(), Inventory()]
+        self.decks = [
+            [], #level 1 cards
+            [], #level 2 cards
+            [] #level 3 cards
+        ]
+        self.pyramid = [
+            [], #level 1 cards
+            [], #level 2 cards
+            [] #level 3 cards
+        ]
+        self.royalCards = []
 
     # getter for the board
     @property
@@ -151,6 +163,58 @@ class SDGameHandler:
             bank[gemstone] -= countedTokens[gemstone]
 
         return bank
+
+    # UNTESTED
+    # ------------------------------------------------------------------------------------------------------------------
+    def getDecks(self):
+        #load json file
+        #parse json file
+
+        # Taken from `WillItCrash.py`:
+
+        with open("cards/data.json", "r") as file:
+            data = load(file)
+
+        print("Level 1 :")
+        self.decks[0] = [JewelCard(**card) for card in data["level1"]]
+        for x in self.decks[0]:
+            print(x)
+
+        print()
+        print("Level 2: ")
+        self.decks[1] = [JewelCard(**card) for card in data["level2"]]
+        for x in self.decks[1]:
+            print(x)
+
+        print()
+        print("Level 3: ")
+        self.decks[2] = [JewelCard(**card)for card in data["level3"]]
+        for x in self.decks[2]:
+            print(x)
+
+        # will probably have to do the same for Royal Cards, something like:
+        print()
+        print("Royal: ")
+        self.royalCards = [JewelCard(**card)for card in data["royal"]]
+        for x in self.royalCards:
+            print(x)
+
+
+    def shuffleDecks(self):
+        shuffle(self.decks[0])
+        shuffle(self.decks[1])
+        shuffle(self.decks[2])
+
+
+    def loadPyramid(self):
+        for i in range(5):
+            self.pyramid[0][i] = self.decks[0].pop()
+        for i in range(4):
+            self.pyramid[1][i] = self.decks[1].pop()
+        for i in range(3):
+            self.pyramid[2][i] = self.decks[2].pop()
+
+    # ------------------------------------------------------------------------------------------------------------------
 
     #TODO: update w/ new inventories
     # wait how do i even do that
