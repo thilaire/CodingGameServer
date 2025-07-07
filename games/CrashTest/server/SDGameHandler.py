@@ -210,9 +210,12 @@ class SDGameHandler:
             self.pyramid[2].append(self.decks[2].pop())
 
 
-    #TODO: update w/ new inventories
-    # wait how do i even do that
-    # tokens, jewel cards, booked cards, privileges...
+
+    # TODO
+    #   Substitution of any token for a gold one (when buying a card for instance)
+    #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
+    #   uncompleted. If there's still not enough, then it's illegal.
+    # I think it's handled directly in `Inventory.buyJewelCard()`??? I don't remember...
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         """
         Adds some item(s) in a player's inventory
@@ -302,12 +305,7 @@ class SDGameHandler:
 
         #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
         # TODO: choose tokens on the board
-        # TODO
-        #   Substitution of any token for a gold one (when buying a card for instance)
-        #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
-        #   uncompleted. If there's still not enough, then it's illegal.
-
-    def tokenCapture(self,coords: list[list], playerInventory) -> None:
+    def tokenCapture(self,coords: list[list], player: int) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
         horizontal or diagonal).
@@ -320,21 +318,39 @@ class SDGameHandler:
             print("ERROR: You can only capture 3 tokens at most!")
             return
 
-        x1, y1 = coords[0]
-
+        # Getting the coordinates in variables
+        points = []
+        #p1
         try:
-            x2, y2 = coords[1] #Try/Catch IndexError or smth?
+            x1, y1 = coords[0] #p1
+            points[0] = coords[0]
+        except ValueError:  #e.g. here:
+                            # testList = [1,2,3]
+                            # a,b = testList
+                            #this leads to a ValueError like this:
+                            #"ValueError: too many values to unpack (expected 2)"
+            print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
+            return
+
+        #p2
+        try:
+            x2, y2 = coords[1] #Try/Catch IndexError if they're not given
         except IndexError:
             x2,y2 = -1,-1
+            points[1] = [-1,-1]
+        except ValueError:
+            print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
+            return
 
+        #p3
         try:
-            x3, y3 = coords[2] #same idea here?
+            x3, y3 = coords[2] #Same idea here
         except IndexError:
             x3, y3 = -1, -1
-
-
-        #checking whether the second case is next to the first
-        d_coords = [x1-x2, y1-y2]
+            points[2] = [-1,-1]
+        except ValueError:
+            print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
+            return
 
         # We should check whether a move is legal (inline + within board + no gold and whatnot)
 
@@ -348,38 +364,91 @@ class SDGameHandler:
             [0,-1],#STRAIGHT RIGHT
             [-1,-1]#BOTTOM RIGHT
         ]
+        #checking whether the positions are valid (vertical, horizontal, diagonal)
+    # ------------------------------------------------------------------------------------------------------------------
 
-        #-1: Error (shouldn't happen); 1: p1 is given; 2: p1 & p2 are given; 3: all are given
+        #checking how many tokens are being captured
+        #if the third one is empty, we check the second one. If it's also empty, then we only check the first one.
+        #then we check for the directions (if any i.e. if len(coords) > 1)
+        #   ->  IS d_coords1 = [x1-x2, y1-y2] IN directionList ? (if it exists...)
+        #           IS d_coords2 = [x2-x3, y2-y3] == d_coords1 ? (idem)
+        #               success
+        #then we check whether there's a gold or nothing inside
+
+
+
+        # -1: Error (shouldn't happen); 1: p1 is given; 2: p1 & p2 are given; 3: all are given
+        # I think it's useless actually...
         _case = -1
 
-        # if the directions isn't in the list, or when
-        if x3 == -1 & y3 == -1:
-            if x2 == -1 & y2 == -1:
-                #check for p1 not to be a gold, not to be in an empty case
-                if self.board[x1][y1] is None:
-                    print("ERROR: empty case!")
-                elif self.board[x1][y1] == 2:
-                    print("ERROR: gold token!")
+        #Checking how many tokens are being captured (i.e. how many we should check)
+        if x3 == -1 & y3 == -1:     #3rd one empty
+            if x2 == -1 & y2 == -1: #2nd one empty & <= 1 coordinate given (0 shouldn't be possible though)
+                _case = 1
+                d_coords1   = []
+                d_coords2   = []
+            else:                   #3rd one empty & <= 2 coordinate(s) given.
+                _case = 2
+                # d_coords1 calculation
+                d_coords1   = [x1 - x2, y1 - y2]
+                d_coords2   = []
+        else:   # d_coordsN calculations (will be useful to check directions)
+            _case = 3
+            d_coords1       = [x1 - x2, y1 - y2]
+            d_coords2       = [x2 - x3, y2 - y3]
 
-
-            #when p1 & p2 are given
-            if not d_coords in directionsList:
-                print("ERROR: chosen cases should be aligned!")
+        # checking whether the positions are valid (vertical, horizontal, diagonal) i.e. whether they're in the same direction
+        # use d_coordsN + directionsList
+        if len(d_coords1) == 2:
+            if not(d_coords1 in directionsList):
+                print(f"ERROR: tokens are not aligned!")
+                return
             else:
-                if (self.board[x1][y1] is None) or (self.board[x2][y2] is None):
-                    print("ERROR: empty case!")
-                elif (self.board[x1][y1] == 2) or (self.board[x2][y2] == 2):
-                    print("ERROR: gold token!")
-
-        #direction between p1 and p2 (= p1-p2) isn't the same as p2 and p3 (=p2-p3)
-        elif [x1 - x2, y1 - y2] != [x2 - x3, y2 - y3]:
-            print("ERROR: chosen cases should be aligned!")
+                if len(d_coords2) == 2:
+                    if d_coords1 != d_coords2:
+                        print("ERROR: tokens are not aligned!")
+                        return
 
 
+        # Checking whether they're capturing nothing or a gold token, which case they lose
+        # we need a list or something to count the tokens
 
-            #print("ERROR: chosen cases are not allowed!")
-            #(x3 != 0 & y3 != 0)
-            #(not d_coords in directionsList) |
+        # use: listCount[TOKEN_TYPE-1] because None doesn't exist in this list.
+        # TOKEN_TYPE: int constants (see file `Constants.py`, l.39-45 [l.38 unused here])
+        listCount = [0,0,0,0,0,0,0]
+
+        for x in points:
+            if self.board[x[0]][x[1]] is None:
+                print("ERROR: Tried to capture an empty board case!")
+                return
+            elif x == [-1,-1]:
+                #just here to tell us that there is nothing, so we get out of the loop since the next should also be [-1,-1].
+                break
+            else:
+                if self.board[x[0]][x[1]] == GOLD:
+                    print("ERROR: Tried to capture a gold token!")
+                else:
+                    listCount[ self.board [x[0]] [x[1]] - 1] += 1
+
+        # Checking whether they're capturing two pearls or three gemstones
+        if listCount[0] == 2:
+            #selected 2 pearls.
+            print(f"INFO: Opponent receives a privilege scroll! (two {tokenTypes[1]} tokens selected!)")
+        else:
+            for i in range(len(listCount)):
+                if listCount[i] == 3:
+                    print(f"INFO: Opponent receives a privilege scroll! (three {tokenTypes[i+1]} tokens selected!)")
+
+                #replace tokens on the board
+                #place tokens in the inventory
+                # x: [x,y]
+                #
+                for x in points:
+                    self.inventories[player].addToken(self.board[x[0]][x[1]],1)
+                    self.board[x[0]][x[1]] = None
+                    #wait is this it???
+
+
 
 
 

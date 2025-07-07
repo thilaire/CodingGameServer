@@ -22,8 +22,6 @@ class RoyalCard:
                 for i in range(5):
                     if x == abilities[i]:
                         x = i + 1
-                        #same as jewelcard, i don't( remember what i wanted to do... (crashes everything, therefore commented the next line)
-                        # self.abilities[i] = i + 1
                 #0 if not good
                 if not ( isinstance(x, int) or not (0 < x < 6) ):
                     print(f"ERROR: ability {x} is unknown. Check data.json or CrownCard instance")

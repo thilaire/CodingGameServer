@@ -23,7 +23,7 @@ class SplendorVegetablePlayer(TrainingPlayer):
 	"""
 	Vegetable Player.
 	A bot that plays like a vegetable, a potato for instance.
-	Except it is not enough to run a Genetic Lifeform and Disk Operating System (GLaDOS).
+	Although it is not enough to run a Genetic Lifeform and Disk Operating System (GLaDOS).
 	And not enough to make good decisions, just like [insert sensitive decision, bonus point if it's a political one].
 	And definitely not enough to run a LLM.
 

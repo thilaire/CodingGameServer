@@ -453,11 +453,15 @@ if __name__ == "__main__":
     print()
     print(f"Game Handler Decks:")
     for x in game.decks:
-        print(f"{x}")
+        print(f"[length: {len(x)}]{x}")
     print()
     print(f"Game Handler Pyramid:")
-    for x in game.pyramid:
-        print(f"{x}")
+    for x in game.pyramid[0]:
+        print(f"LEVEL 1: {x}")
+    for x in game.pyramid[1]:
+        print(f"LEVEL 2: {x}")
+    for x in game.pyramid[2]:
+        print(f"LEVEL 3: {x}")
     print()
     print(f"Game Handler Royal Cards:")
     for x in game.royalCards:
