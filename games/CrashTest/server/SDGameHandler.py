@@ -425,12 +425,19 @@ class SDGameHandler:
         listCount = [0,0,0,0,0,0,0] #Note: dictionary would've been better. My bad
 
         for x in points:
-            if self.board[x[0]][x[1]] is None:
+            if x[0] < 0 or x[1] < 0:
+                if x != [-1,-1]:
+                    print(f"ERROR: invalid indices! (expected coordinates within the board or [-1,-1], got {x} instead!)")
+                    return
+                else:
+                    #just here to tell us that there is nothing, so we get out of the loop since the next should also be [-1,-1].
+                    break
+            elif x[0] > 4 or x[1] > 4:
+                print(f"ERROR: invalid indices! (expected coordinates within the board or [-1,-1], got {x} instead!)")
+                return
+            elif self.board[x[0]][x[1]] is None:
                 print("ERROR: Tried to capture an empty board case!")
                 return
-            elif x == [-1,-1]:
-                #just here to tell us that there is nothing, so we get out of the loop since the next should also be [-1,-1].
-                break
             else:
                 if self.board[x[0]][x[1]] == GOLD:
                     print("ERROR: Tried to capture a gold token!")

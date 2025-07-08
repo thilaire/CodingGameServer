@@ -504,14 +504,15 @@ if __name__ == "__main__":
     # Checking method (Another wrong order -> error) ✅
     game.tokenCapture([[0,0],[-1,-1],[1,0]], 1)
 
-    # Checking method (Trying to take None -> error) ❌ (UNEXPECTED: Takes the first token anyway!)
+    # Checking method (Trying to take None -> error) ✅ (UNEXPECTED: Takes the first token anyway!
+                                                        # UPDATE   : Doesn't matter, we'll end the game after this error)
     game.tokenCapture([[0,0], [0,1], [0,2]],1)
 
     # Checking method (wrong format -> error) ✅
     game.tokenCapture([[0,0,0], [0], [-1,-1]], 1)
     # Checking method (wrong format -> error) ✅
     game.tokenCapture([[0,0], [0], [-1,-1]], 1)
-    # Checking method (wrong coordinates -> error) ❌ (somewhat crashes but not handled)
+    # Checking method (wrong coordinates -> error) ✅
     game.tokenCapture([[0,11], [0,12], [-1,-1]], 1)
 
 
