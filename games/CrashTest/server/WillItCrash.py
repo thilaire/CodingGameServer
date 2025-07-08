@@ -503,19 +503,26 @@ if __name__ == "__main__":
 
     # Checking method (Another wrong order -> error) ✅
     game.tokenCapture([[0,0],[-1,-1],[1,0]], 1)
-
+    game.tokenCapture([[0,0],[2,2],[1,1]],1)
     # Checking method (Trying to take None -> error) ✅ (UNEXPECTED: Takes the first token anyway!
                                                         # UPDATE   : Doesn't matter, we'll end the game after this error)
     game.tokenCapture([[0,0], [0,1], [0,2]],1)
 
     # Checking method (wrong format -> error) ✅
     game.tokenCapture([[0,0,0], [0], [-1,-1]], 1)
+
     # Checking method (wrong format -> error) ✅
     game.tokenCapture([[0,0], [0], [-1,-1]], 1)
+
     # Checking method (wrong coordinates -> error) ✅
     game.tokenCapture([[0,11], [0,12], [-1,-1]], 1)
 
+    # Checking method (not aligned -> error) ✅
+    game.tokenCapture([[3,2],[3,3],[4,4]],1)
 
+    # Checking method (shouldn't use [-1,-1] -> error)
+    game.tokenCapture([[-1,-1],[-1,-1],[-1,-1]], 1)     # ❌
+    game.tokenCapture([[-1,-1], [-2,-2]], 1)            # ❌ for some reason they both do not crash, haven't figured out why yet
 
 
     for i in range(5):
