@@ -142,8 +142,8 @@ class SDGameHandler:
         # [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
         # [jewel_card , token]
         for gemstone in range(1,8):
-            countedTokens[gemstone] += self.inventories[0][gemstone][1]
-            countedTokens[gemstone] += self.inventories[1][gemstone][1]
+            countedTokens[gemstone] += self.inventories[0].nbTokens(gemstone) #TODO
+            countedTokens[gemstone] += self.inventories[1].nbTokens(gemstone) #TODO
 
         #Checking if there's too many tokens, which shouldn't happen
 
@@ -318,12 +318,18 @@ class SDGameHandler:
             print("ERROR: You can only capture 3 tokens at most!")
             return
 
+        if not(0 <= player - 1 <= 1):
+            print("ERROR: unrecognised player (should be 1 or 2)")
+            return
+        else:
+            player -= 1
+
         # Getting the coordinates in variables
-        points = []
+        points = list()
         #p1
         try:
             x1, y1 = coords[0] #p1
-            points[0] = coords[0]
+            points.append(coords[0])
         except ValueError:  #e.g. here:
                             # testList = [1,2,3]
                             # a,b = testList
@@ -335,9 +341,10 @@ class SDGameHandler:
         #p2
         try:
             x2, y2 = coords[1] #Try/Catch IndexError if they're not given
+            points.append(coords[1])
         except IndexError:
             x2,y2 = -1,-1
-            points[1] = [-1,-1]
+            points.append([-1, -1])
         except ValueError:
             print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
             return
@@ -345,9 +352,10 @@ class SDGameHandler:
         #p3
         try:
             x3, y3 = coords[2] #Same idea here
+            points.append(coords[2])
         except IndexError:
             x3, y3 = -1, -1
-            points[2] = [-1,-1]
+            points.append([-1, -1])
         except ValueError:
             print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
             return
@@ -410,12 +418,11 @@ class SDGameHandler:
                         return
 
 
-        # Checking whether they're capturing nothing or a gold token, which case they lose
-        # we need a list or something to count the tokens
-
+        # Checking whether they're capturing nothing or a gold token, which case they lose.
+        # + adding & counting the tokens w/ listCount
         # use: listCount[TOKEN_TYPE-1] because None doesn't exist in this list.
-        # TOKEN_TYPE: int constants (see file `Constants.py`, l.39-45 [l.38 unused here])
-        listCount = [0,0,0,0,0,0,0]
+        # TOKEN_TYPE: int constants (see file `Constants.py`, l.39-45 [no pun intended: l.38 ("None") is unused here])
+        listCount = [0,0,0,0,0,0,0] #Note: dictionary would've been better. My bad
 
         for x in points:
             if self.board[x[0]][x[1]] is None:
@@ -428,28 +435,23 @@ class SDGameHandler:
                 if self.board[x[0]][x[1]] == GOLD:
                     print("ERROR: Tried to capture a gold token!")
                 else:
+                    # place tokens in the inventory
+                    self.inventories[player].addToken(self.board[x[0]][x[1]], 1)
                     listCount[ self.board [x[0]] [x[1]] - 1] += 1
+                    # replace tokens on the board
+                    self.update_board(None, x)
 
         # Checking whether they're capturing two pearls or three gemstones
         if listCount[0] == 2:
-            #selected 2 pearls.
+            # Selected 2 pearls.
             print(f"INFO: Opponent receives a privilege scroll! (two {tokenTypes[1]} tokens selected!)")
+            return
         else:
+            # Selected 3 gemstones.
             for i in range(len(listCount)):
                 if listCount[i] == 3:
                     print(f"INFO: Opponent receives a privilege scroll! (three {tokenTypes[i+1]} tokens selected!)")
-
-                #replace tokens on the board
-                #place tokens in the inventory
-                # x: [x,y]
-                #
-                for x in points:
-                    self.inventories[player].addToken(self.board[x[0]][x[1]],1)
-                    self.board[x[0]][x[1]] = None
-                    #wait is this it???
-
-
-
+            return
 
 
 

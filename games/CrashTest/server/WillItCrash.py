@@ -436,34 +436,86 @@ if __name__ == "__main__":
     # # game.addToInventory(3, PRIVILEGE, 2)                #error, not a player (works ✅)
     # game.addToInventory(1, 5, JCardToAdd)   #error, not an itemType
 
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking pyramid & data import SDGameHandler.getDecks(), shuffleDecks() & loadPyramid() ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+    # print()
+    # print(f"Game Handler Decks      : {game.decks}")
+    # print(f"Game Handler Pyramid    : {game.pyramid}")
+    # print(f"Game Handler Royal Cards: {game.royalCards}")
+    # print()
+    # print("Loading decks")
+    # game.loadDecks()
+    # print("Shuffling decks")
+    # game.shuffleDecks()
+    # print("Loading pyramid")
+    # game.loadPyramid()
+    # print()
+    # print(f"Game Handler Decks:")
+    # for x in game.decks:
+    #     print(f"[length: {len(x)}]{x}")
+    # print()
+    # print(f"Game Handler Pyramid:")
+    # for x in game.pyramid[0]:
+    #     print(f"LEVEL 1: {x}")
+    # for x in game.pyramid[1]:
+    #     print(f"LEVEL 2: {x}")
+    # for x in game.pyramid[2]:
+    #     print(f"LEVEL 3: {x}")
+    # print()
+    # print(f"Game Handler Royal Cards:")
+    # for x in game.royalCards:
+    #     print(f"{x}")
+    # print()
+
+
     #-----------------------------------------------------------------------------------------------------------------
-    # checking pyramid & data import SDGameHandler.getDecks(), shuffleDecks() & loadPyramid() ✅
+    # checking SDGameHandler.tokenCapture(coords[], player)
     #-----------------------------------------------------------------------------------------------------------------
-    print()
-    print(f"Game Handler Decks      : {game.decks}")
-    print(f"Game Handler Pyramid    : {game.pyramid}")
-    print(f"Game Handler Royal Cards: {game.royalCards}")
-    print()
-    print("Loading decks")
-    game.loadDecks()
-    print("Shuffling decks")
-    game.shuffleDecks()
-    print("Loading pyramid")
-    game.loadPyramid()
-    print()
-    print(f"Game Handler Decks:")
-    for x in game.decks:
-        print(f"[length: {len(x)}]{x}")
-    print()
-    print(f"Game Handler Pyramid:")
-    for x in game.pyramid[0]:
-        print(f"LEVEL 1: {x}")
-    for x in game.pyramid[1]:
-        print(f"LEVEL 2: {x}")
-    for x in game.pyramid[2]:
-        print(f"LEVEL 3: {x}")
-    print()
-    print(f"Game Handler Royal Cards:")
-    for x in game.royalCards:
-        print(f"{x}")
-    print()
+
+    # Distribution of tokens on the board.
+    game.redistribute()
+    for i in range(5):
+        print(game.board[i])
+    # Checking whether there's something left in the bank (shouldn't be the case).
+    print(game.bank())
+
+    # Checking inventory & method (Vertical [DOWN] + 3 gemstones) ✅
+    # WORKS WITH SEED 2
+    print(game.inventories[0])
+    game.tokenCapture([[1,1],[2,1],[3,1]], 1)
+    print(game.inventories[0])
+
+    # Checking method (Diagonal [DOWN LEFT] + 2 pearls) ✅
+    game.tokenCapture([[0, 1], [1, 2],[2, 3]], 1)
+
+    # Checking method (Horizontal [LEFT]) ✅
+    game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
+
+    # Checking method (Vertical (UP), 2 TOKENS) ✅
+    game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
+
+    # Checking method (Wrong order -> error) ✅
+    game.tokenCapture([[0,3], [0,2], [0,4] ], 1)
+
+    # Checking method (Gold token -> error) ✅
+    game.tokenCapture([[0,4], [-1,-1], [-1,-1] ], 1)
+
+    # Checking method (Another wrong order -> error) ✅
+    game.tokenCapture([[0,0],[-1,-1],[1,0]], 1)
+
+    # Checking method (Trying to take None -> error) ❌ (UNEXPECTED: Takes the first token anyway!)
+    game.tokenCapture([[0,0], [0,1], [0,2]],1)
+
+    # Checking method (wrong format -> error) ✅
+    game.tokenCapture([[0,0,0], [0], [-1,-1]], 1)
+    # Checking method (wrong format -> error) ✅
+    game.tokenCapture([[0,0], [0], [-1,-1]], 1)
+    # Checking method (wrong coordinates -> error) ❌ (somewhat crashes but not handled)
+    game.tokenCapture([[0,11], [0,12], [-1,-1]], 1)
+
+
+
+
+    for i in range(5):
+        print(game.board[i])
