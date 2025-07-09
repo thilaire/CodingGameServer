@@ -308,7 +308,7 @@ class SDGameHandler:
     def tokenCapture(self,coords: list[list], player: int) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
-        horizontal or diagonal).
+        horizontal or diagonal, with two elements in each coordinate i.e. [x, y]).
         Then we check whether there's a gold token, which case the move is illegal.
         Then we check whether the three tokens are identical, or whether there's two pearls chosen, which case the
         opponent gets a privilege scroll.
@@ -330,6 +330,12 @@ class SDGameHandler:
         try:
             x1, y1 = coords[0] #p1
             points.append(coords[0])
+            if (not(type(x1) is int)) or (not(type(y1) is int)):
+                print(f"ERROR: expected int coordinates in this format: [ [x1,y1], [x2,y2], [x3,y3] ] or [-1,-1] if not selected. Got {coords} instead!")
+                return
+        except IndexError:
+            print(f"ERROR: You should capture at least one token! (first token coordinates not given)")
+            return
         except ValueError:  #e.g. here:
                             # testList = [1,2,3]
                             # a,b = testList
@@ -338,10 +344,18 @@ class SDGameHandler:
             print(f"ERROR: wrong coordinates format! (expected [ [x1,y1], [x2,y2], [x3,y3] ], [-1,-1] if not selected. Got {coords} instead!)")
             return
 
+        if coords[0] == [-1,-1]:
+            print(f"ERROR: You should capture at least one token! (first token coordinates not given)")
+            return
+
+
         #p2
         try:
             x2, y2 = coords[1] #Try/Catch IndexError if they're not given
             points.append(coords[1])
+            if (not(type(x2) is int)) or (not(type(y2) is int)):
+                print(f"ERROR: expected int coordinates in this format: [ [x1,y1], [x2,y2], [x3,y3] ] or [-1,-1] if not selected. Got {coords} instead!")
+                return
         except IndexError:
             x2,y2 = -1,-1
             points.append([-1, -1])
@@ -353,6 +367,9 @@ class SDGameHandler:
         try:
             x3, y3 = coords[2] #Same idea here
             points.append(coords[2])
+            if (not(type(x3) is int)) or (not(type(y3) is int)):
+                print(f"ERROR: expected int coordinates in this format: [ [x1,y1], [x2,y2], [x3,y3] ] or [-1,-1] if not selected. Got {coords} instead!")
+                return
         except IndexError:
             x3, y3 = -1, -1
             points.append([-1, -1])
@@ -372,19 +389,8 @@ class SDGameHandler:
             [0,-1],#STRAIGHT RIGHT
             [-1,-1]#BOTTOM RIGHT
         ]
+
         #checking whether the positions are valid (vertical, horizontal, diagonal)
-    # ------------------------------------------------------------------------------------------------------------------
-
-        #checking how many tokens are being captured
-        #if the third one is empty, we check the second one. If it's also empty, then we only check the first one.
-        #then we check for the directions (if any i.e. if len(coords) > 1)
-        #   ->  IS d_coords1 = [x1-x2, y1-y2] IN directionList ? (if it exists...)
-        #           IS d_coords2 = [x2-x3, y2-y3] == d_coords1 ? (idem)
-        #               success
-        #then we check whether there's a gold or nothing inside
-
-
-
         # -1: Error (shouldn't happen); 1: p1 is given; 2: p1 & p2 are given; 3: all are given
         # I think it's useless actually...
         _case = -1

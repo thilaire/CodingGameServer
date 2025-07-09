@@ -341,7 +341,7 @@ if __name__ == "__main__":
     #
     # #TODO
     # # ok that shouldn't be possible to buy such a card, we need to cap the tokens to 10 and raise an error instead of a warning...
-    # # (yes I know they're only 'print' statements for now)
+    # # (will have to be handled in `SplendorDuel.py`)
     #
     # print()
     # print("Card to purchase with just enough jewels (no token though):")
@@ -520,9 +520,15 @@ if __name__ == "__main__":
     # Checking method (not aligned -> error) ✅
     game.tokenCapture([[3,2],[3,3],[4,4]],1)
 
-    # Checking method (shouldn't use [-1,-1] -> error)
-    game.tokenCapture([[-1,-1],[-1,-1],[-1,-1]], 1)     # ❌
-    game.tokenCapture([[-1,-1], [-2,-2]], 1)            # ❌ for some reason they both do not crash, haven't figured out why yet
+    # Checking method (shouldn't use [-1,-1] -> error) ✅
+    game.tokenCapture([[-1,-1],[-1,-1],[-1,-1]], 1)     # ✅
+    game.tokenCapture([[-1,-1], [-2,-2]], 1)            # ✅
+
+    # Checking method (only one coordinate given) ✅
+    game.tokenCapture([[4,4]],1)
+
+    # Checking method (strs/chars instead of ints) ✅
+    game.tokenCapture([['a','b']],1)
 
 
     for i in range(5):
