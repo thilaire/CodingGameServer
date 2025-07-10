@@ -69,6 +69,27 @@ tokenColors = [
     Fore.WHITE      + Style.DIM     + Back.BLACK    # OBSIDIAN
 ]
 
+tokenEmojis = [{
+    None: "  ",
+    PEARL: "🟣",
+    GOLD: "🟡",
+    BLUE_SAPPHIRE: "🔵",
+    DIAMOND: "⚪",
+    EMERALD: "🟢",
+    RUBY: "🔴",
+    OBSIDIAN: "⚫"
+},
+    {
+        None: "  ",
+        PEARL: "🟪",
+        GOLD: "🟨",
+        BLUE_SAPPHIRE: "🟦",
+        DIAMOND: "⬜",
+        EMERALD: "🟩",
+        RUBY: "🟥",
+        OBSIDIAN: "⬛"
+    }
+]
 
 #Probably useless since we'll manage the game with a sort of bank... we'll see.
     # Maximum token amounts. They're the ones we're going to display on the board.
