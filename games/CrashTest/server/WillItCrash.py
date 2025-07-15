@@ -469,67 +469,209 @@ if __name__ == "__main__":
     # print()
 
 
-    #-----------------------------------------------------------------------------------------------------------------
-    # checking SDGameHandler.tokenCapture(coords[], player)
-    #-----------------------------------------------------------------------------------------------------------------
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking SDGameHandler.tokenCapture(coords[], player) ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+    #
+    # # Distribution of tokens on the board.
+    # game.redistribute()
+    # for i in range(5):
+    #     print(game.board[i])
+    # # Checking whether there's something left in the bank (shouldn't be the case).
+    # print(game.bank())
+    #
+    # # Checking inventory & method (Vertical [DOWN] + 3 gemstones) ✅
+    # # WORKS WITH SEED 2
+    # print(game.inventories[0])
+    # game.tokenCapture([[1,1],[2,1],[3,1]], 1)
+    # print(game.inventories[0])
+    #
+    # # Checking method (Diagonal [DOWN LEFT] + 2 pearls) ✅
+    # game.tokenCapture([[0, 1], [1, 2],[2, 3]], 1)
+    #
+    # # Checking method (Horizontal [LEFT]) ✅
+    # game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
+    #
+    # # Checking method (Vertical (UP), 2 TOKENS) ✅
+    # game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
+    #
+    # # Checking method (Wrong order -> error) ✅
+    # game.tokenCapture([[0,3], [0,2], [0,4] ], 1)
+    #
+    # # Checking method (Gold token -> error) ✅
+    # game.tokenCapture([[0,4], [-1,-1], [-1,-1] ], 1)
+    #
+    # # Checking method (Another wrong order -> error) ✅
+    # game.tokenCapture([[0,0],[-1,-1],[1,0]], 1)
+    # game.tokenCapture([[0,0],[2,2],[1,1]],1)
+    # # Checking method (Trying to take None -> error) ✅ (UNEXPECTED: Takes the first token anyway!
+    #                                                     # UPDATE   : Doesn't matter, we'll end the game after this error)
+    # game.tokenCapture([[0,0], [0,1], [0,2]],1)
+    #
+    # # Checking method (wrong format -> error) ✅
+    # game.tokenCapture([[0,0,0], [0], [-1,-1]], 1)
+    #
+    # # Checking method (wrong format -> error) ✅
+    # game.tokenCapture([[0,0], [0], [-1,-1]], 1)
+    #
+    # # Checking method (wrong coordinates -> error) ✅
+    # game.tokenCapture([[0,11], [0,12], [-1,-1]], 1)
+    #
+    # # Checking method (not aligned -> error) ✅
+    # game.tokenCapture([[3,2],[3,3],[4,4]],1)
+    #
+    # # Checking method (shouldn't use [-1,-1] -> error) ✅
+    # game.tokenCapture([[-1,-1],[-1,-1],[-1,-1]], 1)     # ✅
+    # game.tokenCapture([[-1,-1], [-2,-2]], 1)            # ✅
+    #
+    # # Checking method (only one coordinate given) ✅
+    # game.tokenCapture([[4,4]],1)
+    #
+    # # Checking method (strs/chars instead of ints) ✅
+    # game.tokenCapture([['a','b']],1)
+    #
+    #
+    # for i in range(5):
+    #     print(game.board[i])
 
-    # Distribution of tokens on the board.
-    game.redistribute()
-    for i in range(5):
-        print(game.board[i])
-    # Checking whether there's something left in the bank (shouldn't be the case).
-    print(game.bank())
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # Display of cards. Will be useful to elaborate print method
+    # #-----------------------------------------------------------------------------------------------------------------
+    #
+    # # Cards w/ emojis.
+    # # Reminder of the only card w/ 2 abilities:
+    # # "level3": [
+    # #     {
+    # #         "tokenType": null,
+    # #         "nbJewel": 1,
+    # #         "nbPrestige": 3,
+    # #         "nbCrowns": 0,
+    # #         "abilities": ["ChooseGemstone", "PlayAgain"],
+    # #         "requirements": [0, 0, 0, 0, 8, 0],
+    # #         "_comment": "req=[PEARL,SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]"
+    # #     }
+    # # ]
+    #
+    #
+    # # print("┌───────────┐")
+    # # print("│✨3 👑0 🃏1│")
+    # # print("│           │")
+    # # print("│        ❗ │")
+    # # print("│       💎🔄│")
+    # # print("│🔴8        │")
+    # # print("└───────────┘")
+    #
+    #two abilities
+    test1 = JewelCard(None,1,3,0,[CHOOSE_GEMSTONE,PLAY_AGAIN],{RUBY: 8},None)
 
-    # Checking inventory & method (Vertical [DOWN] + 3 gemstones) ✅
-    # WORKS WITH SEED 2
-    print(game.inventories[0])
-    game.tokenCapture([[1,1],[2,1],[3,1]], 1)
-    print(game.inventories[0])
+    #no ability (actually it's a blank card)
+    test2 = JewelCard(None,0,0,0,[],{},None)
 
-    # Checking method (Diagonal [DOWN LEFT] + 2 pearls) ✅
-    game.tokenCapture([[0, 1], [1, 2],[2, 3]], 1)
+    #one ability
+    test3 = JewelCard(None,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
 
-    # Checking method (Horizontal [LEFT]) ✅
-    game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
+    #another one
+    test4 = JewelCard(BLUE_SAPPHIRE,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
 
-    # Checking method (Vertical (UP), 2 TOKENS) ✅
-    game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
+    strsAbilities = []
 
-    # Checking method (Wrong order -> error) ✅
-    game.tokenCapture([[0,3], [0,2], [0,4] ], 1)
-
-    # Checking method (Gold token -> error) ✅
-    game.tokenCapture([[0,4], [-1,-1], [-1,-1] ], 1)
-
-    # Checking method (Another wrong order -> error) ✅
-    game.tokenCapture([[0,0],[-1,-1],[1,0]], 1)
-    game.tokenCapture([[0,0],[2,2],[1,1]],1)
-    # Checking method (Trying to take None -> error) ✅ (UNEXPECTED: Takes the first token anyway!
-                                                        # UPDATE   : Doesn't matter, we'll end the game after this error)
-    game.tokenCapture([[0,0], [0,1], [0,2]],1)
-
-    # Checking method (wrong format -> error) ✅
-    game.tokenCapture([[0,0,0], [0], [-1,-1]], 1)
-
-    # Checking method (wrong format -> error) ✅
-    game.tokenCapture([[0,0], [0], [-1,-1]], 1)
-
-    # Checking method (wrong coordinates -> error) ✅
-    game.tokenCapture([[0,11], [0,12], [-1,-1]], 1)
-
-    # Checking method (not aligned -> error) ✅
-    game.tokenCapture([[3,2],[3,3],[4,4]],1)
-
-    # Checking method (shouldn't use [-1,-1] -> error) ✅
-    game.tokenCapture([[-1,-1],[-1,-1],[-1,-1]], 1)     # ✅
-    game.tokenCapture([[-1,-1], [-2,-2]], 1)            # ✅
-
-    # Checking method (only one coordinate given) ✅
-    game.tokenCapture([[4,4]],1)
-
-    # Checking method (strs/chars instead of ints) ✅
-    game.tokenCapture([['a','b']],1)
+    test = test4 #proxy just to change the number instead of changing it everywhere
+    print(test.abilities)
 
 
-    for i in range(5):
-        print(game.board[i])
+    # Ability display
+    match test.abilities[0]:
+        case 0:
+            #nothing
+            strsAbilities += ["  ","  "]
+        case 1:
+            #play again
+            strsAbilities += ["❗","🔄"]
+        case 2:
+            #choose gemstone
+            strsAbilities += ["❗", "💎"]
+        case 3:
+            #take token
+            strsAbilities += ["❗", "🪙"]
+        case 4:
+            #privilege
+            strsAbilities += ["❗", "🗞️"]
+        case 5:
+            #steal gemstone
+            strsAbilities += ["❗", "🫳"]
+
+    print(strsAbilities)
+    match test.abilities[1]:
+        case 0:
+            strsAbilities[1] = f" {strsAbilities[1]} "
+        case 1:
+            strsAbilities[1] = f"{strsAbilities[1]}🔄"
+        case 2:
+            strsAbilities[1] = f"{strsAbilities[1]}💎"
+        case 3:
+            strsAbilities[1] = f"{strsAbilities[1]}🪙"
+        case 4:
+            strsAbilities[1] = f"{strsAbilities[1]}🗞️"
+        case 5:
+            strsAbilities[1] = f"{strsAbilities[1]}🫳"
+
+
+    #top of the card
+    strsTop = []
+    if test.nbPrestige:
+        strsTop.append(f"✨{test.nbPrestige}")
+    else:
+        strsTop.append("   ")
+
+    if test.nbCrowns:
+        strsTop.append(f"👑{test.nbCrowns}")
+    else:
+        strsTop.append("   ")
+
+    if test.nbJewel:
+        strsTop.append(f"{tokenEmojis[0][test.tokenType]}{test.nbJewel}")
+    else:
+        strsTop.append("   ")
+
+
+    # Required tokens display
+    strsTokens = ["   ","   ","   ","   "]
+    i=0
+    for key in test.requirements:
+        if test.requirements[key]:
+            strsTokens[i] = f"{tokenEmojis[0][key]}{test.requirements[key]}"
+            i += 1
+
+    cardStrList = [
+                f"┌───────────┐",
+                f"│{strsTop[0]} {strsTop[1]} {strsTop[2]}│",
+                f"│{strsTokens[3]}        │",
+                f"│{strsTokens[2]}     {strsAbilities[0]} │",
+                f"│{strsTokens[1]}    {strsAbilities[1]}│",
+                f"│{strsTokens[0]}        │",
+                f"└───────────┘"
+    ]
+
+    print("WillItCrash.py")
+    for x in cardStrList:
+        print(x)
+
+    print("JewelCard.cardDraw()")
+    for x in test.cardDraw():
+        print(x)
+    # # check if nbJewel >= 10 (takes more space!)
+    # # nvm no card does have a nbJewel >= 10
+    # #-----------------------
+    # # COLOR CONSTANTS TO ADD
+    # # (ROUND=0, SQUARE=1)
+    # # colorToken[SHAPE][key]
+    # #-----------------------
+    # # tokenTypesDict = {
+    # # "None"          :    None,
+    # # "Pearl"         :    PEARL,         🟣🟪
+    # # "Gold"          :    GOLD,          🟡🟨
+    # # "Blue Sapphire" :    BLUE_SAPPHIRE, 🔵🟦
+    # # "Diamond"       :    DIAMOND,       ⚪⬜
+    # # "Emerald"       :    EMERALD,       🟢🟩
+    # # "Ruby"          :    RUBY,          🔴🟥
+    # # "Obsidian"      :    OBSIDIAN,      ⚫⬛

@@ -70,24 +70,24 @@ tokenColors = [
 ]
 
 tokenEmojis = [{
-    None: "  ",
-    PEARL: "🟣",
-    GOLD: "🟡",
-    BLUE_SAPPHIRE: "🔵",
-    DIAMOND: "⚪",
-    EMERALD: "🟢",
-    RUBY: "🔴",
-    OBSIDIAN: "⚫"
+    None            : "🃏",
+    PEARL           : "🟣",
+    GOLD            : "🟡",
+    BLUE_SAPPHIRE   : "🔵",
+    DIAMOND         : "⚪",
+    EMERALD         : "🟢",
+    RUBY            : "🔴",
+    OBSIDIAN        : "⚫"
 },
     {
-        None: "  ",
-        PEARL: "🟪",
-        GOLD: "🟨",
-        BLUE_SAPPHIRE: "🟦",
-        DIAMOND: "⬜",
-        EMERALD: "🟩",
-        RUBY: "🟥",
-        OBSIDIAN: "⬛"
+        None            : "  ",
+        PEARL           : "🟪",
+        GOLD            : "🟨",
+        BLUE_SAPPHIRE   : "🟦",
+        DIAMOND         : "⬜",
+        EMERALD         : "🟩",
+        RUBY            : "🟥",
+        OBSIDIAN        : "⬛"
     }
 ]
 
