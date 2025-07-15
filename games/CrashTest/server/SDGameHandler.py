@@ -71,9 +71,9 @@ class SDGameHandler:
             [] #level 3 cards
         ]
         self.pyramid = [
-            [], #level 1 cards
-            [], #level 2 cards
-            [] #level 3 cards
+            [], #list[JewelCard], #level 1 cards
+            [], #list[JewelCard], #level 2 cards
+            []  #list[JewelCard]  #level 3 cards
         ]
         self.royalCards = []
 
@@ -209,14 +209,46 @@ class SDGameHandler:
         for i in range(3):
             self.pyramid[2].append(self.decks[2].pop())
 
+    def printPyramid(self):
+        """
+                        Prints the pyramid of cards.
+        /!\ Should only be used if the pyramid is already filled! /!\
+        """
+        lines = [[],[],[]]
+        #lvl3lines += [x.cardDraw() for x in self.pyramid[2]]
+
+        # for x in self.pyramid[2]:
+        #     for y in x.cardDraw():
+        #         try:
+        #             lvl3lines[x.cardDraw().index(y)] += y
+        #         except IndexError:
+        #             lvl3lines.append(y)
+        for x in self.pyramid:
+            level = 0
+            for i in range(len(x)): #level
+                for j in range(len(x[i].cardDraw())): #line
+                    try:
+                        lines[level][j] += x[i].cardDraw()[j]
+
+                    except IndexError:
+                        lines[level].append(x[i].cardDraw()[j])
+            level += 1
 
 
-    # TODO
-    #   Substitution of any token for a gold one (when buying a card for instance)
-    #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
-    #   uncompleted. If there's still not enough, then it's illegal.
-    # I think it's handled directly in `Inventory.buyJewelCard()`??? I don't remember...
+
+        for x in lines:
+            print("\n")
+            for y in x:
+                print(y)
+
+
+
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
+        # TODO
+        #   Substitution of any token for a gold one (when buying a card for instance)
+        #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
+        #   uncompleted. If there's still not enough, then it's illegal.
+        # I think it's handled directly in `Inventory.buyJewelCard()`??? I don't remember...
         """
         Adds some item(s) in a player's inventory
 
@@ -302,9 +334,7 @@ class SDGameHandler:
                 print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]}: {bank[token]} in the bank)")
 
 
-
-        #TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
-        # TODO: choose tokens on the board
+#TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
     def tokenCapture(self,coords: list[list], player: int) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
