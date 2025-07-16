@@ -535,7 +535,7 @@ if __name__ == "__main__":
     #     print(game.board[i])
 
     # #-----------------------------------------------------------------------------------------------------------------
-    # # Display of cards. Will be useful to elaborate print method
+    # # Display of cards. Will be useful to elaborate print method ✅
     # #-----------------------------------------------------------------------------------------------------------------
     #
     # # Cards w/ emojis.
@@ -561,104 +561,104 @@ if __name__ == "__main__":
     # # print("│🔴8        │")
     # # print("└───────────┘")
     #
-    #two abilities
-    test1 = JewelCard(None,1,3,0,[CHOOSE_GEMSTONE,PLAY_AGAIN],{RUBY: 8},None)
-
-    #no ability (actually it's a blank card)
-    test2 = JewelCard(None,0,0,0,[],{},None)
-
-    #one ability
-    test3 = JewelCard(None,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
-
-    #another one
-    test4 = JewelCard(BLUE_SAPPHIRE,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
-
-    strsAbilities = []
-
-    test = test4 #proxy just to change the number instead of changing it everywhere
-    print(test.abilities)
-
-
-    # Ability display
-    match test.abilities[0]:
-        case 0:
-            #nothing
-            strsAbilities += ["  ","  "]
-        case 1:
-            #play again
-            strsAbilities += ["❗","🔄"]
-        case 2:
-            #choose gemstone
-            strsAbilities += ["❗", "💎"]
-        case 3:
-            #take token
-            strsAbilities += ["❗", "🪙"]
-        case 4:
-            #privilege
-            strsAbilities += ["❗", "🗞️"]
-        case 5:
-            #steal gemstone
-            strsAbilities += ["❗", "🫳"]
-
-    print(strsAbilities)
-    match test.abilities[1]:
-        case 0:
-            strsAbilities[1] = f" {strsAbilities[1]} "
-        case 1:
-            strsAbilities[1] = f"{strsAbilities[1]}🔄"
-        case 2:
-            strsAbilities[1] = f"{strsAbilities[1]}💎"
-        case 3:
-            strsAbilities[1] = f"{strsAbilities[1]}🪙"
-        case 4:
-            strsAbilities[1] = f"{strsAbilities[1]}🗞️"
-        case 5:
-            strsAbilities[1] = f"{strsAbilities[1]}🫳"
-
-
-    #top of the card
-    strsTop = []
-    if test.nbPrestige:
-        strsTop.append(f"✨{test.nbPrestige}")
-    else:
-        strsTop.append("   ")
-
-    if test.nbCrowns:
-        strsTop.append(f"👑{test.nbCrowns}")
-    else:
-        strsTop.append("   ")
-
-    if test.nbJewel:
-        strsTop.append(f"{tokenEmojis[0][test.tokenType]}{test.nbJewel}")
-    else:
-        strsTop.append("   ")
-
-
-    # Required tokens display
-    strsTokens = ["   ","   ","   ","   "]
-    i=0
-    for key in test.requirements:
-        if test.requirements[key]:
-            strsTokens[i] = f"{tokenEmojis[0][key]}{test.requirements[key]}"
-            i += 1
-
-    cardStrList = [
-                f"┌───────────┐",
-                f"│{strsTop[0]} {strsTop[1]} {strsTop[2]}│",
-                f"│{strsTokens[3]}        │",
-                f"│{strsTokens[2]}     {strsAbilities[0]} │",
-                f"│{strsTokens[1]}    {strsAbilities[1]}│",
-                f"│{strsTokens[0]}        │",
-                f"└───────────┘"
-    ]
-
-    print("WillItCrash.py")
-    for x in cardStrList:
-        print(x)
-
-    print("JewelCard.cardDraw()")
-    for x in test.cardDraw():
-        print(x)
+    # #two abilities
+    # test1 = JewelCard(None,1,3,0,[CHOOSE_GEMSTONE,PLAY_AGAIN],{RUBY: 8},None)
+    #
+    # #no ability (actually it's a blank card)
+    # test2 = JewelCard(None,0,0,0,[],{},None)
+    #
+    # #one ability
+    # test3 = JewelCard(None,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
+    #
+    # #another one
+    # test4 = JewelCard(BLUE_SAPPHIRE,1,3,2,["ChooseGemstone"],{RUBY: 8,PEARL:1},None)
+    #
+    # strsAbilities = []
+    #
+    # test = test4 #proxy just to change the number instead of changing it everywhere
+    # print(test.abilities)
+    #
+    #
+    # # Ability display
+    # match test.abilities[0]:
+    #     case 0:
+    #         #nothing
+    #         strsAbilities += ["  ","  "]
+    #     case 1:
+    #         #play again
+    #         strsAbilities += ["❗","🔄"]
+    #     case 2:
+    #         #choose gemstone
+    #         strsAbilities += ["❗", "💎"]
+    #     case 3:
+    #         #take token
+    #         strsAbilities += ["❗", "🪙"]
+    #     case 4:
+    #         #privilege
+    #         strsAbilities += ["❗", "🗞️"]
+    #     case 5:
+    #         #steal gemstone
+    #         strsAbilities += ["❗", "🫳"]
+    #
+    # print(strsAbilities)
+    # match test.abilities[1]:
+    #     case 0:
+    #         strsAbilities[1] = f" {strsAbilities[1]} "
+    #     case 1:
+    #         strsAbilities[1] = f"{strsAbilities[1]}🔄"
+    #     case 2:
+    #         strsAbilities[1] = f"{strsAbilities[1]}💎"
+    #     case 3:
+    #         strsAbilities[1] = f"{strsAbilities[1]}🪙"
+    #     case 4:
+    #         strsAbilities[1] = f"{strsAbilities[1]}🗞️"
+    #     case 5:
+    #         strsAbilities[1] = f"{strsAbilities[1]}🫳"
+    #
+    #
+    # #top of the card
+    # strsTop = []
+    # if test.nbPrestige:
+    #     strsTop.append(f"✨{test.nbPrestige}")
+    # else:
+    #     strsTop.append("   ")
+    #
+    # if test.nbCrowns:
+    #     strsTop.append(f"👑{test.nbCrowns}")
+    # else:
+    #     strsTop.append("   ")
+    #
+    # if test.nbJewel:
+    #     strsTop.append(f"{tokenEmojis[0][test.tokenType]}{test.nbJewel}")
+    # else:
+    #     strsTop.append("   ")
+    #
+    #
+    # # Required tokens display
+    # strsTokens = ["   ","   ","   ","   "]
+    # i=0
+    # for key in test.requirements:
+    #     if test.requirements[key]:
+    #         strsTokens[i] = f"{tokenEmojis[0][key]}{test.requirements[key]}"
+    #         i += 1
+    #
+    # cardStrList = [
+    #             f"┌───────────┐",
+    #             f"│{strsTop[0]} {strsTop[1]} {strsTop[2]}│",
+    #             f"│{strsTokens[3]}        │",
+    #             f"│{strsTokens[2]}     {strsAbilities[0]} │",
+    #             f"│{strsTokens[1]}    {strsAbilities[1]}│",
+    #             f"│{strsTokens[0]}        │",
+    #             f"└───────────┘"
+    # ]
+    #
+    # print("WillItCrash.py")
+    # for x in cardStrList:
+    #     print(x)
+    #
+    # print("JewelCard.cardDraw()")
+    # for x in test.cardDraw():
+    #     print(x)
     # # check if nbJewel >= 10 (takes more space!)
     # # nvm no card does have a nbJewel >= 10
     # #-----------------------
@@ -675,3 +675,37 @@ if __name__ == "__main__":
     # # "Emerald"       :    EMERALD,       🟢🟩
     # # "Ruby"          :    RUBY,          🔴🟥
     # # "Obsidian"      :    OBSIDIAN,      ⚫⬛
+
+    #-----------------------------------------------------------------------------------------------------------------
+    # checking SDGameHandler.printPyramid()
+    #-----------------------------------------------------------------------------------------------------------------
+    print()
+    print(f"Game Handler Decks      : {game.decks}")
+    print(f"Game Handler Pyramid    : {game.pyramid}")
+    print(f"Game Handler Royal Cards: {game.royalCards}")
+    print()
+    print("Loading decks")
+    game.loadDecks()
+    print("Shuffling decks")
+    game.shuffleDecks()
+    print("Loading pyramid")
+    game.loadPyramid()
+    print()
+    print(f"Game Handler Decks:")
+    for x in game.decks:
+        print(f"[length: {len(x)}]{x}")
+    print()
+    print(f"Game Handler Pyramid:")
+    for x in game.pyramid[0]:
+        print(f"LEVEL 1: {x}")
+    for x in game.pyramid[1]:
+        print(f"LEVEL 2: {x}")
+    for x in game.pyramid[2]:
+        print(f"LEVEL 3: {x}")
+    print()
+    print(f"Game Handler Royal Cards:")
+    for x in game.royalCards:
+        print(f"{x}")
+    print()
+    print("Testing SDGameHandler.printPyramid()")
+    game.printPyramid()

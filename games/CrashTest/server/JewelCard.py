@@ -111,7 +111,6 @@ class JewelCard:
 
         # Abilities handling
         translated_abilities = list()
-        print(f"self.abilities (raw): {self.abilities}")
         for ability in self.abilities:
             # using .Constants' "abilities" list
             if isinstance(ability, str):
@@ -130,4 +129,10 @@ class JewelCard:
 
         translated_abilities.extend([0, 0])
         self.abilities = translated_abilities[:2]
-        print(f"self.abilities (post treatment): {self.abilities}")
+
+        #translate requirement list in dict (didn't quite get the requirements right in the JSON file...)
+        if isinstance(self.requirements, list):
+            if len(self.requirements) != 6:
+                print("ERROR: requirement list is incorrect!")
+            else:
+                self.requirements = dict(zip([PEARL, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN], self.requirements))

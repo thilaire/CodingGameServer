@@ -223,8 +223,8 @@ class SDGameHandler:
         #             lvl3lines[x.cardDraw().index(y)] += y
         #         except IndexError:
         #             lvl3lines.append(y)
+        level = 0
         for x in self.pyramid:
-            level = 0
             for i in range(len(x)): #level
                 for j in range(len(x[i].cardDraw())): #line
                     try:
@@ -233,8 +233,6 @@ class SDGameHandler:
                     except IndexError:
                         lines[level].append(x[i].cardDraw()[j])
             level += 1
-
-
 
         for x in lines:
             print("\n")
