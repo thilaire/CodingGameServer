@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from selectors import SelectSelector
 from typing import List
 
 from .Constants import *
@@ -20,14 +21,14 @@ class Inventory:
     })
     bookedCards     : list[JewelCard] = field(default_factory = lambda: []) #three booked cards at most
     royalCards      : list[RoyalCard] = field(default_factory = lambda: [])
-    thresholds      : list[bool] = field(init = False)
+    thresholds      : list[bool] = field(init = False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
 
     def __post_init__(self):
         self.thresholds = [False, False]
 
 
     #Getters & whatnot
-    def nbPrestige(self, _type: int) -> int:
+    def nbPrestige(self, _type: int|None) -> int:
         """
         Returns the amount of prestige points.
         To get all the prestige points (including the ones from royal cards), _type should be -1.
@@ -58,12 +59,20 @@ class Inventory:
         """
         return self._nbPrivileges
 
-    def nbJewelCards(self, _type: int) -> int:
+    def nbJewelCards(self, _type: int|None) -> int:
         """
-        Returns the number of jewel cards of a specified type.
+        Returns the number of jewels of a specified type.
         """
         #go through all the cards, select every _type card, sum them.
-        return sum(x.nbJewel for x in self.jewelCards if x.tokenType == _type)
+        # if _type is None:
+        #     return sum(x.nbJewel for x in self.jewelCards if x.tokenType is None)
+        # else:
+        #     return sum(x.nbJewel for x in self.jewelCards if x.tokenType == _type)
+        if _type is None:
+            #should be 0 caus there is no such thing as a None jewel
+            return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType is None)
+        else:
+            return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType == _type)
 
     def nbTokens(self, _type: int) -> int:
         """

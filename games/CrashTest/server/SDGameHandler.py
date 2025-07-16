@@ -246,9 +246,29 @@ class SDGameHandler:
                     print(x)
 
 
-    #def printInventory(self, player: int):
-
-
+    def printInventory(self, player: int, isPlayer: bool, emoji: bool):
+        """
+        Prints an inventory.
+        player      : number of the player (1 or 2)
+        isPlayer    : displays the booked cards (if any)
+        emoji       : prints w/ emojis if True, prints w/ console colors if False
+        """
+        if not (0 < player < 3):
+            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
+            return
+        else:
+            player -= 1
+        strU = "──────"
+        if isPlayer:
+            strU = " (you)"
+        if emoji:
+            print(f"┌──────────────────────PLAYER {player}{strU}──────────────────────┐")
+            print(f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │")
+            print(f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │")
+            print(f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)}, {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │")
+            print(f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │")
+            print(f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │")
+            print(f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │")
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         # TODO
         #   Substitution of any token for a gold one (when buying a card for instance)

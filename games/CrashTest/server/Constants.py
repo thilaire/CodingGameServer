@@ -63,7 +63,7 @@ tokenColors = [
     Fore.MAGENTA    + Style.BRIGHT  + Back.RESET,   # PEARL
     Fore.YELLOW     + Style.BRIGHT  + Back.RESET,   # GOLD
     Fore.BLUE       + Style.NORMAL  + Back.RESET,   # SAPPHIRE
-    Fore.WHITE      + Style.NORMAL  + Back.RESET,   # DIAMOND
+    Fore.WHITE      + Style.BRIGHT  + Back.RESET,   # DIAMOND
     Fore.GREEN      + Style.NORMAL  + Back.RESET,   # EMERALD
     Fore.RED        + Style.NORMAL  + Back.RESET,   # RUBY
     Fore.WHITE      + Style.DIM     + Back.RESET    # OBSIDIAN
