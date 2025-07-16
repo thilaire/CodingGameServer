@@ -59,14 +59,14 @@ tokenTypesInt = [NONE,PEARL,GOLD,BLUE_SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]
 
 
 tokenColors = [
-    Fore.RESET,                                     # NONE
-    Fore.MAGENTA    + Style.BRIGHT  + Back.BLACK,   # PEARL
-    Fore.YELLOW     + Style.BRIGHT  + Back.BLACK,   # GOLD
-    Fore.BLUE       + Style.NORMAL  + Back.BLACK,   # SAPPHIRE
-    Fore.WHITE      + Style.NORMAL  + Back.BLACK,   # DIAMOND
-    Fore.GREEN      + Style.NORMAL  + Back.BLACK,   # EMERALD
-    Fore.RED        + Style.NORMAL  + Back.BLACK,   # RUBY
-    Fore.WHITE      + Style.DIM     + Back.BLACK    # OBSIDIAN
+    Fore.RESET      + Style.NORMAL  + Back.RESET,   # NONE
+    Fore.MAGENTA    + Style.BRIGHT  + Back.RESET,   # PEARL
+    Fore.YELLOW     + Style.BRIGHT  + Back.RESET,   # GOLD
+    Fore.BLUE       + Style.NORMAL  + Back.RESET,   # SAPPHIRE
+    Fore.WHITE      + Style.NORMAL  + Back.RESET,   # DIAMOND
+    Fore.GREEN      + Style.NORMAL  + Back.RESET,   # EMERALD
+    Fore.RED        + Style.NORMAL  + Back.RESET,   # RUBY
+    Fore.WHITE      + Style.DIM     + Back.RESET    # OBSIDIAN
 ]
 
 tokenEmojis = [{
@@ -80,7 +80,7 @@ tokenEmojis = [{
     OBSIDIAN        : "⚫"
 },
     {
-        None            : "  ",
+        None            : "🃏",
         PEARL           : "🟪",
         GOLD            : "🟨",
         BLUE_SAPPHIRE   : "🟦",

@@ -165,7 +165,7 @@ class SDGameHandler:
         return bank
 
 
-    def loadDecks(self):
+    def loadDecks(self) -> None:
         # Taken from `WillItCrash.py`:
         with open("cards/data.json", "r") as file:
             data = load(file)
@@ -195,13 +195,13 @@ class SDGameHandler:
         # for x in self.royalCards:
         #     print(x)
 
-    def shuffleDecks(self):
+    def shuffleDecks(self) -> None:
         shuffle(self.decks[0])
         shuffle(self.decks[1])
         shuffle(self.decks[2])
 
 
-    def loadPyramid(self):
+    def loadPyramid(self) -> None:
         for i in range(5):
             self.pyramid[0].append(self.decks[0].pop())
         for i in range(4):
@@ -209,7 +209,7 @@ class SDGameHandler:
         for i in range(3):
             self.pyramid[2].append(self.decks[2].pop())
 
-    def printPyramid(self):
+    def printPyramid(self, emoji: bool = True) -> None:
         """
                         Prints the pyramid of cards.
         /!\ Should only be used if the pyramid is already filled! /!\
@@ -226,16 +226,15 @@ class SDGameHandler:
         level = 0
         for x in self.pyramid:
             for i in range(len(x)): #level
-                for j in range(len(x[i].cardDraw())): #line
+                for j in range(len(x[i].cardDraw(emoji))): #line
                     try:
-                        lines[level][j] += x[i].cardDraw()[j]
+                        lines[level][j] += x[i].cardDraw(emoji)[j]
 
                     except IndexError:
-                        lines[level].append(x[i].cardDraw()[j])
+                        lines[level].append(x[i].cardDraw(emoji)[j])
             level += 1
 
         for i in range(len(lines)):
-            print("\n")
             for x in lines[i]:
                 if i == 1:
                     temp = "      " + x
@@ -247,6 +246,7 @@ class SDGameHandler:
                     print(x)
 
 
+    #def printInventory(self, player: int):
 
 
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:

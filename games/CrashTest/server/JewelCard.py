@@ -21,7 +21,7 @@ class JewelCard:
     })
     _comment: Optional[str] = None
 
-    def cardDraw(self) -> List[str]:
+    def cardDraw(self, emoji: bool = True) -> List[str]:
         """
         Retunrs a list of seven strings (one per lign) that represents the card.
         Will be used to display the card in the terminal.
@@ -34,48 +34,91 @@ class JewelCard:
                 strsAbilities = ["  ", "  "]
             case 1:
                 # play again
-                strsAbilities = ["❗", "🔄"]
+                if emoji:
+                    strsAbilities = ["❗", "🔄"]
+                else:
+                    strsAbilities = ["!!", "PA"]
             case 2:
                 # choose gemstone
-                strsAbilities = ["❗", "💎"]
+                if emoji:
+                    strsAbilities = ["❗", "💎"]
+                else:
+                    strsAbilities = ["!!", "CG"]
             case 3:
                 # take token
-                strsAbilities = ["❗", "🪙"]
+                if emoji:
+                    strsAbilities = ["❗", "🪙"]
+                else:
+                    strsAbilities = ["!!", "TT"]
             case 4:
                 # privilege
-                strsAbilities = ["❗", "🗞️"]
+                if emoji:
+                    strsAbilities = ["❗", "🗞️"]
+                else:
+                    strsAbilities = ["!!", "PS"]
             case 5:
-                # steal gemstone
-                strsAbilities = ["❗", "🫳"]
+                # steal token
+                if emoji:
+                    strsAbilities = ["❗", "🫳"]
+                else:
+                    strsAbilities = ["!!", "ST"]
 
         match self.abilities[1]:
             case 0:
                 strsAbilities[1] = f" {strsAbilities[1]} "
             case 1:
-                strsAbilities[1] = f"{strsAbilities[1]}🔄"
+                if emoji:
+                    strsAbilities[1] = f"{strsAbilities[1]}🔄"
+                else:
+                    strsAbilities[1] = f"{Fore.YELLOW}{strsAbilities[1]}{Fore.RED}PA{Fore.RESET}"
             case 2:
-                strsAbilities[1] = f"{strsAbilities[1]}💎"
+                if emoji:
+                    strsAbilities[1] = f"{strsAbilities[1]}💎"
+                else:
+                    strsAbilities[1] = f"{Fore.YELLOW}{strsAbilities[1]}{Fore.RED}CG{Fore.RESET}"
             case 3:
-                strsAbilities[1] = f"{strsAbilities[1]}🪙"
+                if emoji:
+                    strsAbilities[1] = f"{strsAbilities[1]}🪙"
+                else:
+                    strsAbilities[1] = f"{Fore.YELLOW}{strsAbilities[1]}{Fore.RED}TT{Fore.RESET}"
             case 4:
-                strsAbilities[1] = f"{strsAbilities[1]}🗞️"
+                if emoji:
+                    strsAbilities[1] = f"{strsAbilities[1]}🗞️"
+                else:
+                    strsAbilities[1] = f"{Fore.YELLOW}{strsAbilities[1]}{Fore.RED}PS{Fore.RESET}"
             case 5:
-                strsAbilities[1] = f"{strsAbilities[1]}🫳"
+                if emoji:
+                    strsAbilities[1] = f"{strsAbilities[1]}🫳"
+                else:
+                    strsAbilities[1] = f"{Fore.YELLOW}{strsAbilities[1]}{Fore.RED}ST{Fore.RESET}"
 
         # Requirements at the top of the card
         strsTop = []
         if self.nbPrestige:
-            strsTop.append(f"✨{self.nbPrestige}")
+            if emoji:
+                strsTop.append(f"✨{self.nbPrestige}")
+            else:
+                strsTop.append(f"{Fore.WHITE}{Style.BRIGHT}PP{self.nbPrestige}{Fore.RESET}{Style.NORMAL}")
         else:
             strsTop.append("   ")
 
         if self.nbCrowns:
-            strsTop.append(f"👑{self.nbCrowns}")
+            if emoji:
+                strsTop.append(f"👑{self.nbCrowns}")
+            else:
+                strsTop.append(f"{Fore.YELLOW}{Style.BRIGHT}CR{self.nbCrowns}{Fore.RESET}{Style.NORMAL}")
         else:
             strsTop.append("   ")
 
         if self.nbJewel:
-            strsTop.append(f"{tokenEmojis[0][self.tokenType]}{self.nbJewel}")
+            if emoji:
+                strsTop.append(f"{tokenEmojis[1][self.tokenType]}{self.nbJewel}")
+            else:
+                if self.tokenType is None:
+                    strsTop.append(f"{tokenColors[0]}GM{self.nbJewel}{tokenColors[0]}")
+                else:
+                    strsTop.append(f"{tokenColors[self.tokenType]}GM{self.nbJewel}{tokenColors[0]}")
+
         else:
             strsTop.append("   ")
 
@@ -84,7 +127,10 @@ class JewelCard:
         i = 0
         for key in self.requirements:
             if self.requirements[key]:
-                strsTokens[i] = f"{tokenEmojis[0][key]}{self.requirements[key]}"
+                if emoji:
+                    strsTokens[i] = f"{tokenEmojis[0][key]}{self.requirements[key]}"
+                else:
+                    strsTokens[i] = f"{tokenColors[key]}{tokenTypes[key][0]}{self.requirements[key]}{tokenColors[0]} "
                 i += 1
 
         cardStrList = [
