@@ -234,10 +234,18 @@ class SDGameHandler:
                         lines[level].append(x[i].cardDraw()[j])
             level += 1
 
-        for x in lines:
+        for i in range(len(lines)):
             print("\n")
-            for y in x:
-                print(y)
+            for x in lines[i]:
+                if i == 1:
+                    temp = "      " + x
+                    print(temp)
+                elif i == 2:
+                    temp = "            " + x
+                    print(temp)
+                else:
+                    print(x)
+
 
 
 
