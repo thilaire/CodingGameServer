@@ -24,7 +24,7 @@ from .Inventory import Inventory
 from .JewelCard import JewelCard
 from .RoyalCard import RoyalCard
 
-seed(1)
+seed(6)
 
 class SDGameHandler:
     def __init__(self):
@@ -209,20 +209,36 @@ class SDGameHandler:
         for i in range(3):
             self.pyramid[2].append(self.decks[2].pop())
 
+
+    def alignStrCards(self,cards: List[JewelCard] | List[RoyalCard], emoji: bool) -> List[str]:
+        """
+        Method that returns a list of strs of the cards, but aligned.
+        """
+        cardStrList = [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+        for i in range(len(cards)):
+            for j in range(len(cards[i].cardDraw(emoji))):
+                cardStrList[j] += cards[i].cardDraw(emoji)[j]
+
+        return cardStrList
+
+
+
     def printPyramid(self, emoji: bool = True) -> None:
+        #aaaaaaaaah i shouldve done a method to do an alignment of multiple cards
+        #bruh
         """
                         Prints the pyramid of cards.
         /!\ Should only be used if the pyramid is already filled! /!\
         """
         lines = [[],[],[]]
-        #lvl3lines += [x.cardDraw() for x in self.pyramid[2]]
-
-        # for x in self.pyramid[2]:
-        #     for y in x.cardDraw():
-        #         try:
-        #             lvl3lines[x.cardDraw().index(y)] += y
-        #         except IndexError:
-        #             lvl3lines.append(y)
         level = 0
         for x in self.pyramid:
             for i in range(len(x)): #level
@@ -258,17 +274,53 @@ class SDGameHandler:
             return
         else:
             player -= 1
-        strU = "──────"
+
         if isPlayer:
             strU = " (you)"
+            strBottom = str()
+            alignedCards = self.alignStrCards(self.inventories[player].bookedCards, emoji)
+            match len(self.inventories[player].bookedCards):
+                case 0:
+                    strBottom = f"└──────────────────────────────────────────────────────────┘"
+                case 1:
+                    space = "                                            "
+                    for x in alignedCards:
+                        strBottom += f"│ {x}{space}│\n"
+                    strBottom += f"└──────────────────────────────────────────────────────────┘"
+                case 2:
+                    space = "                               "
+                    for x in alignedCards:
+                        strBottom += f"│ {x}{space}│\n"
+                    strBottom += f"└──────────────────────────────────────────────────────────┘"
+                case 3:
+                    space = "                  "
+                    for x in alignedCards:
+                        strBottom += f"│ {x}{space}│\n"
+                    strBottom += f"└──────────────────────────────────────────────────────────┘"
+
+        else:
+            strU = "──────"
+            strBottom = f"└──────────────────────────────────────────────────────────┘"
+
+
         if emoji:
-            print(f"┌──────────────────────PLAYER {player}{strU}──────────────────────┐")
+            print(f"┌──────────────────────PLAYER {player+1}{strU}──────────────────────┐")
             print(f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │")
             print(f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │")
             print(f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)}, {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │")
             print(f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │")
             print(f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │")
             print(f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │")
+            print(strBottom)
+        else:
+            print(f"┌──────────────────────PLAYER {player+1}{strU}──────────────────────┐")
+            print(f"│ - Tokens        :      {tokenEmojis[2][1]}{self.inventories[player].tokens[1]}{tokenColors[0]},  {tokenEmojis[2][2]}{self.inventories[player].tokens[2]}{tokenColors[0]},  {tokenEmojis[2][3]}{self.inventories[player].tokens[3]}{tokenColors[0]},  {tokenEmojis[2][4]}{self.inventories[player].tokens[4]}{tokenColors[0]},  {tokenEmojis[2][5]}{self.inventories[player].tokens[5]}{tokenColors[0]},  {tokenEmojis[2][6]}{self.inventories[player].tokens[6]}{tokenColors[0]},  {tokenEmojis[2][7]}{self.inventories[player].tokens[7]}{tokenColors[0]}  │")
+            print(f"│ - Cards (jewels):                {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}{tokenColors[0]}  │")
+            print(f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)},  {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │")
+            print(f"│ - Privileges    : {self.inventories[player].nbPrivileges}                                      │")
+            print(f"│ - Crowns        : {self.inventories[player].nbCrowns()}                                      │")
+            print(f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │")
+            print(strBottom)
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         # TODO
         #   Substitution of any token for a gold one (when buying a card for instance)

@@ -710,23 +710,40 @@ if __name__ == "__main__":
     print()
     print("Testing SDGameHandler.printPyramid()")
     game.printPyramid(False)
+    game.printPyramid(True)
+
+    game.redistribute()
+    #for i in range(5):
+    #    print(game.board[i])
+    #print(game.bank())
 
     print("Testing SDGameHandler.printInventory()")
     game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
     game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
 
     JCardToAdd = JewelCard(BLUE_SAPPHIRE,1,3,3,[],{BLUE_SAPPHIRE: 1},None)
-    RCardToAdd = RoyalCard(3,[], None)
+    RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
     game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
     game.addToInventory(1,JEWEL_CARD,JCardToAdd)
-    JCardToAdd = JewelCard(BLUE_SAPPHIRE,3,3,3,[],{BLUE_SAPPHIRE: 1},None)
-    game.addToInventory(1,JEWEL_CARD,JCardToAdd)
+    JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,[],{BLUE_SAPPHIRE: 1},None)
+    game.addToInventory(1,JEWEL_CARD,JCardToAdd1)
     game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
+    game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
     game.addToInventory(1,BOOKED_CARD,JCardToAdd)
     game.addToInventory(1,PRIVILEGE,2)
     game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
 
+    #for x in RCardToAdd.cardDraw(False):
+    #    print(x)
+
+    game.printInventory(1,True,False)
     game.printInventory(1,True,True)
+    game.printInventory(2,False,False)
+    game.printInventory(2,False,True)
+    #for x in game.alignStrCards([JCardToAdd,JCardToAdd1], True):
+    #    print(x)
+
     #There may or may not be a mismatch between prestige points displayed & the total. Total also accounts for royal cards, which is the case here!
 
 

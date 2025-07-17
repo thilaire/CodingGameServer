@@ -88,6 +88,16 @@ tokenEmojis = [{
         EMERALD         : "🟩",
         RUBY            : "🟥",
         OBSIDIAN        : "⬛"
+    },
+    {
+        None            : f"{tokenColors[0]}N",
+        PEARL           : f"{tokenColors[1]}{tokenTypes[1][0]}",
+        GOLD            : f"{tokenColors[2]}{tokenTypes[2][0]}",
+        BLUE_SAPPHIRE   : f"{tokenColors[3]}{tokenTypes[3][0]}",
+        DIAMOND         : f"{tokenColors[4]}{tokenTypes[4][0]}",
+        EMERALD         : f"{tokenColors[5]}{tokenTypes[5][0]}",
+        RUBY            : f"{tokenColors[6]}{tokenTypes[6][0]}",
+        OBSIDIAN        : f"{tokenColors[7]}{tokenTypes[7][0]}"
     }
 ]
 
