@@ -69,7 +69,8 @@ tokenColors = [
     Fore.WHITE      + Style.DIM     + Back.RESET    # OBSIDIAN
 ]
 
-tokenEmojis = [{
+tokenEmojis = [
+    {
     None            : "🃏",
     PEARL           : "🟣",
     GOLD            : "🟡",
@@ -78,7 +79,7 @@ tokenEmojis = [{
     EMERALD         : "🟢",
     RUBY            : "🔴",
     OBSIDIAN        : "⚫"
-},
+    },
     {
         None            : "🃏",
         PEARL           : "🟪",
@@ -101,9 +102,6 @@ tokenEmojis = [{
     }
 ]
 
-#Probably useless since we'll manage the game with a sort of bank... we'll see.
-    # Maximum token amounts. They're the ones we're going to display on the board.
-    # (side note: how are we going to display that on a console screen?)
 maxTokenAmounts = {
     token: (  None if token == "None"
             else 2 if token == "Pearl"       # 2 pearls
@@ -140,7 +138,7 @@ items = ["Token",
          "Booked Card",
          "Royal Card",
          "Privilege"
-        ]
+]
 
 TOKEN = 0
 JEWEL_CARD = 1
@@ -156,7 +154,6 @@ itemsDictionary = {
     items[4] : PRIVILEGE
 }
 
-#hopefully won't be useless
 itemsEmoji = {
     items[0] : "🪙",
     items[1] : "💎",

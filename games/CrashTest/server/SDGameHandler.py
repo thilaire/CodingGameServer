@@ -24,10 +24,9 @@ from .Inventory import Inventory
 from .JewelCard import JewelCard
 from .RoyalCard import RoyalCard
 
-seed(6)
-
 class SDGameHandler:
-    def __init__(self):
+    def __init__(self, randomSeed: int):
+        seed(randomSeed)
         # BOARD COMPLETION MAP - will be useful
         # Says where to put the next token
         self.boardCompletion = (
@@ -46,29 +45,13 @@ class SDGameHandler:
             [None, None, None, None, None]
         ]
 
-        # Memo
-        #
-        #NONE = None
-        #PEARL = 1
-        #GOLD = 2
-        #BLUE_SAPPHIRE = 3
-        #DIAMOND = 4
-        #EMERALD = 5
-        #RUBY = 6
-        #OBSIDIAN = 7
         self.tokens = [0,0,0,0,0,0,0,0]
-
-        #same as Memo ? + privilege + crown. What else?
-        #OR, we may represent inventories this way:
-        # [None, [Jewel cards , Tokens], [Jewel cards , Tokens], ... , [Jewel cards , Tokens], Priv_Scrolls, crowns]
-        #   (None is used to sync the indices)
-        #   Anything else needed?
 
         self.inventories = [Inventory(), Inventory()]
         self.decks = [
             [], #level 1 cards
             [], #level 2 cards
-            [] #level 3 cards
+            []  #level 3 cards
         ]
         self.pyramid = [
             [], #list[JewelCard], #level 1 cards
@@ -96,6 +79,7 @@ class SDGameHandler:
                 - x is the row, y the column.
         """
         x,y = currentPosition
+        nextPosition = []
 
         if self.boardCompletion[x][y] == "N":
             nextPosition = [x - 1, y]
@@ -142,8 +126,8 @@ class SDGameHandler:
         # [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
         # [jewel_card , token]
         for gemstone in range(1,8):
-            countedTokens[gemstone] += self.inventories[0].nbTokens(gemstone) #TODO
-            countedTokens[gemstone] += self.inventories[1].nbTokens(gemstone) #TODO
+            countedTokens[gemstone] += self.inventories[0].nbTokens(gemstone)
+            countedTokens[gemstone] += self.inventories[1].nbTokens(gemstone)
 
         #Checking if there's too many tokens, which shouldn't happen
 
@@ -166,36 +150,26 @@ class SDGameHandler:
 
 
     def loadDecks(self) -> None:
+        """
+        Loads a JSON file ("data.json", in the /cards/ directory) and parses it.
+        Adds the data (i.e. the cards) inside the game.
+        """
         # Taken from `WillItCrash.py`:
         with open("cards/data.json", "r") as file:
             data = load(file)
 
-        self.decks[0] = [JewelCard(**card) for card in data["level1"]]
-        self.decks[1] = [JewelCard(**card) for card in data["level2"]]
-        self.decks[2] = [JewelCard(**card)for card in data["level3"]]
-        # will probably have to do the same for Royal Cards, something like:
-        self.royalCards = [RoyalCard(**card)for card in data["royal"]]
+        self.decks[0] =  [ JewelCard(**card) for card in data["level1"] ]
+        self.decks[1] =  [ JewelCard(**card) for card in data["level2"] ]
+        self.decks[2] =  [ JewelCard(**card) for card in data["level3"] ]
+        # Same goes for Royal Cards
+        self.royalCards = [RoyalCard(**card) for card in data["royal"] ]
 
-
-        # # to print in debug, not in clear
-        # print()
-        # print("Level 1 :")
-        # for x in self.decks[0]:
-        #     print(x)
-        # print()
-        # print("Level 2: ")
-        # for x in self.decks[1]:
-        #     print(x)
-        # print()
-        # print("Level 3: ")
-        # for x in self.decks[2]:
-        #     print(x)
-        # print()
-        # print("Royal: ")
-        # for x in self.royalCards:
-        #     print(x)
 
     def shuffleDecks(self) -> None:
+        """
+        Shuffle needed otherwise we'd get the same pyramid and decks everytime.
+        `shuffle()` comes from `random`
+        """
         shuffle(self.decks[0])
         shuffle(self.decks[1])
         shuffle(self.decks[2])
@@ -230,12 +204,9 @@ class SDGameHandler:
         return cardStrList
 
 
-
-    def printPyramid(self, emoji: bool = True) -> None:
-        #aaaaaaaaah i shouldve done a method to do an alignment of multiple cards
-        #bruh
+    def strPyramid(self, emoji: bool = True) -> str:
         """
-                        Prints the pyramid of cards.
+                  Returns the pyramid of cards as a string.
         /!\ Should only be used if the pyramid is already filled! /!\
         """
         lines = [[],[],[]]
@@ -249,31 +220,39 @@ class SDGameHandler:
                     except IndexError:
                         lines[level].append(x[i].cardDraw(emoji)[j])
             level += 1
-
+        strp = str()
         for i in range(len(lines)):
             for x in lines[i]:
                 if i == 1:
-                    temp = "      " + x
-                    print(temp)
+                    strp += f"      " + x + "       \n"
                 elif i == 2:
-                    temp = "            " + x
-                    print(temp)
+                    strp += "            " + x + "              \n"
                 else:
-                    print(x)
+                    strp += x + "\n"
+        return strp
 
-
-    def printInventory(self, player: int, isPlayer: bool, emoji: bool):
+    def printPyramid(self, emoji: bool = True) -> None:
         """
-        Prints an inventory.
+                        Prints the pyramid of cards.
+        /!\ Should only be used if the pyramid is already filled! /!\
+        """
+        print(self.strPyramid(emoji))
+
+
+    def strInventory(self, player: int, isPlayer: bool, emoji: bool) -> str:
+        """
+        returns the str of an inventory.
         player      : number of the player (1 or 2)
         isPlayer    : displays the booked cards (if any)
         emoji       : prints w/ emojis if True, prints w/ console colors if False
         """
         if not (0 < player < 3):
             print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
-            return
+            return ""
         else:
             player -= 1
+
+        strInv = str()
 
         if isPlayer:
             strU = " (you)"
@@ -304,29 +283,38 @@ class SDGameHandler:
 
 
         if emoji:
-            print(f"┌──────────────────────PLAYER {player+1}{strU}──────────────────────┐")
-            print(f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │")
-            print(f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │")
-            print(f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)}, {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │")
-            print(f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │")
-            print(f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │")
-            print(f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │")
-            print(strBottom)
+            strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
+            strInv += f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │\n"
+            strInv += f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │\n"
+            strInv += f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)}, {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │\n"
+            strInv += f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │\n"
+            strInv += f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │\n"
+            strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
+            strInv += strBottom + "\n"
         else:
-            print(f"┌──────────────────────PLAYER {player+1}{strU}──────────────────────┐")
-            print(f"│ - Tokens        :      {tokenEmojis[2][1]}{self.inventories[player].tokens[1]}{tokenColors[0]},  {tokenEmojis[2][2]}{self.inventories[player].tokens[2]}{tokenColors[0]},  {tokenEmojis[2][3]}{self.inventories[player].tokens[3]}{tokenColors[0]},  {tokenEmojis[2][4]}{self.inventories[player].tokens[4]}{tokenColors[0]},  {tokenEmojis[2][5]}{self.inventories[player].tokens[5]}{tokenColors[0]},  {tokenEmojis[2][6]}{self.inventories[player].tokens[6]}{tokenColors[0]},  {tokenEmojis[2][7]}{self.inventories[player].tokens[7]}{tokenColors[0]}  │")
-            print(f"│ - Cards (jewels):                {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}{tokenColors[0]}  │")
-            print(f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)},  {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │")
-            print(f"│ - Privileges    : {self.inventories[player].nbPrivileges}                                      │")
-            print(f"│ - Crowns        : {self.inventories[player].nbCrowns()}                                      │")
-            print(f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │")
-            print(strBottom)
+            strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
+            strInv += f"│ - Tokens        :      {tokenEmojis[2][1]}{self.inventories[player].tokens[1]}{tokenColors[0]},  {tokenEmojis[2][2]}{self.inventories[player].tokens[2]}{tokenColors[0]},  {tokenEmojis[2][3]}{self.inventories[player].tokens[3]}{tokenColors[0]},  {tokenEmojis[2][4]}{self.inventories[player].tokens[4]}{tokenColors[0]},  {tokenEmojis[2][5]}{self.inventories[player].tokens[5]}{tokenColors[0]},  {tokenEmojis[2][6]}{self.inventories[player].tokens[6]}{tokenColors[0]},  {tokenEmojis[2][7]}{self.inventories[player].tokens[7]}{tokenColors[0]}  │\n"
+            strInv += f"│ - Cards (jewels):                {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}{tokenColors[0]}  │\n"
+            strInv += f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)},  {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │\n"
+            strInv += f"│ - Privileges    : {self.inventories[player].nbPrivileges}                                      │\n"
+            strInv += f"│ - Crowns        : {self.inventories[player].nbCrowns()}                                      │\n"
+            strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
+            strInv += strBottom + "\n"
+
+        return strInv
+
+
+    def printInventory(self, player: int, isPlayer: bool, emoji: bool) -> None:
+        """
+        Prints an inventory.
+        player      : number of the player (1 or 2)
+        isPlayer    : displays the booked cards (if any)
+        emoji       : prints w/ emojis if True, prints w/ console colors if False
+        """
+        print(self.strInventory(player,isPlayer,emoji))
+
+
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
-        # TODO
-        #   Substitution of any token for a gold one (when buying a card for instance)
-        #   idea: count every token required for a card. If there isn't enough, count gold tokens, and add them to those
-        #   uncompleted. If there's still not enough, then it's illegal.
-        # I think it's handled directly in `Inventory.buyJewelCard()`??? I don't remember...
         """
         Adds some item(s) in a player's inventory
 
@@ -397,13 +385,13 @@ class SDGameHandler:
                 #random token from the bank
                 #Can most likely be optimised.
                 #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
-                randomToken = randint(1,7)  # TODO: implement the seed for random generation!!!
+                randomToken = randint(1,7)
 
                 #wait until we're in a case which is not full
                 while bank[randomToken] == 0:
                     randomToken = randint(1,7)
 
-                self.update_board(randomToken, (x,y))
+                self.update_board(randomToken, [x,y])
                 bank[randomToken] -= 1
 
         #need to check whether the bank is empty?
