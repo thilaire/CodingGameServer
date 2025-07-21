@@ -19,14 +19,21 @@ from .Constants import *
 from typing import Tuple, List, Iterator
 from random import randint, seed, shuffle
 from json import load
+from wcwidth import wcswidth
+from re import compile
 
 from .Inventory import Inventory
 from .JewelCard import JewelCard
 from .RoyalCard import RoyalCard
 
+ansi_escape = compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')  # used to avoid miscounting characters w/ self.strip_ansi()
+
+
 class SDGameHandler:
     def __init__(self, randomSeed: int):
         seed(randomSeed)
+
+
         # BOARD COMPLETION MAP - will be useful
         # Says where to put the next token
         self.boardCompletion = (
@@ -184,6 +191,20 @@ class SDGameHandler:
             self.pyramid[2].append(self.decks[2].pop())
 
 
+    def strip_ansi(self, text: str) -> str:
+        """
+        used for deleting the escape sequence of colors (added w/ Fore, Back & Style)
+        """
+        return ansi_escape.sub('', text)
+
+    def pad_to_width(self, s: str, width: int) -> str:
+        """
+        Used for padding two texts to a certain width (self.strPlayerDisplay)
+        """
+        visual_len = wcswidth(self.strip_ansi(s))
+        padding = width - visual_len
+        return s + ' ' * max(0, padding)
+
     def alignStrCards(self,cards: List[JewelCard] | List[RoyalCard], emoji: bool) -> List[str]:
         """
         Method that returns a list of strs of the cards, but aligned.
@@ -230,6 +251,7 @@ class SDGameHandler:
                 else:
                     strp += x + "\n"
         return strp
+
 
     def printPyramid(self, emoji: bool = True) -> None:
         """
@@ -314,6 +336,77 @@ class SDGameHandler:
         print(self.strInventory(player,isPlayer,emoji))
 
 
+    def strRoyalCards(self, emoji:bool) -> str:
+        strList = self.alignStrCards(self.royalCards, emoji)
+        strReturn = str()
+        for x in strList:
+            strReturn += x + "\n"
+        return strReturn
+
+
+    def printRoyalCards(self, emoji:bool) -> None:
+        print(self.strRoyalCards(emoji))
+
+
+    def strPlayerDisplay(self,player: int, emoji:bool) -> str:
+        if not (0 < player < 3):
+            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
+            return ""
+        else:
+            player -= 1
+
+        #Pyramid + Royal Cards
+        strRet1 =  "┌───────────────────────────────────────────────────────────────┐\n"
+        strRet1 += "│                 Available cards on the board                  │\n"
+        strRet1 += "└───────────────────────────────────────────────────────────────┘\n"
+        strRet1 += self.strPyramid(emoji)
+        strRet1 += "┌───────────────────────────────────────────────────────────────┐\n"
+        strRet1 += "│                     Available Royal Cards                     │\n"
+        strRet1 += "└───────────────────────────────────────────────────────────────┘\n"
+
+        # The following lines are used to recentre 4 Royal Cards w/ the textbox just above
+        for x in self.strRoyalCards(emoji).splitlines():
+
+            strRet1 += ((4-len(self.royalCards)) * "      "     #used for "dynamic" shifting i.e. depending on the amnt of cards available
+                        + "      " + x + "\n")                  #used for shifting
+
+        # Writes the inventory (depending on `player`)
+        if player:
+            strRet2 =  self.strInventory(2, True, emoji) + "\n"
+            strRet2 += self.strInventory(1, False, emoji)
+        else:
+            strRet2 =  self.strInventory(1, True, emoji) + "\n"
+            strRet2 += self.strInventory(2, False,emoji)
+
+
+        ##⚠️⚠️⚠️⚠️ if WCSWidth isn't / can't be installed, just de-comment the next line and comment the next ones. (display will be slightly less pretty although usable)
+        ##return strRet1 + strRet2
+
+
+        # ⚠️⚠️⚠️⚠️ if WCSWidth isn't / can't be installed, comment the next lines until the return statement
+        # Combining those blocks
+        block1 = strRet1.splitlines()
+        block2 = strRet2.splitlines()
+
+        block1 = [line.rstrip() for line in block1]     # to remove spaces at the end of each line
+        maxLength = max(wcswidth(self.strip_ansi(line)) for line in block1)
+
+        # adding space to other lines when required
+        block1 = [self.pad_to_width(line, maxLength) for line in block1]
+
+        # adding empty vertical lines if the block is shorter
+        maxLines = max(len(block1), len(block2))
+        block1 += [self.pad_to_width('', maxLength)] * (maxLines - len(block1))     # "[' ' * maxLength] is a line; (maxLength-len(block1)) is the amnt of [] lines added
+                                                                                    # so basically we add spaces to shift the other block's lines
+        block2 += [''] * (maxLines - len(block2))
+
+        lstRet = [line1 + "  " + line2 for line1,line2 in zip(block1,block2)]   # appends lines of block 2 to lines of block 1
+        return "\n".join(lstRet)                                                # returns a string w/ "\n" between all the lines
+
+
+
+
+
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         """
         Adds some item(s) in a player's inventory
@@ -348,7 +441,15 @@ class SDGameHandler:
             case 3: #ROYAL_CARD 👑
                 self.inventories[player].chooseRoyalCard(item)
             case 4: #PRIVILEGE 🗞️
-                self.inventories[player].nbPrivileges += item
+                #item should be 1 or -1
+                if item == 1:
+                    self.getPrivilegeScroll(player)
+                elif item == -1:
+                    self.usePrivilegeScroll(player)
+                else:
+                    print(f"ERROR: Players can only receive or lose one privilege at a time!")
+                    return
+
                 if self.inventories[player].nbPrivileges > 3:
                     print(f"ERROR: Player {player + 1} has {self.inventories[player].nbPrivileges} privileges!")
                 elif self.inventories[player].nbPrivileges <= -2:
@@ -357,6 +458,7 @@ class SDGameHandler:
                     print(f"ERROR: Player {player + 1} has {self.inventories[player].nbPrivileges} privilege!")     # ...otherwise, singular
             case _:
                 print("ERROR: itemType unrecognised!")
+
 
     def redistribute(self) -> None:
 
@@ -400,7 +502,6 @@ class SDGameHandler:
                 print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]}: {bank[token]} in the bank)")
 
 
-#TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
     def tokenCapture(self,coords: list[list], player: int) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
@@ -562,6 +663,57 @@ class SDGameHandler:
                     print(f"INFO: Opponent receives a privilege scroll! (three {tokenTypes[i+1]} tokens selected!)")
             return
 
+
+    def getPrivilegeScroll(self,player) -> None:
+        """
+        Checks whether the player can receive a privilege scroll.
+        If yes, checks whether it takes it from the opponent (which case all three of them should be dispatched among players)
+        or takes it from the board.
+        """
+        if not (0 < player < 3):
+            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
+        else:
+            player -= 1
+
+        #you're not eligible if you have already all the privilege scrolls
+        if self.inventories[player].nbPrivileges == 3:
+            #cant get privilege
+            return
+
+        #if there is no privilege scroll on the board anymore...
+        elif self.inventories[player-1].nbPrivileges + self.inventories[player].nbPrivileges == 3:
+            #...we check whether the opponent has one (they should), which case we steal one from them to add to the other player
+            if  self.inventories[player-1].nbPrivileges != 0:
+                self.inventories[player-1].nbPrivileges -= 1
+                self.inventories [player] .nbPrivileges += 1
+
+        #And if there is still some privilege scrolls on the board...
+        else:
+            #we can distribute one to the player
+            self.inventories[player].nbPrivileges += 1
+
+
+    def usePrivilegeScroll(self,player):
+        """
+        Checks whether a player can use a privilege.
+        If yes, the method moves the privilege towards the board.
+        If no, the game ends.
+        """
+        if not (0 < player < 3):
+            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
+        else:
+            player -= 1
+
+        if self.inventories[player].nbPrivileges <= 0:
+            print("ERROR: player {player+1} hasn't got any privilege!")
+            return
+        else:
+            self.inventories[player].nbPrivileges -= 1
+            return
+
+
+    def chooseRoyalCard(self,player: int, card: RoyalCard):
+        self.inventories[player].chooseRoyalCard(card)
 
 
 # Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())

@@ -206,7 +206,6 @@ class Inventory:
                 self.tokens[idToken] -= amount
             elif sum(x for x in self.tokens if x is not None) > 10:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
-                #TODO: token management
 
     def canBookACard(self) -> int:
         """

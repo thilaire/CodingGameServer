@@ -41,7 +41,8 @@ class SplendorDuel(Game):
 	# dictionary of the possible training Players (name-> class)
 	type_dict = {"MY_TRAINING_PLAYER": SplendorVegetablePlayer}
 
-
+	# TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
+	# TODO: token management
 
 	def __init__(self, player1, player2, **options):
 		"""
