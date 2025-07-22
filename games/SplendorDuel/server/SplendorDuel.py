@@ -18,13 +18,14 @@ from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
 from random import seed
 
+from .SDGameHandler import SDGameHandler
 # import here your training players
 from .SplendorVegetablePlayer import SplendorVegetablePlayer
 
 
 class SplendorDuel(Game):
 	"""
-	class TemplateGame
+	class SplendorDuel
 
 	Inherits from Game
 	- _players: tuple of the two players
@@ -70,15 +71,15 @@ class SplendorDuel(Game):
 		#	-0 to 3 privilege scroll(s)
 		# I believe that's it?
 
-		# Player inventories of the things listed above, in the same order.
-		# Player1 then Player2
-		self.inventories = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]]
+		# Player inventories are managed in the game handler (w/ all the things above)
 
 
 		# To use when distributing the gemstone tokens on the board
 		# get a seed if the seed is not given; seed the random numbers generator
 		if 'seed' in options:
 			seed(int(options['seed']))
+			self.gameHandler = SDGameHandler(int(options["seed"])) #I guess I don't need to implement the seed in the handler anymore??
+
 
 
 		# Every turn, you have an optional move/action, then a mandatory one.
@@ -196,8 +197,32 @@ class SplendorDuel(Game):
 		# parse the move and check if it's in correct form
 		# returns the tuple (LOOSING_MOVE, "The move is not in correct form  !") if not valid
 
-		# check if the move is possible
+
+
+
+		# check the move
+			# -> need to define how `move`'s going to look like w/ regex for instance.
 		# returns (LOOSING_MOVE, "explanations....") if not valid (give the full reason why it is not valid)
+
+		optional = str()
+
+		# # check for optional moves
+		# match optional:
+		# #	either nothing
+		# 	case NO_OPTIONAL_MOVE:
+		# 		pass
+		# #	either use of a privilege scroll to take a token on the board:
+		# 	case TAKE_TOKEN:
+		# 		self.gameHandler.addToInventory(self._whoPlays, PRIVILEGE, -1)
+		# 		self.gameHandler.addToInventory
+		# #	either redistribute the tokens on the board
+		# 	case REDISTRIBUTE:
+		# 		pass
+
+
+
+
+		# if it's recognised, do the appropriate actions, use the right methods
 
 		# move the player
 		# update the intern data

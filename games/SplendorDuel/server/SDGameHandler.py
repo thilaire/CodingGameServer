@@ -404,9 +404,6 @@ class SDGameHandler:
         return "\n".join(lstRet)                                                # returns a string w/ "\n" between all the lines
 
 
-
-
-
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         """
         Adds some item(s) in a player's inventory
