@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional, List
 
 from .Constants import *
-
+#TODO: make a "Card" class, that way RoyalCard & JewelCard would inherit from Card ?
 @dataclass
 class RoyalCard:
     """Base class for Crown Cards."""

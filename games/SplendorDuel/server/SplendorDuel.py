@@ -44,6 +44,13 @@ class SplendorDuel(Game):
 
 	# TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
 	# TODO: token management
+	# TODO: buyBookedCard()
+	# TODO: printBoard()
+	# TODO: API interaction with Pyt	hon
+	#		Decide how to communicate (the protocol, i.e. what character/string stands for what)
+	# TODO: docs (what means what when printing Player Display (w/ or w/o emojis))
+	# TODO: turn prints into logger infos
+
 
 	def __init__(self, player1, player2, **options):
 		"""
@@ -76,9 +83,12 @@ class SplendorDuel(Game):
 
 		# To use when distributing the gemstone tokens on the board
 		# get a seed if the seed is not given; seed the random numbers generator
+
 		if 'seed' in options:
 			seed(int(options['seed']))
 			self.gameHandler = SDGameHandler(int(options["seed"])) #I guess I don't need to implement the seed in the handler anymore??
+		#seed not needed but GameHandler needed!!!
+
 
 
 

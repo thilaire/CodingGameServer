@@ -253,14 +253,6 @@ class SDGameHandler:
         return strp
 
 
-    def printPyramid(self, emoji: bool = True) -> None:
-        """
-                        Prints the pyramid of cards.
-        /!\ Should only be used if the pyramid is already filled! /!\
-        """
-        print(self.strPyramid(emoji))
-
-
     def strInventory(self, player: int, isPlayer: bool, emoji: bool) -> str:
         """
         returns the str of an inventory.
@@ -326,26 +318,12 @@ class SDGameHandler:
         return strInv
 
 
-    def printInventory(self, player: int, isPlayer: bool, emoji: bool) -> None:
-        """
-        Prints an inventory.
-        player      : number of the player (1 or 2)
-        isPlayer    : displays the booked cards (if any)
-        emoji       : prints w/ emojis if True, prints w/ console colors if False
-        """
-        print(self.strInventory(player,isPlayer,emoji))
-
-
     def strRoyalCards(self, emoji:bool) -> str:
         strList = self.alignStrCards(self.royalCards, emoji)
         strReturn = str()
         for x in strList:
             strReturn += x + "\n"
         return strReturn
-
-
-    def printRoyalCards(self, emoji:bool) -> None:
-        print(self.strRoyalCards(emoji))
 
 
     def strPlayerDisplay(self,player: int, emoji:bool) -> str:
@@ -374,9 +352,12 @@ class SDGameHandler:
         if player:
             strRet2 =  self.strInventory(2, True, emoji) + "\n"
             strRet2 += self.strInventory(1, False, emoji)
+            strRet2 += self.strBoard(emoji)
         else:
             strRet2 =  self.strInventory(1, True, emoji) + "\n"
             strRet2 += self.strInventory(2, False,emoji)
+            strRet2 += self.strBoard(emoji)
+
 
 
         ##⚠️⚠️⚠️⚠️ if WCSWidth isn't / can't be installed, just de-comment the next line and comment the next ones. (display will be slightly less pretty although usable)
@@ -403,6 +384,48 @@ class SDGameHandler:
         lstRet = [line1 + "  " + line2 for line1,line2 in zip(block1,block2)]   # appends lines of block 2 to lines of block 1
         return "\n".join(lstRet)                                                # returns a string w/ "\n" between all the lines
 
+
+    def strBoard(self, emoji: bool) -> str:
+        """
+        Returns a string (with multiple "\n") to display the board (useful for `strPlayerDisplay()`)
+        """
+        # header display
+        strRet =  "┌──────────────────────────────────────────────────────────┐\n"
+        strRet += "│                          BOARD                           │\n"
+        strRet += "└──────────────────────────────────────────────────────────┘\n"
+
+        # Board
+        if emoji:
+            # to align the board display w/ the header
+            alignmentSpace = "                      " # 22 spaces
+            strRet += alignmentSpace + "┌────────────┐" + "\n" #top of the board
+            for x in self.board:
+                strRet += alignmentSpace + "│ " # left side of the board
+                for i in range(len(x)):
+                    if x[i] is None:
+                        strRet += "🕳️"
+                    else:
+                        strRet += tokenEmojis[0][x[i]]
+                    if i == 4:
+                        strRet += " │\n" # right side of the board
+            strRet += alignmentSpace + "└────────────┘" #bottom of the board
+
+        else:
+            # to align the board display w/ the header (Emojis take more space than colored letters)
+            alignmentSpace = "                       " # 23 spaces
+            strRet += alignmentSpace + "┌───────────┐" + "\n" #top of the board
+            for x in self.board:
+                strRet += alignmentSpace + "│ " # left side of the board
+                for i in range(len(x)):
+                    if x[i] is None:
+                        strRet += ". "
+                    else:
+                        strRet += tokenEmojis[2][x[i]] + Fore.RESET + " "
+                    if i == 4:
+                        strRet += "│\n" # right side of the board
+            strRet += alignmentSpace + "└───────────┘" #bottom of the board
+
+        return strRet
 
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         """

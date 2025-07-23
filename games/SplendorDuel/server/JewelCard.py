@@ -37,31 +37,31 @@ class JewelCard:
                 if emoji:
                     strsAbilities = ["❗", "🔄"]
                 else:
-                    strsAbilities = ["!!", "PA"]
+                    strsAbilities = [f"{Fore.RED}{Style.BRIGHT}!!{Fore.RESET}{Style.NORMAL}", "PA"]
             case 2:
                 # choose gemstone
                 if emoji:
                     strsAbilities = ["❗", "💎"]
                 else:
-                    strsAbilities = ["!!", "CG"]
+                    strsAbilities = [f"{Fore.RED}{Style.BRIGHT}!!{Fore.RESET}{Style.NORMAL}", "CG"]
             case 3:
                 # take token
                 if emoji:
                     strsAbilities = ["❗", "🪙"]
                 else:
-                    strsAbilities = ["!!", "TT"]
+                    strsAbilities = [f"{Fore.RED}{Style.BRIGHT}!!{Fore.RESET}{Style.NORMAL}", "TT"]
             case 4:
                 # privilege
                 if emoji:
                     strsAbilities = ["❗", "🗞️"]
                 else:
-                    strsAbilities = ["!!", "PS"]
+                    strsAbilities = [f"{Fore.RED}{Style.BRIGHT}!!{Fore.RESET}{Style.NORMAL}", "PS"]
             case 5:
                 # steal token
                 if emoji:
                     strsAbilities = ["❗", "🫳"]
                 else:
-                    strsAbilities = ["!!", "ST"]
+                    strsAbilities = [f"{Fore.RED}{Style.BRIGHT}!!{Fore.RESET}{Style.NORMAL}", "ST"]
 
         match self.abilities[1]:
             case 0:

@@ -706,8 +706,8 @@ if __name__ == "__main__":
         print(f"{x}")
     print()
     print("Testing SDGameHandler.printPyramid()")
-    game.printPyramid(False)
-    game.printPyramid(True)
+    print(game.strPyramid(False))
+    print(game.strPyramid(True))
 
     game.redistribute()
     #for i in range(5):
@@ -734,11 +734,11 @@ if __name__ == "__main__":
     #for x in RCardToAdd.cardDraw(False):
     #    print(x)
 
-    game.printInventory(1,True,False)
-    game.printInventory(1,True,True)
-    game.printInventory(2,False,False)
-    game.printInventory(2,False,True)
-    game.printRoyalCards(True)
+    print(game.strInventory(1,True,False))
+    print(game.strInventory(1,True,True))
+    print(game.strInventory(2,False,False))
+    print(game.strInventory(2,False,True))
+    print(game.strRoyalCards(True))
     #for x in game.alignStrCards([JCardToAdd,JCardToAdd1], True):
     #    print(x)
 
@@ -748,5 +748,8 @@ if __name__ == "__main__":
     print()
     print("Testing SDGameHandler.strPlayerDisplay()")
     print(game.strPlayerDisplay(1,False))
+
+    # print("Testing SDGameHandler.strBoard()")
+    # print(game.strBoard(False))
 
 

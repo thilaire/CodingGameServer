@@ -6,25 +6,37 @@ With that API, they can connect to the server, play move, display the game, send
 
 */
 
-#include "clientAPI.h"
-#include <stdio.h>
-#include "caVaPlanterAPI.h"
 
+#ifndef __API_CLIENT_TEMPLATE__
+#define __API_CLIENT_TEMPLATE__
+#include "ret_type.h"
+
+
+
+/* define here the type defining a move */
+
+/* A move is defined by ...*/
+typedef struct
+{
+    /* insert your code here */
+} t_move;
 
 
 /* -------------------------------------
  * Initialize connection with the server
- * Quit the program if the connection to the server cannot be established
+ * Quit the program if the connection to the server
+ * cannot be established
  *
  * Parameters:
- * - serverName: (string) address of the server (it could be "localhost" if the server is run in local, or "pc4521.polytech.upmc.fr" if the server runs there)
+ * - serverName: (string) address of the server
+ *   (it could be "localhost" if the server is run in local,
+ *   or "pc4521.polytech.upmc.fr" if the server runs there)
  * - port: (int) port number used for the connection
- * - name: (string) name of the player : max 20 characters (checked by the server)
+ * - name: (string) name of the bot : max 20 characters
+ *         (checked by the server)
  */
-void connectToServer( char* serverName, int port, char* name)
-{
-	connectToCGS( __FUNCTION__, serverName, port, name);
-}
+void connectToServer( char* serverName, int port, char* name);
+
 
 
 /* ----------------------------------
@@ -34,10 +46,7 @@ void connectToServer( char* serverName, int port, char* name)
  * Parameters:
  * None
 */
-void closeConnection()
-{
-	closeCGSConnection( __FUNCTION__ );
-}
+void closeConnection();
 
 
 /* ----------------------------------------------------------------
@@ -63,17 +72,7 @@ void closeConnection()
  *        - 'start': allows to set who starts ('0' or '1')
  * gameType could also be : "TOURNAMENT name" where name is the name of the tournament
   */
-void waitForTemplateGame( char* gameType, char* labyrinthName, ...)
-{
-	char data[...];
-	/* wait for a game */
-	waitForGame( __FUNCTION__, gameType, labyrinthName, data);
-
-	/*
-	 *insert your code here to parse the data send by the server */
-	 */
-
-}
+void waitForSplendorGame( char* gameType, char* labyrinthName, ...);
 
 
 /* -------------------------------------
@@ -85,18 +84,7 @@ void waitForTemplateGame( char* gameType, char* labyrinthName, ...)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getTemplateGameData( ...)
-{
-	char data[N];   /* size to define */
-	/* wait for a game */
-	int ret = getGameData( __FUNCTION__, data, N);
-
-	/*
-	 * insert your code to copy the data in the player data
-	 */
-
-    return ret;
-}
+int getSplendorGameData( ...);
 
 
 
@@ -112,20 +100,7 @@ int getTemplateGameData( ...)
  * LOOSING_MOVE for a losing (or illegal) move
  * this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove( t_move* move )
-{
-
-    char data[N];   /* to define */
-
-    /* get the move */
-    int ret = getCGSMove( __FUNCTION__, data, N);
-
-	/*
-	 * insert your code to extract move from the data
-	 */
-
-	return ret;
-}
+t_return_code getMove( t_move* move );
 
 
 
@@ -141,18 +116,7 @@ t_return_code getMove( t_move* move )
  * LOOSING_MOVE for a losing (or illegal) move
  * this code is relative to your programm (WINNING_MOVE if YOU win, ...)
  */
-t_return_code sendMove( t_move move )
-{
-    char data[...];
-
-    /*
-     * insert your code to build the string data from the move
-     */
-
-    /* send the move */
-	return sendCGSMove( __FUNCTION__, data);
-}
-
+t_return_code sendMove( t_move move );
 
 
 
@@ -160,10 +124,7 @@ t_return_code sendMove( t_move move )
  * Display the Game
  * in a pretty way (ask the server what to print)
  */
-void printTemplateGame()
-{
-    printGame( __FUNCTION__ );
-}
+void printSplendorGame();
 
 
 
@@ -173,7 +134,8 @@ void printTemplateGame()
  * Parameters:
  * - comment: (string) comment to send to the server (max 100 char.)
  */
-void sendComment(char* comment)
-{
-    sendCGSComment( __FUNCTION__, comment);
-}
+void sendComment(char* comment);
+
+
+
+#endif
