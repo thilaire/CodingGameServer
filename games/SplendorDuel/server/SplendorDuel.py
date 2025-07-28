@@ -42,14 +42,22 @@ class SplendorDuel(Game):
 	# dictionary of the possible training Players (name-> class)
 	type_dict = {"MY_TRAINING_PLAYER": SplendorVegetablePlayer}
 
-	# TODO: privilege scroll management (memo: redistribute, 3-token capture, take from opponent, use one)
-	# TODO: token management
 	# TODO: buyBookedCard()
 	# TODO: printBoard()
-	# TODO: API interaction with Pyt	hon
+	# TODO: API interaction with Python
 	#		Decide how to communicate (the protocol, i.e. what character/string stands for what)
+	# 		-> see SplendorGameAPI.c/SplendorGameAPI.h
 	# TODO: docs (what means what when printing Player Display (w/ or w/o emojis))
-	# TODO: turn prints into logger infos
+	# TODO: turn prints into logger infos & exceptions
+	# TODO: create and manage exceptions
+	# TODO: abilities (5/5)
+	# TODO: prohibit taking a royal card when it was previously claimed (+ display nothing when there's not this card anymore).
+	#		For instance, if someone takes the cards of index 1, then the opponent takes the card of index one => the opponent loses.
+	# TODO: emoji print between two players in a tournament?
+	# TODO: add a functionality to eject tokens when booking a card & already having 10 tokens in the inventory
+	# TODO: implement a way to get the new card data when booking a card (see API)
+	# TODO: change the rules: whenever somemone owns 10 tokens & buys a card to take or steal a token, we should ignore this ability.
+
 
 
 	def __init__(self, player1, player2, **options):

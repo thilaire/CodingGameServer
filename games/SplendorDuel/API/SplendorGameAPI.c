@@ -69,10 +69,6 @@ void waitForSplendorGame( char* gameType, char* labyrinthName, ...)
 	/* wait for a game */
 	waitForGame( __FUNCTION__, gameType, labyrinthName, data);
 
-	/*
-	 *insert your code here to parse the data send by the server */
-	 */
-
 }
 
 
@@ -85,7 +81,7 @@ void waitForSplendorGame( char* gameType, char* labyrinthName, ...)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getSplendorGameData( ...)
+int getSplendorGameData( ...) //tableau de 150 char
 {
 	char data[N];   /* size to define */
 	/* wait for a game */
@@ -93,8 +89,16 @@ int getSplendorGameData( ...)
 
 	/*
 	 * insert your code to copy the data in the player data
-	 25 ints then 5*12 ints (5 level-1 Jewel Cards), 4*12 ints (4 level-2 JCards), 3*12 (3 level-3 JCards), 4*2 ints (4 royal cards), 2*21 ints (inventories)
+	 25 ints then 5*12 ints (5 level-1 Jewel Cards), 4*12 ints (4 level-2 JCards), 3*12 (3 level-3 JCards), 4*2 ints (4 royal cards)
 	 */
+	//mettre dans le tableau à retourner grâce aux valeurs qui sont dans data. 
+	//À mettre dedans avec sscanf()
+	//bheck snakepapi.c
+
+	//datra : chaine de char que je vais lire avec sscanf
+
+	//faiore la meme chose pour getmove()
+	//quasi la même pour sendmove, sauf qy'on la construit. On l'envoie avec SendCGSMove()
 
     return ret;
 }
@@ -163,7 +167,7 @@ t_return_code sendMove( t_move move )
 		- Book a card: "book [level] [index of the card]"
 			If you want to take from the decks, choose only the level of the card
 		- Buy a JCard: "buy [level] [index]"
-		- Crown Card : "crown [index]"
+		- Royal Card : "royal [index]"
 			To use only after reaching 3 or 6 crowns			
 	*/
 

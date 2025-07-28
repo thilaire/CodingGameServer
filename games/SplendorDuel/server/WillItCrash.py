@@ -722,7 +722,7 @@ if __name__ == "__main__":
     RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
     game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
     game.addToInventory(1,JEWEL_CARD,JCardToAdd)
-    JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,[],{BLUE_SAPPHIRE: 1},None)
+    JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
     game.addToInventory(1,JEWEL_CARD,JCardToAdd1)
     game.addToInventory(1,ROYAL_CARD,RCardToAdd)
     game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
@@ -732,7 +732,7 @@ if __name__ == "__main__":
     game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
 
     #for x in RCardToAdd.cardDraw(False):
-    #    print(x)
+    #    print(x) ```
 
     print(game.strInventory(1,True,False))
     print(game.strInventory(1,True,True))
@@ -747,6 +747,7 @@ if __name__ == "__main__":
     #There may or may not be a mismatch between prestige points displayed & the total. Total also accounts for royal cards, which is the case here!
     print()
     print("Testing SDGameHandler.strPlayerDisplay()")
+    print(game.strPlayerDisplay(1,True))
     print(game.strPlayerDisplay(1,False))
 
     # print("Testing SDGameHandler.strBoard()")

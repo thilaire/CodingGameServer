@@ -107,6 +107,7 @@ class Inventory:
             self.royalCards.append(card)
         else:
             print(f"ERROR: shouldn't choose a royal card! ({self.nbCrowns()} crowns)")
+            #TODO : raise an exception ?
 
     def buyJewelCard(self, card: JewelCard) -> List[bool|int]:
         """
