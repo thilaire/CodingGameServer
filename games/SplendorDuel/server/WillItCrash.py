@@ -719,7 +719,8 @@ if __name__ == "__main__":
     game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
 
     JCardToAdd = JewelCard(BLUE_SAPPHIRE,1,3,3,[],{BLUE_SAPPHIRE: 1},None)
-    RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
+    # RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
+    RCardToAdd = game.royalCards[1]
     game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
     game.addToInventory(1,JEWEL_CARD,JCardToAdd)
     JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
@@ -738,16 +739,16 @@ if __name__ == "__main__":
     print(game.strInventory(1,True,True))
     print(game.strInventory(2,False,False))
     print(game.strInventory(2,False,True))
-    print(game.strRoyalCards(True))
+    print(game.strRoyalCards(False))
     #for x in game.alignStrCards([JCardToAdd,JCardToAdd1], True):
     #    print(x)
 
-    game.royalCards.pop(1)
+    # game.royalCards.pop(1)
 
     #There may or may not be a mismatch between prestige points displayed & the total. Total also accounts for royal cards, which is the case here!
     print()
     print("Testing SDGameHandler.strPlayerDisplay()")
-    print(game.strPlayerDisplay(1,True))
+    # print(game.strPlayerDisplay(1,True))
     print(game.strPlayerDisplay(1,False))
 
     # print("Testing SDGameHandler.strBoard()")

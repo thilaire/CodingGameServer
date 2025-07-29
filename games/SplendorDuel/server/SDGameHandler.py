@@ -197,6 +197,7 @@ class SDGameHandler:
         """
         return ansi_escape.sub('', text)
 
+
     def pad_to_width(self, s: str, width: int) -> str:
         """
         Used for padding two texts to a certain width (self.strPlayerDisplay)
@@ -204,6 +205,7 @@ class SDGameHandler:
         visual_len = wcswidth(self.strip_ansi(s))
         padding = width - visual_len
         return s + ' ' * max(0, padding)
+
 
     def alignStrCards(self,cards: List[JewelCard] | List[RoyalCard], emoji: bool) -> List[str]:
         """
@@ -219,8 +221,15 @@ class SDGameHandler:
             ""
         ]
         for i in range(len(cards)):
-            for j in range(len(cards[i].cardDraw(emoji))):
-                cardStrList[j] += cards[i].cardDraw(emoji)[j]
+            try:
+                for j in range(len(cards[i].cardDraw(emoji))):
+                    cardStrList[j] += cards[i].cardDraw(emoji)[j]
+            except AttributeError:
+                if cards[i] is None:
+                    cardStrList[0] += "┌───────────┐"
+                    for j in range(5):
+                        cardStrList[j+1] += "│           │"
+                    cardStrList[6] += "└───────────┘"
 
         return cardStrList
 
@@ -347,6 +356,7 @@ class SDGameHandler:
 
             strRet1 += ((4-len(self.royalCards)) * "      "     #used for "dynamic" shifting i.e. depending on the amnt of cards available
                         + "      " + x + "\n")                  #used for shifting
+            #Kind of outdated considering we now always have 4 elements in the list but the shifting still works
 
         # Writes the inventory (depending on `player`)
         if player:
@@ -427,6 +437,7 @@ class SDGameHandler:
 
         return strRet
 
+
     def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
         """
         Adds some item(s) in a player's inventory
@@ -436,7 +447,8 @@ class SDGameHandler:
         """
         # Jewel Card
         # Token
-        # Crown
+        # TODO make it so that when taking a royal card, there's a "None" instead of the card afterwards
+        #      (It'll be useful for display management (something like "if royalCards[i] is None: (print a blank card)").)
         # TODO I guess
         #   !! when reaching 3 or 6 crowns
         #   call a new method, "chooseRoyalCard()" or smth
@@ -459,7 +471,7 @@ class SDGameHandler:
             case 2: #BOOKED_CARD 🎟️
                 self.inventories[player].bookCard(item)
             case 3: #ROYAL_CARD 👑
-                self.inventories[player].chooseRoyalCard(item)
+                self.chooseRoyalCard(player,item)
             case 4: #PRIVILEGE 🗞️
                 #item should be 1 or -1
                 if item == 1:
@@ -734,7 +746,7 @@ class SDGameHandler:
 
     def chooseRoyalCard(self,player: int, card: RoyalCard):
         self.inventories[player].chooseRoyalCard(card)
-
+        self.royalCards[self.royalCards.index(card)] = None
 
 # Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())
 class PositionIterator:
@@ -786,7 +798,6 @@ class PositionIterator:
         #return the next position
         self.current = [x_f,y_f]
         return self.current
-
 
 
 

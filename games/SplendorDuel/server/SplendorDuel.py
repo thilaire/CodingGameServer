@@ -50,7 +50,7 @@ class SplendorDuel(Game):
 	# TODO: docs (what means what when printing Player Display (w/ or w/o emojis))
 	# TODO: turn prints into logger infos & exceptions
 	# TODO: create and manage exceptions
-	# TODO: abilities (5/5)
+	# TODO: abilities (Priority 5/5)
 	# TODO: prohibit taking a royal card when it was previously claimed (+ display nothing when there's not this card anymore).
 	#		For instance, if someone takes the cards of index 1, then the opponent takes the card of index one => the opponent loses.
 	# TODO: emoji print between two players in a tournament?
