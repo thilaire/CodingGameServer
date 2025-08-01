@@ -306,19 +306,27 @@ class SDGameHandler:
 
 
         if emoji:
+            if self.inventories[player].nbPrestige(-1) >= 10:
+                nbPP = f"{self.inventories[player].nbPrestige(-1)},"
+            else:
+                nbPP = f" {self.inventories[player].nbPrestige(-1)}, "
             strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
             strInv += f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │\n"
             strInv += f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │\n"
-            strInv += f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)}, {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │\n"
+            strInv += f"│ - Prestige      : Total:{nbPP} {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │\n"
             strInv += f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │\n"
             strInv += f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │\n"
             strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
             strInv += strBottom + "\n"
         else:
+            if self.inventories[player].nbPrestige(-1) >= 10:
+                nbPP = f"{self.inventories[player].nbPrestige(-1)},"
+            else:
+                nbPP = f" {self.inventories[player].nbPrestige(-1)}, "
             strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
             strInv += f"│ - Tokens        :      {tokenEmojis[2][1]}{self.inventories[player].tokens[1]}{tokenColors[0]},  {tokenEmojis[2][2]}{self.inventories[player].tokens[2]}{tokenColors[0]},  {tokenEmojis[2][3]}{self.inventories[player].tokens[3]}{tokenColors[0]},  {tokenEmojis[2][4]}{self.inventories[player].tokens[4]}{tokenColors[0]},  {tokenEmojis[2][5]}{self.inventories[player].tokens[5]}{tokenColors[0]},  {tokenEmojis[2][6]}{self.inventories[player].tokens[6]}{tokenColors[0]},  {tokenEmojis[2][7]}{self.inventories[player].tokens[7]}{tokenColors[0]}  │\n"
             strInv += f"│ - Cards (jewels):                {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}{tokenColors[0]}  │\n"
-            strInv += f"│ - Prestige      : Total: {self.inventories[player].nbPrestige(-1)},  {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │\n"
+            strInv += f"│ - Prestige      : Total:{nbPP} {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │\n"
             strInv += f"│ - Privileges    : {self.inventories[player].nbPrivileges}                                      │\n"
             strInv += f"│ - Crowns        : {self.inventories[player].nbCrowns()}                                      │\n"
             strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
@@ -442,13 +450,12 @@ class SDGameHandler:
         """
         Adds some item(s) in a player's inventory
 
-        itemType: see constants.py
+        itemType: see constants.py (n.b. use BOOKED_CARD to book a card... yeah I shouldn't have used the past principle)
         item    : JewelCard, RoyalCard (not yet created), list[tokenType, tokenAmount] or int (if privilege)
+
         """
         # Jewel Card
         # Token
-        # TODO make it so that when taking a royal card, there's a "None" instead of the card afterwards
-        #      (It'll be useful for display management (something like "if royalCards[i] is None: (print a blank card)").)
         # TODO I guess
         #   !! when reaching 3 or 6 crowns
         #   call a new method, "chooseRoyalCard()" or smth
@@ -521,12 +528,15 @@ class SDGameHandler:
                 #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
                 randomToken = randint(1,7)
 
-                #wait until we're in a case which is not full
-                while bank[randomToken] == 0:
-                    randomToken = randint(1,7)
+                # if the bank isn't empty
+                if bank != [None, 0, 0, 0, 0, 0, 0, 0]:
+                    #wait until we're in a case which is not full
+                    while bank[randomToken] == 0:
+                        randomToken = randint(1,7)
+                    self.update_board(randomToken, [x, y])
+                    bank[randomToken] -= 1
 
-                self.update_board(randomToken, [x,y])
-                bank[randomToken] -= 1
+
 
         #need to check whether the bank is empty?
         for token in range(1,7):
@@ -745,8 +755,38 @@ class SDGameHandler:
 
 
     def chooseRoyalCard(self,player: int, card: RoyalCard):
-        self.inventories[player].chooseRoyalCard(card)
-        self.royalCards[self.royalCards.index(card)] = None
+        """
+        Gets a royal card inside the inventory of a player.
+        Must be used whenever needed, i.e. whenever a player reaches 3 crowns or 6 crowns.
+
+        (On second thought: Maybe we should use either indices of the self.royalCards list
+        instead of RoyalCard objects since we're going to use it w/ game.royalCards[n]...)
+        """
+        if card is None:
+            print("ERROR: Impossible to get RoyalCard! (card is a None object)")
+            return
+        elif not (card in self.royalCards):
+            print("ERROR: Impossible to get RoyalCard!")
+            return
+        else:
+            self.inventories[player].chooseRoyalCard(card)
+            self.royalCards[self.royalCards.index(card)] = None
+            return
+
+
+    def buyBookedCard(self, player: int, cardIndex: int) -> None:
+        """
+        Lets a player buy a JewelCard they previously booked using the cardIndex.
+        cardIndex is the index within the Inventory.bookedCards list.
+        """
+        if not(1 <= player <= 2):
+            print(f"ERROR: unrecognised player (should be 1 or 2, got {player} instead!)")
+        else:
+            player -= 1
+
+        self.addToInventory(player+1,JEWEL_CARD, self.inventories[player].bookedCards.pop(cardIndex))
+
+
 
 # Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())
 class PositionIterator:

@@ -128,7 +128,7 @@ class Inventory:
             DIAMOND         : 0,  # DIAMOND,
             EMERALD         : 0,  # EMERALD,
             RUBY            : 0,  # RUBY,
-            OBSIDIAN        : 0  # OBSIDIAN
+            OBSIDIAN        : 0   # OBSIDIAN
         }
         # we sum up every JewelCard.nbJewel in the inventory.
         for cardType in self.jewelCards:

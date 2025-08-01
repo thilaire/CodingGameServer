@@ -42,8 +42,6 @@ class SplendorDuel(Game):
 	# dictionary of the possible training Players (name-> class)
 	type_dict = {"MY_TRAINING_PLAYER": SplendorVegetablePlayer}
 
-	# TODO: buyBookedCard()
-	# TODO: printBoard()
 	# TODO: API interaction with Python
 	#		Decide how to communicate (the protocol, i.e. what character/string stands for what)
 	# 		-> see SplendorGameAPI.c/SplendorGameAPI.h
@@ -57,6 +55,7 @@ class SplendorDuel(Game):
 	# TODO: add a functionality to eject tokens when booking a card & already having 10 tokens in the inventory
 	# TODO: implement a way to get the new card data when booking a card (see API)
 	# TODO: change the rules: whenever somemone owns 10 tokens & buys a card to take or steal a token, we should ignore this ability.
+	# TODO: implement the rule to choose a gold token on the board whenever booking a card.
 
 
 

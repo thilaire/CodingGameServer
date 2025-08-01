@@ -673,10 +673,100 @@ if __name__ == "__main__":
     # # "Ruby"          :    RUBY,          🔴🟥
     # # "Obsidian"      :    OBSIDIAN,      ⚫⬛
 
-    #-----------------------------------------------------------------------------------------------------------------
-    # checking SDGameHandler.printPyramid()   ✅
-    # checking SDGameHandler.printInventory() ✅
-    #-----------------------------------------------------------------------------------------------------------------
+    # #-----------------------------------------------------------------------------------------------------------------
+    # # checking SDGameHandler.printPyramid()   ✅
+    # # checking SDGameHandler.printInventory() ✅
+    # #-----------------------------------------------------------------------------------------------------------------
+
+    # print()
+    # print(f"Game Handler Decks      : {game.decks}")
+    # print(f"Game Handler Pyramid    : {game.pyramid}")
+    # print(f"Game Handler Royal Cards: {game.royalCards}")
+    # print()
+    # print("Loading decks")
+    # game.loadDecks()
+    # print("Shuffling decks")
+    # game.shuffleDecks()
+    # print("Loading pyramid")
+    # game.loadPyramid()
+    # print()
+    # print(f"Game Handler Decks:")
+    # for x in game.decks:
+    #     print(f"[length: {len(x)}]{x}")
+    # print()
+    # print(f"Game Handler Pyramid:")
+    # for x in game.pyramid[0]:
+    #     print(f"LEVEL 1: {x}")
+    # for x in game.pyramid[1]:
+    #     print(f"LEVEL 2: {x}")
+    # for x in game.pyramid[2]:
+    #     print(f"LEVEL 3: {x}")
+    # print()
+    # print(f"Game Handler Royal Cards:")
+    # for x in game.royalCards:
+    #     print(f"{x}")
+    # print()
+    # print("Testing SDGameHandler.printPyramid()")
+    # print(game.strPyramid(False))
+    # print(game.strPyramid(True))
+    #
+    # game.redistribute()
+    # #for i in range(5):
+    # #    print(game.board[i])
+    # #print(game.bank())
+    #
+    # print("Testing SDGameHandler.printInventory()")
+    # game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
+    # game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
+    #
+    # JCardToAdd = JewelCard(BLUE_SAPPHIRE,1,3,3,[],{BLUE_SAPPHIRE: 1},None)
+    # # RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
+    # RCardToAdd = game.royalCards[1]
+    # game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
+    # print("not yet in inventory:")
+    # print(game.strRoyalCards(False))
+    # game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    # print("one in inventory:")
+    # print(game.strRoyalCards(False))
+    # game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    # print("two in inventory:")
+    # print(game.strRoyalCards(False))
+    # JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
+    # game.addToInventory(1,JEWEL_CARD,JCardToAdd1)
+    # game.addToInventory(1,ROYAL_CARD,RCardToAdd)
+    # game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
+    # game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
+    # game.addToInventory(1,BOOKED_CARD,JCardToAdd)
+    # game.addToInventory(1,PRIVILEGE,2)
+    # game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
+    #
+    # #for x in RCardToAdd.cardDraw(False):
+    # #    print(x) ```
+    #
+    # print(game.strInventory(1,True,False))
+    # print(game.strInventory(1,True,True))
+    # print(game.strInventory(2,False,False))
+    # print(game.strInventory(2,False,True))
+    # print(game.strRoyalCards(False))
+    # #for x in game.alignStrCards([JCardToAdd,JCardToAdd1], True):
+    # #    print(x)
+    #
+    # # game.royalCards.pop(1)
+    #
+    # #There may or may not be a mismatch between prestige points displayed & the total. Total also accounts for royal cards, which is the case here!
+    # print()
+    # print("Testing SDGameHandler.strPlayerDisplay()")
+    # # print(game.strPlayerDisplay(1,True))
+    # print(game.strPlayerDisplay(1,False))
+    #
+    # # print("Testing SDGameHandler.strBoard()")
+    # # print(game.strBoard(False))
+
+
+    # -----------------------------------------------------------------------------------------------------------------
+    # Checking SDGameHandler.buyBookedCard() ✅
+    # -----------------------------------------------------------------------------------------------------------------
+    emoji = False
     print()
     print(f"Game Handler Decks      : {game.decks}")
     print(f"Game Handler Pyramid    : {game.pyramid}")
@@ -689,69 +779,31 @@ if __name__ == "__main__":
     print("Loading pyramid")
     game.loadPyramid()
     print()
-    print(f"Game Handler Decks:")
-    for x in game.decks:
-        print(f"[length: {len(x)}]{x}")
-    print()
-    print(f"Game Handler Pyramid:")
-    for x in game.pyramid[0]:
-        print(f"LEVEL 1: {x}")
-    for x in game.pyramid[1]:
-        print(f"LEVEL 2: {x}")
-    for x in game.pyramid[2]:
-        print(f"LEVEL 3: {x}")
-    print()
-    print(f"Game Handler Royal Cards:")
-    for x in game.royalCards:
-        print(f"{x}")
-    print()
-    print("Testing SDGameHandler.printPyramid()")
-    print(game.strPyramid(False))
-    print(game.strPyramid(True))
 
-    game.redistribute()
-    #for i in range(5):
-    #    print(game.board[i])
-    #print(game.bank())
 
-    print("Testing SDGameHandler.printInventory()")
-    game.tokenCapture([ [4, 1],[4, 2], [4, 3]], 1)
-    game.tokenCapture([ [2, 4],[1, 4], [-1,-1]], 1)
-
-    JCardToAdd = JewelCard(BLUE_SAPPHIRE,1,3,3,[],{BLUE_SAPPHIRE: 1},None)
-    # RCardToAdd = RoyalCard(3,["ChooseGemstone"], None)
+    print("Adding stuff in player1's inventory")
     RCardToAdd = game.royalCards[1]
-    game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,4])
-    game.addToInventory(1,JEWEL_CARD,JCardToAdd)
-    JCardToAdd1 = JewelCard(BLUE_SAPPHIRE,3,3,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
-    game.addToInventory(1,JEWEL_CARD,JCardToAdd1)
-    game.addToInventory(1,ROYAL_CARD,RCardToAdd)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd1)
-    game.addToInventory(1,BOOKED_CARD,JCardToAdd)
-    game.addToInventory(1,PRIVILEGE,2)
-    game.addToInventory(1, TOKEN, [BLUE_SAPPHIRE, 1])   #should be alright since we consumed 1 sap. to buy the JCard
+    JCardToBook = JewelCard(BLUE_SAPPHIRE,3,10,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
+    game.addToInventory(1,BOOKED_CARD,JCardToBook)
 
-    #for x in RCardToAdd.cardDraw(False):
-    #    print(x) ```
+    print("Dispatching tokens on the board")
+    game.redistribute()
+    print(game.strBoard(emoji))
+    print("Capturing a blue token on the board (player 1)")
+    game.tokenCapture([ [0, 1],[-1, -1], [-1, -1]], 1)
+    # If random changes, use next line:
+    # game.addToInventory(1,TOKEN,[BLUE_SAPPHIRE,1])
+    print(game.strBoard(emoji))
+    print("Display (player1's POV):")
+    print(game.strPlayerDisplay(1,emoji))
 
-    print(game.strInventory(1,True,False))
-    print(game.strInventory(1,True,True))
-    print(game.strInventory(2,False,False))
-    print(game.strInventory(2,False,True))
-    print(game.strRoyalCards(False))
-    #for x in game.alignStrCards([JCardToAdd,JCardToAdd1], True):
-    #    print(x)
-
-    # game.royalCards.pop(1)
-
-    #There may or may not be a mismatch between prestige points displayed & the total. Total also accounts for royal cards, which is the case here!
+    print("Testing SDGameHandler.buyBookedCard()\nBefore purchase:")
+    print(game.strPlayerDisplay(1,emoji))
     print()
-    print("Testing SDGameHandler.strPlayerDisplay()")
-    # print(game.strPlayerDisplay(1,True))
-    print(game.strPlayerDisplay(1,False))
+    game.buyBookedCard(1,0)
+    print()
+    print("After buying booked card:")
+    print(game.strPlayerDisplay(1,emoji))
+    print(game.inventories[0].bookedCards)
 
-    # print("Testing SDGameHandler.strBoard()")
-    # print(game.strBoard(False))
-
-
+    print(game.strInventory(2,1,True))
