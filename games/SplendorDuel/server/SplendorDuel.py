@@ -66,10 +66,6 @@ class SplendorDuel(Game):
 		:param player2: 2nd Player
 		:param options: dictionary of options (the options 'seed' and 'timeout' are managed by the Game class)
 		"""
-		#
-		# insert your code here to create your game (its data, etc.)...
-		#
-
 
 		# Each player may or may not own one or some:
 		#	-bonus(es)
@@ -91,13 +87,8 @@ class SplendorDuel(Game):
 		# To use when distributing the gemstone tokens on the board
 		# get a seed if the seed is not given; seed the random numbers generator
 
-		if 'seed' in options:
-			seed(int(options['seed']))
-			self.gameHandler = SDGameHandler(int(options["seed"])) #I guess I don't need to implement the seed in the handler anymore??
-		#seed not needed but GameHandler needed!!!
-
-
-
+		self._setseed(options)
+		self.gameHandler = SDGameHandler()
 
 		# Every turn, you have an optional move/action, then a mandatory one.
 		# You may skip the optional moves (duh)

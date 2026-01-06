@@ -55,7 +55,7 @@ tokenTypesDict = {
     "Obsidian"      :    OBSIDIAN,
 }
 
-tokenTypesInt = [NONE,PEARL,GOLD,BLUE_SAPPHIRE,DIAMOND,EMERALD,RUBY,OBSIDIAN]
+tokenTypesInt = [NONE, PEARL, GOLD, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN]
 
 
 tokenColors = [
@@ -161,3 +161,14 @@ itemsEmoji = {
     items[3] : "👑",
     items[4] : "🗞️",
 }
+
+# Board completion map
+# useful to indicate where to put the next token
+boardCompletion = (
+    ("E", "E", "E", "E", "S"),      # North
+    ("N", "E", "E", "S", "S"),      # South
+    ("N", "N", "S", "S", "S"),      # East
+    ("N", "N", "W", "S", "S"),      # West
+    ("N", "W", "W", "W", None)      # None when complete (index (4,4)), beginning at index (2,2)
+)
+

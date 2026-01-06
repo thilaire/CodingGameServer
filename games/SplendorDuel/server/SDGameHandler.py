@@ -26,169 +26,64 @@ from .Inventory import Inventory
 from .JewelCard import JewelCard
 from .RoyalCard import RoyalCard
 
+
 ansi_escape = compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')  # used to avoid miscounting characters w/ self.strip_ansi()
+
+# list of coordinates for the path in the board
+# it has been generated with BoardPositionsPath.py
+Path = [(2, 2), (3, 2), (3, 1), (2, 1), (1, 1), (1, 2), (1, 3), (2, 3), (3, 3), (4, 3), (4, 2), (4, 1), (4, 0), (3, 0), (2, 0), (1, 0), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
 
 
 class SDGameHandler:
-    def __init__(self, randomSeed: int):
-        seed(randomSeed)
+    """contains the data of the game, and the methods to check if a move is legal"""
+    def __init__(self):
 
-
-        # BOARD COMPLETION MAP - will be useful
-        # Says where to put the next token
-        self.boardCompletion = (
-            ("E", "E", "E", "E", "S"),	# North
-            ("N", "E", "E", "S", "S"),	# South
-            ("N", "N", "S", "S", "S"),	# East
-            ("N", "N", "W", "S", "S"),	# West
-            ("N", "W", "W", "W", None)	# None when complete (index (4,4)), beginning at index (2,2)
-        )
-
-        self._board = [
-            [None, None, None, None, None],  # 5*5 matrix. Each member of the matrix represents a case of the board.
-            [None, None, None, None, None],  # On each case of the board, there will be a token distributed (1st turn),
-            [None, None, None, None, None],  # then a little less etc. depending on player decisions each move.
+        # 5*5 matrix for the board.
+        # On each case of the board, there may be a token
+        self.board = [
+            [None, None, None, None, None],
+            [None, None, None, None, None],
+            [None, None, None, None, None],
             [None, None, None, None, None],
             [None, None, None, None, None]
         ]
 
-        self.tokens = [0,0,0,0,0,0,0,0]
-
+        # empty inventories for the two players
         self.inventories = [Inventory(), Inventory()]
-        self.decks = [
-            [], #level 1 cards
-            [], #level 2 cards
-            []  #level 3 cards
-        ]
-        self.pyramid = [
-            [], #list[JewelCard], #level 1 cards
-            [], #list[JewelCard], #level 2 cards
-            []  #list[JewelCard]  #level 3 cards
-        ]
-        self.royalCards = []
 
-    # getter for the board
-    @property
-    def board(self):
-        return self._board
-
-
-    # setter for the board
-    def update_board(self, value: None|int, position: Tuple[int]|List[int]):
-        x,y = position
-        self._board[x][y] = value
-
-
-    def nextPosition(self, currentPosition: List[int]) -> List[int]:
-        """
-        returns the position of the next element to check?
-        Memo:   - currentPosition = [x,y];
-                - x is the row, y the column.
-        """
-        x,y = currentPosition
-        nextPosition = []
-
-        if self.boardCompletion[x][y] == "N":
-            nextPosition = [x - 1, y]
-        elif self.boardCompletion[x][y] == "S":
-            nextPosition = [x + 1, y]
-        elif self.boardCompletion[x][y] == "E":
-            nextPosition = [x, y + 1]
-        elif self.boardCompletion[x][y] == "W":
-            nextPosition = [x, y - 1]
-        elif self.boardCompletion[x][y] is None:
-            nextPosition = [-1,-1]
-        else:
-            print("ERROR: no location on the board completion map!")
-        return nextPosition
-
-
-    def bank(self) -> List[int|None]:
-        """
-        Defines the bank aka where all the tokens to distribute belong.
-        So we'll use this method whenever a player chooses to redistribute the tokens on the board
-        (+ the privilege, but it's not handled here)
-
-            -> returns a list with all available tokens (will be used to redistribute)
-        """
-        # all the tokens are here in the beginning, caus nobody has any, nor does the board
-        bank = [None, 2, 3, 4, 4, 4, 4, 4]
-        countedTokens = [None, 0, 0, 0, 0, 0, 0, 0]
-        #first position index: (2,2)
-        #then we run following the board by using nextPosition((x,y))
-
-        # run through all the board, starting at the center
-        coords = [2,2]
-        # While the position isn't outside the board
-        while coords != [-1,-1]:
-            #go to the board, add the current thing to the list
-            x, y = coords
-            if self.board[x][y] is not None:
-                countedTokens[self.board[x][y]] += 1
-            coords = self.nextPosition(coords)
-
-        # We need to count the token each player has + the tokens on the board. That gives us the unavailable tokens.
-        # Then we just subtract those to the max amount and voilà, we have the amount of tokens in the bank.
-
-        # [None, [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], 0, 0]
-        # [jewel_card , token]
-        for gemstone in range(1,8):
-            countedTokens[gemstone] += self.inventories[0].nbTokens(gemstone)
-            countedTokens[gemstone] += self.inventories[1].nbTokens(gemstone)
-
-        #Checking if there's too many tokens, which shouldn't happen
-
-        # Max amount of pearls = 2
-        if countedTokens[PEARL] > 2:
-            print(f"ERROR: counted too many {tokenTypes[PEARL]} tokens!")  # tokenTypes: see Constants.py
-        # Max amount of gold = 3
-        if countedTokens[GOLD] > 3:
-            print(f"ERROR: counted too many {tokenTypes[PEARL]} tokens!")  # tokenTypes: see Constants.py
-
-        for gemstone in range(1,len(countedTokens)):
-            #we already did the first two cases, so we pass them
-            if gemstone > 2:
-                #the rest of the tokens aren't supposed to exceed 4
-                if countedTokens[gemstone] > 4:
-                    print(f"ERROR: counted too many {tokenTypes[gemstone]} tokens!") # tokenTypes: see Constants.py
-            bank[gemstone] -= countedTokens[gemstone]
-
-        return bank
-
-
-    def loadDecks(self) -> None:
-        """
-        Loads a JSON file ("data.json", in the /cards/ directory) and parses it.
-        Adds the data (i.e. the cards) inside the game.
-        """
-        # Taken from `WillItCrash.py`:
+        # load the cards from the JSON file
         with open("cards/data.json", "r") as file:
             data = load(file)
-
-        self.decks[0] =  [ JewelCard(**card) for card in data["level1"] ]
-        self.decks[1] =  [ JewelCard(**card) for card in data["level2"] ]
-        self.decks[2] =  [ JewelCard(**card) for card in data["level3"] ]
-        # Same goes for Royal Cards
-        self.royalCards = [RoyalCard(**card) for card in data["royal"] ]
-
-
-    def shuffleDecks(self) -> None:
-        """
-        Shuffle needed otherwise we'd get the same pyramid and decks everytime.
-        `shuffle()` comes from `random`
-        """
-        shuffle(self.decks[0])
-        shuffle(self.decks[1])
-        shuffle(self.decks[2])
-
-
-    def loadPyramid(self) -> None:
-        for i in range(5):
-            self.pyramid[0].append(self.decks[0].pop())
-        for i in range(4):
-            self.pyramid[1].append(self.decks[1].pop())
+        self.decks = [[JewelCard(**card) for card in data["level"+str(l+1)]] for l in range(3)]
+        # and shuffle each deck
         for i in range(3):
-            self.pyramid[2].append(self.decks[2].pop())
+            shuffle(self.decks[i])
+
+        # The same for the Royal Cards
+        self.royalCards = [RoyalCard(**card) for card in data["royal"]]
+
+        # distribute cards to the pyramid
+        self.pyramid = [
+            [self.decks[0].pop() for _ in range(5)], #list[JewelCard], #level 1 cards
+            [self.decks[1].pop() for _ in range(4)], #list[JewelCard], #level 2 cards
+            [self.decks[2].pop() for _ in range(3)]  #list[JewelCard]  #level 3 cards
+        ]
+
+        # prepare the bank (of tokens) and distribute them to the board
+        self.bank = [PEARL,]*2 + [GOLD,]*3 + [BLUE_SAPPHIRE,]*4 + [DIAMOND,]*4 + [EMERALD,]*4 + [RUBY,]*4 + [OBSIDIAN,]*4
+        self.distribute()
+
+
+
+    def distribute(self) -> None:
+        """distribute the remaining token on the board"""
+        # shuffle the bank
+        shuffle(self.bank)
+
+        # browse the board according to the Path
+        for x, y in Path:
+            if self.board[x][y] is None and self.bank:
+                self.board[x][y] = self.bank.pop()
 
 
     def strip_ansi(self, text: str) -> str:
@@ -499,51 +394,6 @@ class SDGameHandler:
                 print("ERROR: itemType unrecognised!")
 
 
-    def redistribute(self) -> None:
-
-        #Basically, we go on the board, we check the first index. If it's already full, we go to the next (case given
-        #by the self._boardCompletion map).
-        #If a case is empty, we randomly choose one of the indices from the list of the bank. If the index is empty,
-        #we choose another one until we get to an available token.
-        #If there's no available token, the distribution is done
-
-        # algorithm idea:
-        # while the next case isn't -1-1,
-        #   if the case isn't complete
-        #       take a random token from the bank,
-        #       put it on the board
-        #       subtract it to the bank
-        #   go to the next case
-
-        coords = [2,2]
-        bank = self.bank()
-
-        # browse the board
-        for position in PositionIterator(coords):
-            x, y = position
-
-            if self.board[x][y] is None:
-                #random token from the bank
-                #Can most likely be optimised.
-                #e.g. pop the random one which doesn't work from the [1,2,...,7] list, then choose from it?
-                randomToken = randint(1,7)
-
-                # if the bank isn't empty
-                if bank != [None, 0, 0, 0, 0, 0, 0, 0]:
-                    #wait until we're in a case which is not full
-                    while bank[randomToken] == 0:
-                        randomToken = randint(1,7)
-                    self.update_board(randomToken, [x, y])
-                    bank[randomToken] -= 1
-
-
-
-        #need to check whether the bank is empty?
-        for token in range(1,7):
-            if bank[token] != 0:
-                print(f"ERROR: the bank isn't empty after refilling the board! (item {tokenTypes[token]}: {bank[token]} in the bank)")
-
-
     def tokenCapture(self,coords: list[list], player: int) -> None:
         """
         checks whether the list of coordinates given is legit. (<4 elements in the list, all following each other in vertical,
@@ -691,7 +541,7 @@ class SDGameHandler:
                     self.inventories[player].addToken(self.board[x[0]][x[1]], 1)
                     listCount[ self.board [x[0]] [x[1]] - 1] += 1
                     # replace tokens on the board
-                    self.update_board(None, x)
+                    self.board[x[0]][x[1]] = None
 
         # Checking whether they're capturing two pearls or three gemstones
         if listCount[0] == 2:
@@ -785,59 +635,6 @@ class SDGameHandler:
             player -= 1
 
         self.addToInventory(player+1,JEWEL_CARD, self.inventories[player].bookedCards.pop(cardIndex))
-
-
-
-# Used for browsing the board. Used to redistribute tokens (see SDGameHandler.redistribute())
-class PositionIterator:
-    def __init__(self, coords: List[int]):
-        self.directions = {
-            "N":(-1,0),
-            "S":(1,0),
-            "E":(0,1),
-            "W":(0,-1)
-        }
-        self.boardCompletion = (
-            ("E", "E", "E", "E", "S"),	# North
-            ("N", "E", "E", "S", "S"),	# South
-            ("N", "N", "S", "S", "S"),	# East
-            ("N", "N", "W", "S", "S"),	# West
-            ("N", "W", "W", "W", None)	# None when complete (index (4,4)), beginning at index (2,2)
-        )
-        self.current = coords
-        self.started = False
-
-    def __iter__(self) -> Iterator[List[int]]:
-        return self
-
-    def __next__(self):
-        if not self.started:
-            self.started = True
-            return self.current #returns first position (= [2,2] here)
-
-        x,y = self.current
-        _next = self.boardCompletion[x][y]
-        if _next is None: #either out of indices (I guess?? or mb IndexError would be raised?) or last index
-            raise StopIteration
-        #boardCompletion[][] = direction letter
-
-        #calc next position
-        dx,dy = self.directions[_next]
-        x_f = x + dx
-        y_f = y + dy
-
-        #check whether the next position is valid. Stop iteration if not (will most likely result in an error which is
-        #outside the scope of the iterator though).
-        # if x ∉ [0;length(board)], stop
-        if not (0 <= x_f or x_f < len(self.boardCompletion)):
-            raise StopIteration
-        # if y ∉ [0;length(board)], stop
-        if not (0 <= y_f or y_f < len(self.boardCompletion)):
-            raise StopIteration
-
-        #return the next position
-        self.current = [x_f,y_f]
-        return self.current
 
 
 
