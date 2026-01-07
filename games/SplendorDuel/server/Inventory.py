@@ -6,110 +6,93 @@ from .Constants import *
 from .JewelCard import JewelCard
 from .RoyalCard import RoyalCard
 
+
 @dataclass
 class Inventory:
-    _nbPrivileges   : int = 0
-    tokens          : list[int|None] = field(default_factory = lambda :
-        [None, 0, 0, 0, 0, 0, 0, 0])
-    jewelCards      : dict = field(default_factory = lambda :{
-        None            : [], #list[JewelCard],
-        BLUE_SAPPHIRE   : [], #list[JewelCard],
-        DIAMOND         : [], #list[JewelCard],
-        EMERALD         : [], #list[JewelCard],
-        RUBY            : [], #list[JewelCard],
-        OBSIDIAN        : []  #list[JewelCard]
+    """class to list of the tokens and cards owned by a player."""
+    nbPrivileges: int = 0
+    tokens: dict = field(default_factory=lambda: {
+        BLUE_SAPPHIRE: 0, DIAMOND: 0, EMERALD: 0, RUBY: 0, OBSIDIAN: 0
     })
-    bookedCards     : list[JewelCard] = field(default_factory = lambda: []) #three booked cards at most
-    royalCards      : list[RoyalCard] = field(default_factory = lambda: [])
-    thresholds      : list[bool] = field(init = False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
+    jewelCards: dict = field(default_factory=lambda: {
+        BLUE_SAPPHIRE: [], DIAMOND: [], EMERALD: [], RUBY: [], OBSIDIAN: []
+    })
+    bookedCards: list[JewelCard] = field(default_factory=lambda: []) #three booked cards at most
+    royalCards: list[RoyalCard] = field(default_factory=lambda: [])
+    #thresholds: list[bool] = field(init=False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
 
-    def __post_init__(self):
-        self.thresholds = [False, False]
+    # def __post_init__(self):
+    #     self.thresholds = [False, False]
 
 
-    #Getters & whatnot
     def nbPrestige(self, _type: int|None) -> int:
         """
-        Returns the amount of prestige points.
-        To get all the prestige points (including the ones from royal cards), _type should be -1.
+        Returns the number of prestige points.
+        To get all the prestige points (including the ones from royal cards), _type should be None.
         """
         #run through all the jewelCards colors;
         #run through all the cards;
         #sum up all the prestige points
 
-        if _type == -1:
-            return sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList) + sum(card.nbPrestige for card in self.royalCards)
+        if _type is None:
+            return (sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList) +
+                    sum(card.nbPrestige for card in self.royalCards))
         else:
-            try:
-                return sum(card.nbPrestige for card in self.jewelCards[_type])
-            except KeyError:
-                print(f"ERROR: No such Jewel Card type ({_type}) exists!")
-                return -1
+            return sum(card.nbPrestige for card in self.jewelCards[_type])
 
     def nbCrowns(self) -> int:
         """
-        Returns the total amount of crowns in the inventory.
+        Returns the total number of crowns in the inventory.
         """
         return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
 
-    @property
-    def nbPrivileges(self) -> int:
-        """
-        returns the amount of privileges
-        """
-        return self._nbPrivileges
 
-    def nbJewelCards(self, _type: int|None) -> int:
+    def nbJewelCards(self, _type: int) -> int:
         """
         Returns the number of jewels of a specified type.
         """
         #go through all the cards, select every _type card, sum them.
-        if _type is None:
-            #should be 0 caus there is no such thing as a None jewel
-            return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType is None)
-        else:
-            return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType == _type)
-
-    def nbTokens(self, _type: int) -> int:
-        """
-        Returns the amount of tokens of a specified type.
-        """
-        return self.tokens[_type]
-
-    def nbRoyalCards(self) -> int:
-        return len(self.royalCards)
+        return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType == _type)
 
 
+    # def nbTokens(self, _type: int) -> int:
+    #     """
+    #     Returns the number of tokens of a specified type.
+    #     """
+    #     return len(self.tokens[_type])
+    #
+    #
+    # def nbRoyalCards(self) -> int:
+    #     """Returns the number of royal cards in the inventory."""
+    #     return len(self.royalCards)
 
-    #Setters & similar methods
-    
-    @nbPrivileges.setter
-    def nbPrivileges(self, val) -> None:
-        self._nbPrivileges = val
 
-    def addJewelCard(self, jewelCard) -> None:
-        """
-        pops jewelCardsList[index] to add it to the inventory.
-        jewelCardsList is either the level 1, 2  or 3 deck.
-        """
-        self.jewelCards[jewelCard.tokenType].append(jewelCard)
 
-    def chooseRoyalCard(self, card: RoyalCard) -> None:
-        """
-        Choosing a Royal Card requires a player to pass either 3 or 6 crowns.
-        (Checking when someone passes 3 or 6 crowns will be done somewhere else?)
-        """
-        if self.nbCrowns() >= 3 and self.thresholds[0] == False:
-            self.thresholds[0] = True
-            self.royalCards.append(card)
-        elif self.nbCrowns() >= 6 and self.thresholds[1] == False:
-            self.thresholds[1] = True
-            self.royalCards.append(card)
-        else:
-            print(f"ERROR: shouldn't choose a royal card! ({self.nbCrowns()} crowns)")
-            #TODO : raise an exception ?
+    # def addJewelCard(self, jewelCard) -> None:
+    #     """
+    #     pops jewelCardsList[index] to add it to the inventory.
+    #     jewelCardsList is either the level 1, 2  or 3 deck.
+    #     """
+    #     self.jewelCards[jewelCard.tokenType].append(jewelCard)
+    #
 
-    def buyJewelCard(self, card: JewelCard) -> List[bool|int]:
+    # def chooseRoyalCard(self, card: RoyalCard) -> None:
+    #     """
+    #     Choosing a Royal Card requires a player to pass either 3 or 6 crowns.
+    #     (Checking when someone passes 3 or 6 crowns will be done somewhere else?)
+    #     """
+    #     if self.nbCrowns() >= 3 and self.thresholds[0] == False:
+    #         self.thresholds[0] = True
+    #         self.royalCards.append(card)
+    #     elif self.nbCrowns() >= 6 and self.thresholds[1] == False:
+    #         self.thresholds[1] = True
+    #         self.royalCards.append(card)
+    #     else:
+    #         print(f"ERROR: shouldn't choose a royal card! ({self.nbCrowns()} crowns)")
+    #         #TODO : raise an exception ?
+
+
+    def buyJewelCard(self, card: JewelCard) -> tuple[bool, int]:
         """
         Just checks whether we can add the card to the inventory.
         Returns a list in the following format: [playAgain: bool ; specialMove: int]

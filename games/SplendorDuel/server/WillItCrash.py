@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # for card in cards:
     #     jewel_cards_dict[card.tokenType].append(card)
 
-    inv = Inventory(_nbPrivileges = 0, jewelCards = jewel_cards_dict)
+    inv = Inventory(nbPrivileges= 0, jewelCards = jewel_cards_dict)
 
     #-------------------------------------------------------------------------------------------------------------------
     #check for errors ✅

@@ -17,6 +17,7 @@ Copyright 2025 B. Lamon
 
 from colorama import Fore, Back, Style
 
+
 # 2 pearls, 3 gold, 4 for each gemstone.
 # Pearl, Gold, Blue Sapphire, Diamond (clear),	(Names I've chosen, no clue whether
 # Emerald (green), Ruby (red), Obsidian (black)	there's official color names...)
@@ -35,80 +36,70 @@ tokenTypes = [
                         # really needed though? not sure.
 ]
 
-NONE            =   None
-PEARL           =   1
-GOLD            =   2
-BLUE_SAPPHIRE   =   3
-DIAMOND         =   4
-EMERALD         =   5
-RUBY            =   6
-OBSIDIAN        =   7
+
+NONE = None
+PEARL = 1
+GOLD = 2
+BLUE_SAPPHIRE = 3
+DIAMOND = 4
+EMERALD = 5
+RUBY = 6
+OBSIDIAN = 7
 
 tokenTypesDict = {
-    "None"          :    None,
-    "Pearl"         :    PEARL,
-    "Gold"          :    GOLD,
-    "Blue Sapphire" :    BLUE_SAPPHIRE,
-    "Diamond"       :    DIAMOND,
-    "Emerald"       :    EMERALD,
-    "Ruby"          :    RUBY,
-    "Obsidian"      :    OBSIDIAN,
+    "None":    None,
+    "Pearl":    PEARL,
+    "Gold":    GOLD,
+    "Blue Sapphire":    BLUE_SAPPHIRE,
+    "Diamond":    DIAMOND,
+    "Emerald":    EMERALD,
+    "Ruby":    RUBY,
+    "Obsidian":    OBSIDIAN,
 }
 
 tokenTypesInt = [NONE, PEARL, GOLD, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN]
 
 
-tokenColors = [
-    Fore.RESET      + Style.NORMAL  + Back.RESET,   # NONE
-    Fore.MAGENTA    + Style.BRIGHT  + Back.RESET,   # PEARL
-    Fore.YELLOW     + Style.BRIGHT  + Back.RESET,   # GOLD
-    Fore.BLUE       + Style.NORMAL  + Back.RESET,   # SAPPHIRE
-    Fore.WHITE      + Style.BRIGHT  + Back.RESET,   # DIAMOND
-    Fore.GREEN      + Style.NORMAL  + Back.RESET,   # EMERALD
-    Fore.RED        + Style.NORMAL  + Back.RESET,   # RUBY
-    Fore.WHITE      + Style.DIM     + Back.RESET    # OBSIDIAN
-]
-
-tokenEmojis = [
-    {
-    None            : "🃏",
-    PEARL           : "🟣",
-    GOLD            : "🟡",
-    BLUE_SAPPHIRE   : "🔵",
-    DIAMOND         : "⚪",
-    EMERALD         : "🟢",
-    RUBY            : "🔴",
-    OBSIDIAN        : "⚫"
-    },
-    {
-        None            : "🃏",
-        PEARL           : "🟪",
-        GOLD            : "🟨",
-        BLUE_SAPPHIRE   : "🟦",
-        DIAMOND         : "⬜",
-        EMERALD         : "🟩",
-        RUBY            : "🟥",
-        OBSIDIAN        : "⬛"
-    },
-    {
-        None            : f"{tokenColors[0]}N",
-        PEARL           : f"{tokenColors[1]}{tokenTypes[1][0]}",
-        GOLD            : f"{tokenColors[2]}{tokenTypes[2][0]}",
-        BLUE_SAPPHIRE   : f"{tokenColors[3]}{tokenTypes[3][0]}",
-        DIAMOND         : f"{tokenColors[4]}{tokenTypes[4][0]}",
-        EMERALD         : f"{tokenColors[5]}{tokenTypes[5][0]}",
-        RUBY            : f"{tokenColors[6]}{tokenTypes[6][0]}",
-        OBSIDIAN        : f"{tokenColors[7]}{tokenTypes[7][0]}"
-    }
-]
-
-maxTokenAmounts = {
-    token: (  None if token == "None"
-            else 2 if token == "Pearl"       # 2 pearls
-            else 3 if token == "Gold"   # 3 gold tokens
-            else 4)                     # 4 gemstone tokens
-            for i,token in enumerate(tokenTypes)
+tokenColors = {
+    None: Fore.RESET + Style.NORMAL + Back.RESET,
+    PEARL: Fore.MAGENTA + Style.BRIGHT + Back.RESET,
+    GOLD: Fore.YELLOW + Style.BRIGHT + Back.RESET,
+    BLUE_SAPPHIRE: Fore.BLUE + Style.NORMAL + Back.RESET,
+    DIAMOND: Fore.WHITE + Style.BRIGHT + Back.RESET,
+    EMERALD: Fore.GREEN + Style.NORMAL + Back.RESET,
+    RUBY: Fore.RED + Style.NORMAL + Back.RESET,
+    OBSIDIAN: Fore.WHITE + Style.DIM + Back.RESET
 }
+
+tokenEmojis = [{
+    None: "🃏",
+    PEARL: "🟣",
+    GOLD: "🟡",
+    BLUE_SAPPHIRE: "🔵",
+    DIAMOND: "⚪",
+    EMERALD: "🟢",
+    RUBY: "🔴",
+    OBSIDIAN: "⚫"
+}, {
+    None: "🃏",
+    PEARL: "🟪",
+    GOLD: "🟨",
+    BLUE_SAPPHIRE: "🟦",
+    DIAMOND: "⬜",
+    EMERALD: "🟩",
+    RUBY: "🟥",
+    OBSIDIAN: "⬛"
+}, {c: tokenColors[c] + name[0] for name, c in tokenTypesDict.items()}
+]
+
+#
+# maxTokenAmounts = {
+#     token: (  None if token == "None"
+#             else 2 if token == "Pearl"       # 2 pearls
+#             else 3 if token == "Gold"   # 3 gold tokens
+#             else 4)                     # 4 gemstone tokens
+#             for i,token in enumerate(tokenTypes)
+# }
 
 
 # Abilities
@@ -118,57 +109,58 @@ abilities = ["PlayAgain",
              "GetAPrivilegeScroll", # If none available, steal from the opponent
              "StealGemstonePearl"]  # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
 
-PLAY_AGAIN      =   1
-CHOOSE_GEMSTONE =   2
-TAKE_A_TOKEN    =   3
-GET_PRIVILEGE   =   4
-STEAL_GEMSTONE  =   5
+PLAY_AGAIN = 1
+CHOOSE_GEMSTONE = 2
+TAKE_A_TOKEN = 3
+GET_PRIVILEGE = 4
+STEAL_GEMSTONE = 5
+
 
 abilitiesDictionary = {
-    abilities[0]:   PLAY_AGAIN,     #🔄
-    abilities[1]:   CHOOSE_GEMSTONE,#💎
-    abilities[2]:   TAKE_A_TOKEN,   #🪙
-    abilities[3]:   GET_PRIVILEGE,  #🗞️
-    abilities[4]:   STEAL_GEMSTONE  #🫳
+    "PlayAgain":   PLAY_AGAIN,     #🔄
+    "ChooseGemstone":   CHOOSE_GEMSTONE,#💎
+    "TakeAToken":   TAKE_A_TOKEN,   #🪙
+    "GetAPrivilegeScroll":   GET_PRIVILEGE,  #🗞️
+    "StealGemstonePearl":   STEAL_GEMSTONE  #🫳
 }
 
-# Items
-items = ["Token",
-         "Jewel Card",
-         "Booked Card",
-         "Royal Card",
-         "Privilege"
-]
-
-TOKEN = 0
-JEWEL_CARD = 1
-BOOKED_CARD = 2
-ROYAL_CARD = 3
-PRIVILEGE = 4
-
-itemsDictionary = {
-    items[0] : TOKEN,
-    items[1] : JEWEL_CARD,
-    items[2] : BOOKED_CARD,
-    items[3] : ROYAL_CARD,
-    items[4] : PRIVILEGE
+abilitiesEmoji = {
+    PLAY_AGAIN: "🔄",
+    CHOOSE_GEMSTONE: "💎",
+    TAKE_A_TOKEN: "🪙",
+    GET_PRIVILEGE: "🗞️",
+    STEAL_GEMSTONE: "🫳"
 }
 
-itemsEmoji = {
-    items[0] : "🪙",
-    items[1] : "💎",
-    items[2] : "🎟️",
-    items[3] : "👑",
-    items[4] : "🗞️",
-}
 
-# Board completion map
-# useful to indicate where to put the next token
-boardCompletion = (
-    ("E", "E", "E", "E", "S"),      # North
-    ("N", "E", "E", "S", "S"),      # South
-    ("N", "N", "S", "S", "S"),      # East
-    ("N", "N", "W", "S", "S"),      # West
-    ("N", "W", "W", "W", None)      # None when complete (index (4,4)), beginning at index (2,2)
-)
+# # Items
+# items = ["Token",
+#          "Jewel Card",
+#          "Booked Card",
+#          "Royal Card",
+#          "Privilege"
+# ]
+
+# TOKEN = 0
+# JEWEL_CARD = 1
+# BOOKED_CARD = 2
+# ROYAL_CARD = 3
+# PRIVILEGE = 4
+#
+# itemsDictionary = {
+#     items[0] : TOKEN,
+#     items[1] : JEWEL_CARD,
+#     items[2] : BOOKED_CARD,
+#     items[3] : ROYAL_CARD,
+#     items[4] : PRIVILEGE
+# }
+#
+# itemsEmoji = {
+#     items[0] : "🪙",
+#     items[1] : "💎",
+#     items[2] : "🎟️",
+#     items[3] : "👑",
+#     items[4] : "🗞️",
+# }
+
 

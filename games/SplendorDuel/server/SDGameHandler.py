@@ -59,6 +59,7 @@ class SDGameHandler:
         for i in range(3):
             shuffle(self.decks[i])
 
+
         # The same for the Royal Cards
         self.royalCards = [RoyalCard(**card) for card in data["royal"]]
 
