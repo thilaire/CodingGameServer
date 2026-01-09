@@ -66,7 +66,7 @@ class SDGameHandler:
         # The same for the Royal Cards
         self.royalCards = [Card(**card) for card in data["royal"]]
         for c in self.royalCards:
-            print("\n".join(c.cardDraw(False)))
+            print("\n".join(c.cardDraw(True)))
 
 
             # distribute cards to the pyramid

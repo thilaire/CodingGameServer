@@ -59,8 +59,9 @@ class Card:
         #royal card
         if self.isRoyal():
             strCrowns = Fore.YELLOW+Style.BRIGHT \
-                + leftPadding(f"{RoyalEmoji[emoji]}", 3) \
+                + leftPadding(f"{RoyalEmoji[emoji]}", 5) \
                 + Fore.RESET+Style.NORMAL
+            strJewel = " "
 
         cardStrList = [
             f"┌───────────┐",
@@ -76,7 +77,7 @@ class Card:
 
     def isRoyal(self) -> bool:
         """returns True if the card is a Royal Card, False otherwise"""
-        return self.nbJewel == 0 and self.nbCrowns == 0 and self.requirements == [0, 0, 0, 0, 0, 0]
+        return self.nbJewel == 0 and self.nbCrowns == 0 and self.requirements == {1: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
 
 
     def __post_init__(self):

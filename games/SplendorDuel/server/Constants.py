@@ -149,7 +149,7 @@ abilitiesEmoji = {
 
 PrestigeEmoji = {True: "✨", False: "PP"}
 CrownEmoji = {True: "👑", False: "CR"}
-RoyalEmoji = {True: "🤴", False: "  "}
+RoyalEmoji = {True: "🤴", False: "ROYAL"}
 # # Items
 # items = ["Token",
 #          "Jewel Card",
