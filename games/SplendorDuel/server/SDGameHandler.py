@@ -23,8 +23,8 @@ from wcwidth import wcswidth
 from re import compile
 
 from .Inventory import Inventory
-from .JewelCard import JewelCard
-from .RoyalCard import RoyalCard
+from .Card import Card
+
 
 
 ansi_escape = compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')  # used to avoid miscounting characters w/ self.strip_ansi()
@@ -54,16 +54,22 @@ class SDGameHandler:
         # load the cards from the JSON file
         with open("cards/data.json", "r") as file:
             data = load(file)
-        self.decks = [[JewelCard(**card) for card in data["level"+str(l+1)]] for l in range(3)]
+        self.decks = [[Card(**card) for card in data["level" + str(l + 1)]] for l in range(3)]
         # and shuffle each deck
         for i in range(3):
             shuffle(self.decks[i])
+            for c in self.decks[i]:
+                print("\n".join(c.cardDraw(True)))
+
 
 
         # The same for the Royal Cards
-        self.royalCards = [RoyalCard(**card) for card in data["royal"]]
+        self.royalCards = [Card(**card) for card in data["royal"]]
+        for c in self.royalCards:
+            print("\n".join(c.cardDraw(False)))
 
-        # distribute cards to the pyramid
+
+            # distribute cards to the pyramid
         self.pyramid = [
             [self.decks[0].pop() for _ in range(5)], #list[JewelCard], #level 1 cards
             [self.decks[1].pop() for _ in range(4)], #list[JewelCard], #level 2 cards
@@ -103,7 +109,7 @@ class SDGameHandler:
         return s + ' ' * max(0, padding)
 
 
-    def alignStrCards(self,cards: List[JewelCard] | List[RoyalCard], emoji: bool) -> List[str]:
+    def alignStrCards(self, cards: List[Card], emoji: bool) -> List[str]:
         """
         Method that returns a list of strs of the cards, but aligned.
         """
@@ -319,7 +325,7 @@ class SDGameHandler:
                     if x[i] is None:
                         strRet += "🕳️"
                     else:
-                        strRet += tokenEmojis[0][x[i]]
+                        strRet += tokenEmojis[emoji][x[i]]
                     if i == 4:
                         strRet += " │\n" # right side of the board
             strRet += alignmentSpace + "└────────────┘" #bottom of the board
@@ -334,7 +340,7 @@ class SDGameHandler:
                     if x[i] is None:
                         strRet += ". "
                     else:
-                        strRet += tokenEmojis[2][x[i]] + Fore.RESET + " "
+                        strRet += tokenEmojis[emoji][x[i]] + Fore.RESET + " "
                     if i == 4:
                         strRet += "│\n" # right side of the board
             strRet += alignmentSpace + "└───────────┘" #bottom of the board
@@ -342,7 +348,7 @@ class SDGameHandler:
         return strRet
 
 
-    def addToInventory(self, player: int,  itemType: int, item: JewelCard | RoyalCard | int | list) -> None:
+    def addToInventory(self, player: int, itemType: int, item: Card | int | list) -> None:
         """
         Adds some item(s) in a player's inventory
 
@@ -605,7 +611,7 @@ class SDGameHandler:
             return
 
 
-    def chooseRoyalCard(self,player: int, card: RoyalCard):
+    def chooseRoyalCard(self,player: int, card: Card):
         """
         Gets a royal card inside the inventory of a player.
         Must be used whenever needed, i.e. whenever a player reaches 3 crowns or 6 crowns.

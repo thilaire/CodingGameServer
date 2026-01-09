@@ -2,10 +2,11 @@ from dataclasses import dataclass, field
 from typing import Optional, List
 
 from .Constants import *
+from .utils import leftPadding
 
 
 @dataclass
-class JewelCard:
+class Card:
     """Base class for Jewel Cards. Each jewel card will be an instance of this class."""
     tokenType: int|None  # see Constants.py
     nbJewel: int       # 0,1,2
@@ -23,56 +24,63 @@ class JewelCard:
         Will be used to display the card in the terminal.
         """
         # abilities
-        strsAbilities = abilitiesEmoji.get(self.abilities[0], "  ") + abilitiesEmoji.get(self.abilities[1], "  ")
+        strAbilities = leftPadding(" ".join(abilitiesEmoji[emoji].get(a, "") for a in self.abilities), 7)
+
         # Prestige points
         if not self.nbPrestige:
             strPrestige = "   "
-        elif emoji:
-            strPrestige = f"✨{self.nbPrestige}"
         else:
-            strPrestige = f"{Fore.WHITE}{Style.BRIGHT}PP{self.nbPrestige}{Fore.RESET}{Style.NORMAL}"
+            strPrestige = Fore.WHITE+Style.BRIGHT + leftPadding(f"{PrestigeEmoji[emoji]}{self.nbPrestige}", 3) + Fore.RESET+Style.NORMAL
+
         # Crown points
         if not self.nbCrowns:
             strCrowns = "   "
-        elif emoji:
-            strCrowns = f"👑{self.nbCrowns}"
         else:
-            strCrowns = f"{Fore.YELLOW}{Style.BRIGHT}CR{self.nbCrowns}{Fore.RESET}{Style.NORMAL}"
+           strCrowns = Fore.YELLOW+Style.BRIGHT + leftPadding(f"{CrownEmoji[emoji]}{self.nbCrowns}", 3) + Fore.RESET+Style.NORMAL
+
         # jewel
         if not self.nbJewel:
             strJewel = "   "
-        elif emoji:
-            strJewel = f"{tokenEmojis[1][self.tokenType]}{self.nbJewel}"
         else:
-            strJewel = f"{tokenColors[self.tokenType]}G{tokenTypes[self.tokenType][0]}{self.nbJewel}{tokenColors[None]}"
-
+            strJewel = tokenColors[self.tokenType] \
+                   + leftPadding(f"{jewelEmojis[emoji][self.tokenType]}{self.nbJewel}", 3) \
+                   + tokenColors[None]
 
         # Required tokens display
         strsTokens = []
-        for key in self.requirements:
-            if self.requirements[key]:
-                if emoji:
-                    strsTokens.append(f"{tokenEmojis[0][key]}{self.requirements[key]}")
-                else:
-                    strsTokens.append(f"{tokenColors[key]}{tokenTypes[key][0]}{self.requirements[key]}{tokenColors[None]} ")
-        strsTokens.extend(["   ", "   ", "   ", "   "])
+        for token, nb in self.requirements.items():
+            if nb:
+                strsTokens.append(tokenColors[token]
+                                  + leftPadding(f"{tokenEmojis[emoji][token]}{nb}", 3)
+                                  + tokenColors[None])
+            else:
+                strsTokens.append("   ")
+
+        #royal card
+        if self.isRoyal():
+            strCrowns = Fore.YELLOW+Style.BRIGHT \
+                + leftPadding(f"{RoyalEmoji[emoji]}", 3) \
+                + Fore.RESET+Style.NORMAL
 
         cardStrList = [
             f"┌───────────┐",
             f"│{strPrestige} {strCrowns} {strJewel}│",
             f"│{strsTokens[3]}        │",
             f"│{strsTokens[2]}        │",
-            f"│{strsTokens[1]}    {strsAbilities}│",
+            f"│{strsTokens[1]} {strAbilities}│",
             f"│{strsTokens[0]}        │",
             f"└───────────┘"
         ]
 
         return cardStrList
 
+    def isRoyal(self) -> bool:
+        """returns True if the card is a Royal Card, False otherwise"""
+        return self.nbJewel == 0 and self.nbCrowns == 0 and self.requirements == [0, 0, 0, 0, 0, 0]
+
 
     def __post_init__(self):
-        # Allow ourselves to not only use (ints | None) for tokenType (though it's what's inside JewelCard), but
-        # to also use names of the gemstones (in strings, which are all in tokenTypes & tokenTypesDict).
+        # Token handling
         if not (isinstance(self.tokenType, int) or self.tokenType is None):
             try:
                 self.tokenType = tokenTypesDict[self.tokenType]
@@ -84,13 +92,10 @@ class JewelCard:
         for ability in self.abilities:
             # using .Constants' "abilities" list
             if isinstance(ability, str):
-                if ability in abilities:
-                    try:
-                        translated_abilities.append(abilities.index(ability) + 1) # L. 113 in Constants (indexed from 1)
-                    except ValueError:
-                        print(f"ERROR: Ability '{ability}' unknown!")
-                else:
-                    translated_abilities.append(0)
+                try:
+                    translated_abilities.append(abilitiesDictionary.get(ability))
+                except ValueError:
+                    print(f"ERROR: Ability '{ability}' unknown!")
             elif isinstance(ability, int) and 0 < ability < 6:
                 translated_abilities.append(ability)
             else:
@@ -100,7 +105,7 @@ class JewelCard:
         translated_abilities.extend([0, 0])
         self.abilities = translated_abilities[:2]
 
-        #translate a requirement list in dict (didn't quite get the requirements right in the JSON file...)
+        #translate a requirement list in dict
         if isinstance(self.requirements, list):
             if len(self.requirements) != 6:
                 print("ERROR: requirement list is incorrect!")

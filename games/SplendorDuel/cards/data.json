@@ -612,23 +612,42 @@
       {
          "nbPrestige":2,
          "abilities":["PlayAgain"],
-         "_comment": "royal; req=3|6 crowns"
+         "_comment": "royal; req=3|6 crowns",
+         "tokenType":"None",
+         "nbJewel":0,
+         "nbCrowns":0,
+         "requirements":[0, 0, 0, 0, 0, 0]
       },
       {
          "nbPrestige":3,
          "abilities":[],
-         "_comment": "royal; req=3|6 crowns"
+         "_comment": "royal; req=3|6 crowns",
+         "tokenType":"None",
+         "nbJewel":0,
+         "nbCrowns":0,
+         "requirements":[0, 0, 0, 0, 0, 0]
       },
       {
          "nbPrestige":2,
          "abilities":["GetAPrivilegeScroll"],
-         "_comment": "royal; req=3|6 crowns"
+         "_comment": "royal; req=3|6 crowns",
+         "tokenType":"None",
+         "nbJewel":0,
+         "nbCrowns":0,
+         "requirements":[0, 0, 0, 0, 0, 0]
       },
       {
          "nbPrestige":2,
          "abilities":["StealGemstonePearl"],
-         "_comment": "royal; req=3|6 crowns"
+         "_comment": "royal; req=3|6 crowns",
+         "tokenType":"None",
+         "nbJewel":0,
+         "nbCrowns":0,
+         "requirements":[0, 0, 0, 0, 0, 0]
       }
 
    ]
 }
+
+
+

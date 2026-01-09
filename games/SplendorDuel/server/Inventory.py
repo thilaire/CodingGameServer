@@ -3,8 +3,7 @@ from selectors import SelectSelector
 from typing import List
 
 from .Constants import *
-from .JewelCard import JewelCard
-from .RoyalCard import RoyalCard
+from .Card import Card
 
 
 @dataclass
@@ -17,8 +16,8 @@ class Inventory:
     jewelCards: dict = field(default_factory=lambda: {
         BLUE_SAPPHIRE: [], DIAMOND: [], EMERALD: [], RUBY: [], OBSIDIAN: []
     })
-    bookedCards: list[JewelCard] = field(default_factory=lambda: []) #three booked cards at most
-    royalCards: list[RoyalCard] = field(default_factory=lambda: [])
+    bookedCards: list[Card] = field(default_factory=lambda: []) #three booked cards at most
+    royalCards: list[Card] = field(default_factory=lambda: [])
     #thresholds: list[bool] = field(init=False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
 
     # def __post_init__(self):
@@ -92,7 +91,7 @@ class Inventory:
     #         #TODO : raise an exception ?
 
 
-    def buyJewelCard(self, card: JewelCard) -> tuple[bool, int]:
+    def buyJewelCard(self, card: Card) -> tuple[bool, int]:
         """
         Just checks whether we can add the card to the inventory.
         Returns a list in the following format: [playAgain: bool ; specialMove: int]
@@ -213,7 +212,7 @@ class Inventory:
         else:
             return 0
 
-    def bookCard(self, card: JewelCard) -> int:
+    def bookCard(self, card: Card) -> int:
         if self.canBookACard() == -1:
             return -1
         else:

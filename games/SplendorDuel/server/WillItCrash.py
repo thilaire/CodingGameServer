@@ -1,9 +1,8 @@
 import json
 
-
+from random import seed
 from .SDGameHandler import SDGameHandler
-from .JewelCard import JewelCard
-from .RoyalCard import RoyalCard
+from .Card import Card
 from .Inventory import Inventory
 from .Constants import *
 
@@ -11,12 +10,10 @@ if __name__ == "__main__":
     # #-----------------------------------------------------------------------------------------------------------------
     #checking whether we can update the board ✅
     # #-----------------------------------------------------------------------------------------------------------------
+    seed(1234)
     game = SDGameHandler()
 
-    game.board[0][0] = PEARL
-    game.board[4][4] = RUBY
-
-    print(game.strBoard(True))
+    print(game.strBoard(False))
 
 
 
@@ -106,7 +103,7 @@ if __name__ == "__main__":
     # #-----------------------------------------------------------------------------------------------------------------
     print("Inventory before adding anything :")
     print(inv)
-    inv.addJewelCard(JewelCard(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0,nbPrestige=0,abilities=["PlayAgain", "ChooseGemstone"]))
+    inv.addJewelCard(Card(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0, nbPrestige=0, abilities=["PlayAgain", "ChooseGemstone"]))
     print("Inventory after adding this jewel card:")
     print(inv)
 
@@ -644,7 +641,7 @@ if __name__ == "__main__":
 
     print("Adding stuff in player1's inventory")
     RCardToAdd = game.royalCards[1]
-    JCardToBook = JewelCard(BLUE_SAPPHIRE,3,10,3,["ChooseGemstone","PlayAgain"],{BLUE_SAPPHIRE: 1},None)
+    JCardToBook = Card(BLUE_SAPPHIRE, 3, 10, 3, ["ChooseGemstone", "PlayAgain"], {BLUE_SAPPHIRE: 1}, None)
     game.addToInventory(1,BOOKED_CARD,JCardToBook)
 
     print("Dispatching tokens on the board")

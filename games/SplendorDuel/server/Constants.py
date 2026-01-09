@@ -59,7 +59,6 @@ tokenTypesDict = {
 
 tokenTypesInt = [NONE, PEARL, GOLD, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN]
 
-
 tokenColors = {
     None: Fore.RESET + Style.NORMAL + Back.RESET,
     PEARL: Fore.MAGENTA + Style.BRIGHT + Back.RESET,
@@ -71,44 +70,51 @@ tokenColors = {
     OBSIDIAN: Fore.WHITE + Style.DIM + Back.RESET
 }
 
-tokenEmojis = [{
-    None: "🃏",
-    PEARL: "🟣",
-    GOLD: "🟡",
-    BLUE_SAPPHIRE: "🔵",
-    DIAMOND: "⚪",
-    EMERALD: "🟢",
-    RUBY: "🔴",
-    OBSIDIAN: "⚫"
-}, {
-    None: "🃏",
-    PEARL: "🟪",
-    GOLD: "🟨",
-    BLUE_SAPPHIRE: "🟦",
-    DIAMOND: "⬜",
-    EMERALD: "🟩",
-    RUBY: "🟥",
-    OBSIDIAN: "⬛"
-}, {c: tokenColors[c] + name[0] for name, c in tokenTypesDict.items()}
-]
+tokenEmojis = {
+    True: {
+        None: "🃏",
+        PEARL: "🟣",
+        GOLD: "🟡",
+        BLUE_SAPPHIRE: "🔵",
+        DIAMOND: "⚪",
+        EMERALD: "🟢",
+        RUBY: "🔴",
+        OBSIDIAN: "⚫"
+},
+    False: {c: tokenColors[c] + name[0] for name, c in tokenTypesDict.items()}
+}
 
-#
-# maxTokenAmounts = {
-#     token: (  None if token == "None"
-#             else 2 if token == "Pearl"       # 2 pearls
-#             else 3 if token == "Gold"   # 3 gold tokens
-#             else 4)                     # 4 gemstone tokens
-#             for i,token in enumerate(tokenTypes)
-# }
+jewelEmojis = {
+    True: {
+            None: "🃏",
+            PEARL: "🟪",
+            GOLD: "🟨",
+            BLUE_SAPPHIRE: "🟦",
+            DIAMOND: "⬜",
+            EMERALD: "🟩",
+            RUBY: "🟥",
+            OBSIDIAN: "⬛"
+},
+    False: {c: "G" + name[0] for name, c in tokenTypesDict.items()}
+}
+
+
+tokenEmojis = {
+    True: {
+        None: "🃏",
+        PEARL: "🟣",
+        GOLD: "🟡",
+        BLUE_SAPPHIRE: "🔵",
+        DIAMOND: "⚪",
+        EMERALD: "🟢",
+        RUBY: "🔴",
+        OBSIDIAN: "⚫"
+},
+    False: {c: " " + name[0] for name, c in tokenTypesDict.items()}
+}
 
 
 # Abilities
-abilities = ["PlayAgain",
-             "ChooseGemstone",      # Need to own the gemstone card first, otherwise they can't buy a card w/ this ability
-             "TakeAToken",          # On the board
-             "GetAPrivilegeScroll", # If none available, steal from the opponent
-             "StealGemstonePearl"]  # steal a gemstone or a pearl token from the opponent. NOT GOLD TOKEN
-
 PLAY_AGAIN = 1
 CHOOSE_GEMSTONE = 2
 TAKE_A_TOKEN = 3
@@ -125,14 +131,25 @@ abilitiesDictionary = {
 }
 
 abilitiesEmoji = {
+    True: {
     PLAY_AGAIN: "🔄",
     CHOOSE_GEMSTONE: "💎",
     TAKE_A_TOKEN: "🪙",
     GET_PRIVILEGE: "🗞️",
     STEAL_GEMSTONE: "🫳"
+},
+    False: {
+        PLAY_AGAIN: "PA",
+        CHOOSE_GEMSTONE: "CG",
+        TAKE_A_TOKEN: "TT",
+        GET_PRIVILEGE: "GP️",
+        STEAL_GEMSTONE: "SG"
+    }
 }
 
-
+PrestigeEmoji = {True: "✨", False: "PP"}
+CrownEmoji = {True: "👑", False: "CR"}
+RoyalEmoji = {True: "🤴", False: "  "}
 # # Items
 # items = ["Token",
 #          "Jewel Card",
