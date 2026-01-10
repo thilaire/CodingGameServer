@@ -92,17 +92,15 @@ class Card:
         translated_abilities = list()
         for ability in self.abilities:
             # using .Constants' "abilities" list
-            if isinstance(ability, str):
+            if isinstance(ability, int) and 0 < ability < 6:
+                translated_abilities.append(ability)
+            else:
                 try:
                     translated_abilities.append(abilitiesDictionary.get(ability))
                 except ValueError:
                     print(f"ERROR: Ability '{ability}' unknown!")
-            elif isinstance(ability, int) and 0 < ability < 6:
-                translated_abilities.append(ability)
-            else:
-                print(f"ERROR: Ability '{ability}' unknown!")
-                translated_abilities.append(0)
 
+        # only two abilities allowed
         translated_abilities.extend([0, 0])
         self.abilities = translated_abilities[:2]
 
