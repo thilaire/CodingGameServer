@@ -18,7 +18,7 @@ are the two depictions of the same Jewel Card. The depiction changes depending o
 
 The second depiction is working fine on Kubuntu (Ubuntu with the KDE Plasma desktop environment). It'll most likely work fine with a vanilla Ubuntu.
 
-However, if you want reliability in the depiction (i.e. not having to deal with misaligned texts & tables), I recommend not using emojis, as they don't always show properly (e.g. on Mac, the display is unusable). Try this yourself, it is a simple print statement so if it doesn't work, you can always switch back.
+However, if you want reliability in the depiction (i.e. not having to deal with misaligned texts & tables), I recommend not using emojis, as they don't always show properly (e.g. on Mac, the display is unusable with terminal but works fine with iTerm). Try this yourself, it is a simple print statement so if it doesn't work, you can always switch back.
 
 All of these represent (left to right, top to bottom):
 
@@ -26,10 +26,9 @@ All of these represent (left to right, top to bottom):
 
 - CRx or 👑x : number of Crowns of the card.
 
-- GMx or 🟦x: Gems of the card (colors of GM & emoji may vary, see first table below)
+- Gxy or 🟦y: Gems of the card (colors of Gx & emoji may vary, see first table below)
 
-- !! or❗: alerts that there is at least one special ability, listed just below the exclamation mark.
- 
+
 - CGPA or 💎🔄: two special abilities. All the abilities are listed below in the second table.
 
 - Bx or 🔵x: number of tokens (Blue Sapphire tokens here) and/or permanent gem bonuses required in order to purchase the card. All the gem colors are listed below.
@@ -47,14 +46,13 @@ All of these represent (left to right, top to bottom):
 Please note that when not using emojis, letters are written in a color similar to the one in the emoji column (e.g. `P` is written in purple, `O` in black & whatnot)
 
 #### Table 2: Jewel Card Ability list
-| Emoji = True | Emoji = False | Meaning                                  |
-|--------------|---------------|------------------------------------------|
-| ❗           | !!            | Informs about the presence of an ability |
-| 🔄           | PA            | Play Again                               |
-| 💎           | CG            | Choose Gem (of the card)                 |
-| 🪙           | TT            | Take a Token (on the board)              |
-| 🗞️           | PS            | get a Privilege Scroll                   |
-| 🫳           | ST            | Steal a Token from your opponent         |
+| Emoji = True | Emoji = False | Meaning                        |
+|--------------|---------------|--------------------------------|
+| 🔄           | PA            | Play Again                     |
+| 💎           | CG            | Choose Gem (of the card)       |
+| 🪙           | TT            | Take a Token (on the board)    |
+| 🗞️           | GP            | get a Privilege Scroll         |
+| 🫳           | SG            | Steal a Gem from your opponent |
 
 
 #### Table 3: Token emoji signification 
