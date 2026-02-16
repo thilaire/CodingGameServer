@@ -38,7 +38,7 @@ setup(
 	long_description=readme(),
 	classifiers=[
 		'License :: OSI Approved :: GPL License',
-		'Programming Language :: Python :: 3.6',
+		'Programming Language :: Python :: 3.10',
 		'Topic :: Education',
 	],
 	keywords='coding game server',
