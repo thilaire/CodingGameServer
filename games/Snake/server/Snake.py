@@ -208,7 +208,7 @@ class Snake(Game):
 		self.counter = [0, 0]
 
 		# call the superclass constructor (only at the end, because the superclass constructor launches
-		# the players and they will immediately requires some Labyrinth's properties)
+		# the players and they will immediately require some Labyrinth's properties)
 		super().__init__(player1, player2, **options)
 
 
@@ -261,7 +261,7 @@ class Snake(Game):
 
 	def __str__(self):
 		"""
-		Convert a Game into string (to be send to clients, and display)
+		Convert a Game into string (to be sent to clients, and display)
 		"""
 		# iter over each element of the array
 		lines = []
