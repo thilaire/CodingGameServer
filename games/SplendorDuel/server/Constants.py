@@ -32,8 +32,6 @@ tokenTypes = [
     "Emerald",          # Green gemstone token
     "Ruby",             # Red gemstone token
     "Obsidian",         # Black gemstone token
-    "Any"               # Not really relevant for tokens. Used for jewel cards.
-                        # really needed though? not sure.
 ]
 
 
@@ -101,7 +99,7 @@ jewelEmojis = {
 
 tokenEmojis = {
     True: {
-        None: "🃏",
+        None: "🕳️",
         PEARL: "🟣",
         GOLD: "🟡",
         BLUE_SAPPHIRE: "🔵",
@@ -112,7 +110,7 @@ tokenEmojis = {
 },
     False: {c: " " + name[0] for name, c in tokenTypesDict.items()}
 }
-
+tokenEmojis[False][None] = " "
 
 # Abilities
 PLAY_AGAIN = 1
@@ -150,6 +148,7 @@ abilitiesEmoji = {
 PrestigeEmoji = {True: "✨", False: "PP"}
 CrownEmoji = {True: "👑", False: "CR"}
 RoyalEmoji = {True: "🤴", False: "ROYAL"}
+privilegeEmoji = {True: "🗞️", False: "PR"}
 # # Items
 # items = ["Token",
 #          "Jewel Card",

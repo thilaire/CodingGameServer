@@ -34,19 +34,21 @@ ansi_escape = compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')  # used to avoid
 Path = [(2, 2), (3, 2), (3, 1), (2, 1), (1, 1), (1, 2), (1, 3), (2, 3), (3, 3), (4, 3), (4, 2), (4, 1), (4, 0), (3, 0), (2, 0), (1, 0), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
 
 
+def drawCards(cards: List[Card], emoji: bool) -> List[str]:
+    """
+    Method that returns a list of strs of the cards
+    """
+    d = list(map(lambda x: x.draw(emoji), cards))
+    return list(map(lambda x: " ".join(x), list(zip(*d))))
+
+
 class SDGameHandler:
     """contains the data of the game, and the methods to check if a move is legal"""
     def __init__(self):
 
         # 5*5 matrix for the board.
         # On each case of the board, there may be a token
-        self.board = [
-            [None, None, None, None, None],
-            [None, None, None, None, None],
-            [None, None, None, None, None],
-            [None, None, None, None, None],
-            [None, None, None, None, None]
-        ]
+        self.board = [[None for _ in range(5)] for _ in range(5)]
 
         # empty inventories for the two players
         self.inventories = [Inventory(), Inventory()]
@@ -58,22 +60,16 @@ class SDGameHandler:
         # and shuffle each deck
         for i in range(3):
             shuffle(self.decks[i])
-            for c in self.decks[i]:
-                print("\n".join(c.cardDraw(True)))
-
-
 
         # The same for the Royal Cards
         self.royalCards = [Card(**card) for card in data["royal"]]
-        for c in self.royalCards:
-            print("\n".join(c.cardDraw(True)))
+        shuffle(self.royalCards)
 
-
-            # distribute cards to the pyramid
+        # distribute cards to the pyramid
         self.pyramid = [
-            [self.decks[0].pop() for _ in range(5)], #list[JewelCard], #level 1 cards
-            [self.decks[1].pop() for _ in range(4)], #list[JewelCard], #level 2 cards
-            [self.decks[2].pop() for _ in range(3)]  #list[JewelCard]  #level 3 cards
+            [self.decks[0].pop() for _ in range(5)],    # level 1 cards
+            [self.decks[1].pop() for _ in range(4)],    # level 2 cards
+            [self.decks[2].pop() for _ in range(3)]     # level 3 cards
         ]
 
         # prepare the bank (of tokens) and distribute them to the board
@@ -108,34 +104,6 @@ class SDGameHandler:
         padding = width - visual_len
         return s + ' ' * max(0, padding)
 
-
-    def alignStrCards(self, cards: List[Card], emoji: bool) -> List[str]:
-        """
-        Method that returns a list of strs of the cards, but aligned.
-        """
-        cardStrList = [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-        ]
-        for i in range(len(cards)):
-            try:
-                for j in range(len(cards[i].cardDraw(emoji))):
-                    cardStrList[j] += cards[i].cardDraw(emoji)[j]
-            except AttributeError:
-                if cards[i] is None:
-                    cardStrList[0] += "┌───────────┐"
-                    for j in range(5):
-                        cardStrList[j+1] += "│           │"
-                    cardStrList[6] += "└───────────┘"
-
-        return cardStrList
-
-
     def strPyramid(self, emoji: bool = True) -> str:
         """
                   Returns the pyramid of cards as a string.
@@ -145,12 +113,12 @@ class SDGameHandler:
         level = 0
         for x in self.pyramid:
             for i in range(len(x)): #level
-                for j in range(len(x[i].cardDraw(emoji))): #line
+                for j in range(len(x[i].draw(emoji))): #line
                     try:
-                        lines[level][j] += x[i].cardDraw(emoji)[j]
+                        lines[level][j] += x[i].draw(emoji)[j]
 
                     except IndexError:
-                        lines[level].append(x[i].cardDraw(emoji)[j])
+                        lines[level].append(x[i].draw(emoji)[j])
             level += 1
         strp = str()
         for i in range(len(lines)):
@@ -164,94 +132,61 @@ class SDGameHandler:
         return strp
 
 
-    def strInventory(self, player: int, isPlayer: bool, emoji: bool) -> str:
+    def strInventory(self, player: int, full: bool, emoji: bool) -> str:
         """
         returns the str of an inventory.
         player      : number of the player (1 or 2)
-        isPlayer    : displays the booked cards (if any)
+        full        : displays the full information or not (booked and royal cards, if any)
         emoji       : prints w/ emojis if True, prints w/ console colors if False
         """
-        if not (0 < player < 3):
-            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
-            return ""
-        else:
-            player -= 1
+        # booked cards
+        strBooked = ""
+        if full:
+            alignedCards = drawCards(self.inventories[player].bookedCards, emoji)
+            space = " "*(55-14*len(self.inventories[player].bookedCards))
+            for x in alignedCards:
+                strBooked += f"│ {x}{space}│\n"
+        # royal cards
+        strRoyal = ""
+        if full:
+            alignedCards = drawCards(self.inventories[player].royalCards, emoji)
+            space = " "*(55-14*len(self.inventories[player].royalCards))
+            for x in alignedCards:
+                strRoyal += f"│ {x}{space}│\n"
+        # prestige cards
+        nbPP = f"{self.inventories[player].nbPrestige(None)},"
+        if self.inventories[player].nbPrestige(None) < 10:
+            nbPP += " "
+        # tokens, cards and prestige points
+        token = ", ".join([f"{tokenEmojis[emoji][col]}{self.inventories[player].tokens[col]}" for col in (BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN)])
+        cards = ", ".join([f"{jewelEmojis[emoji][col]}{self.inventories[player].nbJewelCards(col)}" for col in (BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN)])
+        prestige = ", ".join([f"{jewelEmojis[emoji][col]}{self.inventories[player].nbPrestige(col)}" for col in (BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN)])
 
-        strInv = str()
-
-        if isPlayer:
-            strU = " (you)"
-            strBottom = str()
-            alignedCards = self.alignStrCards(self.inventories[player].bookedCards, emoji)
-            match len(self.inventories[player].bookedCards):
-                case 0:
-                    strBottom = f"└──────────────────────────────────────────────────────────┘"
-                case 1:
-                    space = "                                            "
-                    for x in alignedCards:
-                        strBottom += f"│ {x}{space}│\n"
-                    strBottom += f"└──────────────────────────────────────────────────────────┘"
-                case 2:
-                    space = "                               "
-                    for x in alignedCards:
-                        strBottom += f"│ {x}{space}│\n"
-                    strBottom += f"└──────────────────────────────────────────────────────────┘"
-                case 3:
-                    space = "                  "
-                    for x in alignedCards:
-                        strBottom += f"│ {x}{space}│\n"
-                    strBottom += f"└──────────────────────────────────────────────────────────┘"
-
-        else:
-            strU = "──────"
-            strBottom = f"└──────────────────────────────────────────────────────────┘"
-
-
-        if emoji:
-            if self.inventories[player].nbPrestige(-1) >= 10:
-                nbPP = f"{self.inventories[player].nbPrestige(-1)},"
-            else:
-                nbPP = f" {self.inventories[player].nbPrestige(-1)}, "
-            strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
-            strInv += f"│ - Tokens        :     {tokenEmojis[0][1]}{self.inventories[player].tokens[1]}, {tokenEmojis[0][2]}{self.inventories[player].tokens[2]}, {tokenEmojis[0][3]}{self.inventories[player].tokens[3]}, {tokenEmojis[0][4]}{self.inventories[player].tokens[4]}, {tokenEmojis[0][5]}{self.inventories[player].tokens[5]}, {tokenEmojis[0][6]}{self.inventories[player].tokens[6]}, {tokenEmojis[0][7]}{self.inventories[player].tokens[7]}  │\n"
-            strInv += f"│ - Cards (jewels):               {tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}  │\n"
-            strInv += f"│ - Prestige      : Total:{nbPP} {tokenEmojis[1][None]}{self.inventories[player].nbPrestige(None)},{tokenEmojis[1][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}, {tokenEmojis[1][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}, {tokenEmojis[1][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}, {tokenEmojis[1][RUBY]}{self.inventories[player].nbPrestige(RUBY)}, {tokenEmojis[1][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}  │\n"
-            strInv += f"│ - Privileges    : {itemsEmoji[items[4]]} {self.inventories[player].nbPrivileges}                                   │\n"
-            strInv += f"│ - Crowns        : {itemsEmoji[items[3]]} {self.inventories[player].nbCrowns()}                                   │\n"
-            strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
-            strInv += strBottom + "\n"
-        else:
-            if self.inventories[player].nbPrestige(-1) >= 10:
-                nbPP = f"{self.inventories[player].nbPrestige(-1)},"
-            else:
-                nbPP = f" {self.inventories[player].nbPrestige(-1)}, "
-            strInv += f"┌──────────────────────PLAYER {player + 1}{strU}──────────────────────┐\n"
-            strInv += f"│ - Tokens        :      {tokenEmojis[2][1]}{self.inventories[player].tokens[1]}{tokenColors[0]},  {tokenEmojis[2][2]}{self.inventories[player].tokens[2]}{tokenColors[0]},  {tokenEmojis[2][3]}{self.inventories[player].tokens[3]}{tokenColors[0]},  {tokenEmojis[2][4]}{self.inventories[player].tokens[4]}{tokenColors[0]},  {tokenEmojis[2][5]}{self.inventories[player].tokens[5]}{tokenColors[0]},  {tokenEmojis[2][6]}{self.inventories[player].tokens[6]}{tokenColors[0]},  {tokenEmojis[2][7]}{self.inventories[player].tokens[7]}{tokenColors[0]}  │\n"
-            strInv += f"│ - Cards (jewels):                {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbJewelCards(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbJewelCards(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbJewelCards(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbJewelCards(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbJewelCards(OBSIDIAN)}{tokenColors[0]}  │\n"
-            strInv += f"│ - Prestige      : Total:{nbPP} {tokenEmojis[2][None]}{self.inventories[player].nbPrestige(None)}{tokenColors[0]}, {tokenEmojis[2][BLUE_SAPPHIRE]}{self.inventories[player].nbPrestige(BLUE_SAPPHIRE)}{tokenColors[0]},  {tokenEmojis[2][DIAMOND]}{self.inventories[player].nbPrestige(DIAMOND)}{tokenColors[0]},  {tokenEmojis[2][EMERALD]}{self.inventories[player].nbPrestige(EMERALD)}{tokenColors[0]},  {tokenEmojis[2][RUBY]}{self.inventories[player].nbPrestige(RUBY)}{tokenColors[0]},  {tokenEmojis[2][OBSIDIAN]}{self.inventories[player].nbPrestige(OBSIDIAN)}{tokenColors[0]}  │\n"
-            strInv += f"│ - Privileges    : {self.inventories[player].nbPrivileges}                                      │\n"
-            strInv += f"│ - Crowns        : {self.inventories[player].nbCrowns()}                                      │\n"
-            strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                      │\n"
-            strInv += strBottom + "\n"
+        strInv = f"┌────────────────────────PLAYER {player}───────────────────────┐\n"
+        strInv += f"│ - Tokens        :            {token}  │\n"
+        strInv += f"│ - Cards (jewels):            {cards}  │\n"
+        strInv += f"│ - Prestige      : Total={nbPP}  {prestige}  │\n"
+        strInv += f"│ - Privileges    : {privilegeEmoji[emoji]} {self.inventories[player].nbPrivileges}                                │\n"
+        strInv += f"│ - Crowns        : {CrownEmoji[emoji]} {self.inventories[player].nbCrowns()}                                │\n"
+        strInv += f"│ - Booked cards  : {len(self.inventories[player].bookedCards)}                                   │\n"
+        if full:
+                strInv += strBooked
+                strInv += f"│ - Royal cards  : {len(self.inventories[player].royalCards)}                                    │\n"
+                strInv += strRoyal
+        strInv += f"└───────────────────────────────────────────────────────┘\n"
 
         return strInv
 
 
-    def strRoyalCards(self, emoji:bool) -> str:
-        strList = self.alignStrCards(self.royalCards, emoji)
+    def strRoyalCards(self, emoji: bool) -> str:
+        strList = drawCards(self.royalCards, emoji)
         strReturn = str()
         for x in strList:
             strReturn += x + "\n"
         return strReturn
 
 
-    def strPlayerDisplay(self,player: int, emoji:bool) -> str:
-        if not (0 < player < 3):
-            print(f"ERROR: Player should be 1 or 2! (Got player = {player})")
-            return ""
-        else:
-            player -= 1
-
+    def strPlayerDisplay(self, player: int, emoji: bool) -> str:
         #Pyramid + Royal Cards
         strRet1 =  "┌───────────────────────────────────────────────────────────────┐\n"
         strRet1 += "│                 Available cards on the board                  │\n"
@@ -269,22 +204,9 @@ class SDGameHandler:
             #Kind of outdated considering we now always have 4 elements in the list but the shifting still works
 
         # Writes the inventory (depending on `player`)
-        if player:
-            strRet2 =  self.strInventory(2, True, emoji) + "\n"
-            strRet2 += self.strInventory(1, False, emoji)
-            strRet2 += self.strBoard(emoji)
-        else:
-            strRet2 =  self.strInventory(1, True, emoji) + "\n"
-            strRet2 += self.strInventory(2, False,emoji)
-            strRet2 += self.strBoard(emoji)
+        strRet2 =  self.strInventory(player, True, emoji) + "\n"
+        strRet2 += self.strInventory(1-player, False, emoji)
 
-
-
-        ##⚠️⚠️⚠️⚠️ if WCSWidth isn't / can't be installed, just de-comment the next line and comment the next ones. (display will be slightly less pretty although usable)
-        ##return strRet1 + strRet2
-
-
-        # ⚠️⚠️⚠️⚠️ if WCSWidth isn't / can't be installed, comment the next lines until the return statement
         # Combining those blocks
         block1 = strRet1.splitlines()
         block2 = strRet2.splitlines()
@@ -302,7 +224,8 @@ class SDGameHandler:
         block2 += [''] * (maxLines - len(block2))
 
         lstRet = [line1 + "  " + line2 for line1,line2 in zip(block1,block2)]   # appends lines of block 2 to lines of block 1
-        return "\n".join(lstRet)                                                # returns a string w/ "\n" between all the lines
+        # then add the board
+        return "\n".join(lstRet) + "\n"*2 + self.strBoard(emoji)                                                # returns a string w/ "\n" between all the lines
 
 
     def strBoard(self, emoji: bool) -> str:
@@ -310,40 +233,19 @@ class SDGameHandler:
         Returns a string (with multiple "\n") to display the board (useful for `strPlayerDisplay()`)
         """
         # header display
-        strRet =  "┌──────────────────────────────────────────────────────────┐\n"
+        strRet = "┌──────────────────────────────────────────────────────────┐\n"
         strRet += "│                          BOARD                           │\n"
         strRet += "└──────────────────────────────────────────────────────────┘\n"
 
-        # Board
-        if emoji:
-            # to align the board display w/ the header
-            alignmentSpace = "                      " # 22 spaces
-            strRet += alignmentSpace + "┌────────────┐" + "\n" #top of the board
-            for x in self.board:
-                strRet += alignmentSpace + "│ " # left side of the board
-                for i in range(len(x)):
-                    if x[i] is None:
-                        strRet += "🕳️"
-                    else:
-                        strRet += tokenEmojis[emoji][x[i]]
-                    if i == 4:
-                        strRet += " │\n" # right side of the board
-            strRet += alignmentSpace + "└────────────┘" #bottom of the board
-
-        else:
-            # to align the board display w/ the header (Emojis take more space than colored letters)
-            alignmentSpace = "                       " # 23 spaces
-            strRet += alignmentSpace + "┌───────────┐" + "\n" #top of the board
-            for x in self.board:
-                strRet += alignmentSpace + "│ " # left side of the board
-                for i in range(len(x)):
-                    if x[i] is None:
-                        strRet += ". "
-                    else:
-                        strRet += tokenEmojis[emoji][x[i]] + Fore.RESET + " "
-                    if i == 4:
-                        strRet += "│\n" # right side of the board
-            strRet += alignmentSpace + "└───────────┘" #bottom of the board
+        # to align the board display w/ the header
+        alignmentSpace = 22*" "
+        strRet += alignmentSpace + "┌────────────┐" + "\n"
+        for line in self.board:
+            strRet += alignmentSpace + "│ "
+            for to in line:
+                strRet += tokenColors[to] + tokenEmojis[emoji][to] + tokenColors[None]
+            strRet += " │\n"
+        strRet += alignmentSpace + "└────────────┘"
 
         return strRet
 

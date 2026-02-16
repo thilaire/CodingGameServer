@@ -18,7 +18,7 @@ class Card:
     })
     _comment: Optional[str] = None
 
-    def cardDraw(self, emoji: bool = True) -> List[str]:
+    def draw(self, emoji: bool = True) -> List[str]:
         """
         Retunrs a list of seven strings (one per lign) that represents the card.
         Will be used to display the card in the terminal.

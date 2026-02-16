@@ -9,22 +9,15 @@ from .Card import Card
 @dataclass
 class Inventory:
     """class to list of the tokens and cards owned by a player."""
-    nbPrivileges: int = 0
-    tokens: dict = field(default_factory=lambda: {
-        BLUE_SAPPHIRE: 0, DIAMOND: 0, EMERALD: 0, RUBY: 0, OBSIDIAN: 0
-    })
-    jewelCards: dict = field(default_factory=lambda: {
-        BLUE_SAPPHIRE: [], DIAMOND: [], EMERALD: [], RUBY: [], OBSIDIAN: []
-    })
-    bookedCards: list[Card] = field(default_factory=lambda: []) #three booked cards at most
-    royalCards: list[Card] = field(default_factory=lambda: [])
-    #thresholds: list[bool] = field(init=False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
+    def __init__(self):
+        self.nbPrivileges = 0
+        self.tokens = {BLUE_SAPPHIRE: 0, DIAMOND: 0, EMERALD: 0, RUBY: 0, OBSIDIAN: 0}
+        self.jewelCards = {BLUE_SAPPHIRE: [], DIAMOND: [], EMERALD: [], RUBY: [], OBSIDIAN: []}
+        self.bookedCards = [] #three booked cards at most
+        self.royalCards = []
+        #thresholds: list[bool] = field(init=False) # for the crown cards [True, False] when reaching 3 crowns, [True, True] when reaching 6
 
-    # def __post_init__(self):
-    #     self.thresholds = [False, False]
-
-
-    def nbPrestige(self, _type: int|None) -> int:
+    def nbPrestige(self, color: int|None) -> int:
         """
         Returns the number of prestige points.
         To get all the prestige points (including the ones from royal cards), _type should be None.
@@ -32,26 +25,24 @@ class Inventory:
         #run through all the jewelCards colors;
         #run through all the cards;
         #sum up all the prestige points
-
-        if _type is None:
-            return (sum(card.nbPrestige for colorList in self.jewelCards.values() for card in colorList) +
+        if color is None:
+            return (sum(card.nbPrestige for col in self.jewelCards.keys() for card in self.jewelCards[col]) +
                     sum(card.nbPrestige for card in self.royalCards))
         else:
-            return sum(card.nbPrestige for card in self.jewelCards[_type])
+            return sum(card.nbPrestige for card in self.jewelCards[color])
 
     def nbCrowns(self) -> int:
         """
         Returns the total number of crowns in the inventory.
         """
-        return sum(card.nbCrowns for color in self.jewelCards.values() for card in color)
+        return sum(card.nbCrowns for color in self.jewelCards.keys() for card in self.jewelCards[color])
 
 
-    def nbJewelCards(self, _type: int) -> int:
+    def nbJewelCards(self, color: int) -> int:
         """
         Returns the number of jewels of a specified type.
         """
-        #go through all the cards, select every _type card, sum them.
-        return sum(card.nbJewel for color in self.jewelCards.values() for card in color if card.tokenType == _type)
+        return sum(card.nbJewel for card in self.jewelCards[color])
 
 
     # def nbTokens(self, _type: int) -> int:
@@ -67,13 +58,14 @@ class Inventory:
 
 
 
-    # def addJewelCard(self, jewelCard) -> None:
-    #     """
-    #     pops jewelCardsList[index] to add it to the inventory.
-    #     jewelCardsList is either the level 1, 2  or 3 deck.
-    #     """
-    #     self.jewelCards[jewelCard.tokenType].append(jewelCard)
-    #
+    def addJewelCard(self, jewelCard) -> None:
+        """
+        pops jewelCardsList[index] to add it to the inventory.
+        jewelCardsList is either the level 1, 2  or 3 deck.
+        """
+        #TODO: ne marche pas sur des cartes de type None !!
+        self.jewelCards[jewelCard.tokenType].append(jewelCard)
+
 
     # def chooseRoyalCard(self, card: RoyalCard) -> None:
     #     """
@@ -169,9 +161,9 @@ class Inventory:
             return [firstReturn,card.abilities[0]]
 
 
-    def chooseGemstone(self):
-        #should it be in SDGameHandler?
-        pass
+    # def chooseGemstone(self):
+    #     #should it be in SDGameHandler?
+    #     pass
 
     def addToken(self, idToken, amount) -> None:
         if idToken is None:
@@ -190,7 +182,7 @@ class Inventory:
             elif sum(x for x in self.tokens if x is not None) > 10:
                 print(f"WARNING: You should have 10 tokens at most, you need to throw {sum(x for x in self.tokens if x is not None) - 10} of them!")
 
-    def canBookACard(self) -> int:
+    def canBookACard(self) -> str:
         """
         Checks whether it's possible for this player's inventory to book a certain card.
         """
@@ -207,15 +199,14 @@ class Inventory:
         #
         
         if len(self.bookedCards) >= 3:
-            print(f"ERROR: you already have {len(self.bookedCards)} booked cards! (3 at most)")
-            return -1
+            return f"ERROR: you already have {len(self.bookedCards)} booked cards! (3 at most)"
         else:
-            return 0
+            return ""
 
-    def bookCard(self, card: Card) -> int:
-        if self.canBookACard() == -1:
-            return -1
-        else:
-            self.bookedCards.append(card)
-            return 0
-        
+    # def bookCard(self, card: Card) -> int:
+    #     if self.canBookACard() == -1:
+    #         return -1
+    #     else:
+    #         self.bookedCards.append(card)
+    #         return 0
+    #

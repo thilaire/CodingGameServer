@@ -13,37 +13,24 @@ if __name__ == "__main__":
     seed(1234)
     game = SDGameHandler()
 
-    print(game.strBoard(False))
+    #print(game.strBoard(False))
 
+    game.inventories[0].addJewelCard(game.decks[1].pop())
+    game.inventories[1].addJewelCard(game.decks[1].pop())
+    game.inventories[0].addJewelCard(game.decks[1].pop())
 
+    game.inventories[0].bookedCards.append(game.decks[1].pop())
+    game.inventories[0].bookedCards.append(game.decks[1].pop())
+    game.inventories[0].bookedCards.append(game.decks[1].pop())
 
+    game.inventories[0].royalCards.append(game.royalCards.pop())
 
-
-
-
+    #print(game.strInventory(0, True, True))
+    print(game.strPlayerDisplay(0, True))
+    print(game.strPlayerDisplay(0, False))
     # #-----------------------------------------------------------------------------------------------------------------
     # #add cards to inventory ✅
     # #-----------------------------------------------------------------------------------------------------------------
-
-    # #tokenType, nbJewels, nbPrestige, nbCrowns
-    # carte0 = JewelCard(BLUE_SAPPHIRE, 2, 2, 0, ["None"])
-    # carte1 = JewelCard(RUBY, 2, 2, 2)
-    # carte2 = JewelCard(RUBY, 2, 3, 1)
-    # carte3 = JewelCard(RUBY,6,5,3)
-    #
-    # cards = [carte0,carte1,carte2,carte3]
-
-    #probably need this later in some other file, mb even in this one
-    gemCards = [NONE, BLUE_SAPPHIRE, DIAMOND, EMERALD, RUBY, OBSIDIAN]
-
-    #dict init
-    jewel_cards_dict = { gem: [] for gem in gemCards}
-
-    # #auto fetch + add card to dict
-    # for card in cards:
-    #     jewel_cards_dict[card.tokenType].append(card)
-
-    inv = Inventory(nbPrivileges= 0, jewelCards = jewel_cards_dict)
 
     #-------------------------------------------------------------------------------------------------------------------
     #check for errors ✅
@@ -101,11 +88,11 @@ if __name__ == "__main__":
     # #-----------------------------------------------------------------------------------------------------------------
     # # checking inventory.addJewelCard() & ability translation
     # #-----------------------------------------------------------------------------------------------------------------
-    print("Inventory before adding anything :")
-    print(inv)
-    inv.addJewelCard(Card(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0, nbPrestige=0, abilities=["PlayAgain", "ChooseGemstone"]))
-    print("Inventory after adding this jewel card:")
-    print(inv)
+    # print("Inventory before adding anything :")
+    # print(inv)
+    # inv.addJewelCard(Card(tokenType = BLUE_SAPPHIRE, nbJewel= 1, nbCrowns=0, nbPrestige=0, abilities=["PlayAgain", "ChooseGemstone"]))
+    # print("Inventory after adding this jewel card:")
+    # print(inv)
 
     # #-----------------------------------------------------------------------------------------------------------------
     # # checking inventory.buyJewelCard()
