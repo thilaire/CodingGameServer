@@ -31,11 +31,14 @@ Copyright 2021 T. Hilaire
 */
 
 
-#include "clientAPI.h"
 #include <stdio.h>
+#include <string.h>
+#include "clientAPI.h"
 #include "labyrinthAPI.h"
 
-unsigned char nX, nY; 	/* store lab size, used for getLabyrinth (the user do not have to pass them once again */
+
+
+unsigned char nX, nY; 	/* store lab size (so that the user does not have to pass them once again */
 
 
 /* -------------------------------------
@@ -45,8 +48,7 @@ unsigned char nX, nY; 	/* store lab size, used for getLabyrinth (the user do not
  *
  * Parameters:
  * - serverName: (string) address of the server
- *   (it could be "localhost" if the server is run in local,
- *   or "pc4521.polytech.upmc.fr" if the server runs there)
+ *   (it should be "vps-1a2cee88.vps.ovh.net" if the server runs there)
  * - port: (int) port number used for the connection
  * - name: (string) name of this bot (max 20 characters)
  */
@@ -71,17 +73,17 @@ void closeConnection()
 
 
 /* ------------------------------------------------------------------------------
- * Wait for a Game, and retrieve its name and first data (array of the labyrinth
+ * Wait for a Game, and retrieve its name and first data (size of the labyrinth)
  *
  * Parameters:
  * - gameType: string (max 200 characters) type of the game we want to play (empty string for regular game)
  * - labyrinthName: string (max 50 characters), corresponds to the game name (filled by the function)
- * - sizeX, sizeY: sizes of the labyrinth
+ * - sizeX, sizeY: sizes of the labyrinth (filled by the function)
  *
- * gameType is a string like "GAME key1=value1 key2=value1 ..."
+ * gameType is a string like "<GAME> key1=value1 key2=value1 ..."
  * - It indicates the type of the game you want to plys
  *   it could be "TRAINING <BOT>" to play against bot <BOT>
- *   or "TOURNAMENT xxxx" to join the tournament xxxx
+ *   or "TOURNAMENT <xxxx"> to join the tournament <xxxx>
  *   or "" (empty string) to wait for an opponent (decided by the server)
  * - key=value pairs are used for options (each training player has its own options)
  *   invalid keys are ignored, invalid values leads to error
@@ -89,11 +91,13 @@ void closeConnection()
  *   - timeout: allows an define the timeout when training (in seconds)
  *   - 'seed': allows to set the seed of the random generator
  *   - 'start': allows to set who starts ('0' or '1')
+ *   - 'margin': if set to 1, then add spaces between lines and columns when the labyrinth is displayed
+ *   - 'display': if equal to "display", then the labyrinth is not displayed, but instead its data is (5 numbers per tile)
  *
  * The bot name <BOT> could be:
- * - "PLAY_RANDOM" for a player that make random (but legal) moves
- * - "ASTAR" for a
- *
+ * - "DONTMOVE" for a player that insert randomly the extra tile and don't move
+ * - "RANDOM" for a player that insert randomly the extra tile and move to the next item if reachable
+ * - "BASIC" for a player that search for the best insertion in order to move to the next item
  *
  */
 void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int* sizeY)
@@ -114,33 +118,19 @@ void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int
 
 /* -------------------------------------
  * Get the labyrinth and tell who starts
- * It fills the char* lab with the data of the labyrinth
- * 1 if there's a wall, 0 for nothing
+ * It fills the char* labyData with the data of the labyrinth
  *
  * Parameters:
- * - lab: the array of labyrinth (the pointer data MUST HAVE allocated with the right size !!)
- * - tile North, East, South, West and Item : extern tile (to be later inserted)
+ * - labyData: thedata of labyrinth (the pointer data MUST HAVE allocated with at least (sizeX*sizeY+5)*11 characters)
+ * The data is stored in a string and is composed of sizeX*sizeY tiles, plus the extra tile.
+ * Each tile is composed by 5 integers, one of each wall on North, East, South and West (1 if there is a wall, 0 if none), plus the item number (0 if no item)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
-int getLabyrinth(int* lab, int* tileN, int* tileE, int* tileS, int* tileW, int* tileItem)
+ int getLabyrinth(char* labyData)
 {
-	char data[4096];
 	/* wait for a game */
-	int ret = getGameData( __FUNCTION__, data, 4096);
-
-	/* copy the data in the array lab
-	 * the datas is a readable string of char '0' and '1'
-	 * */
-	char *p = data;
-	int nbchar;
-	for( int i=0; i<nX*nY; i++) {
-		sscanf(p, "%d %d %d %d %d %n", lab, lab+1, lab+2, lab+3, lab+4, &nbchar);
-		p += nbchar;
-		lab += 5;
-	}
-
-	sscanf(p, "%d %d %d %d %d", tileN, tileE, tileS, tileW, tileItem);
+	int ret = getGameData( __FUNCTION__, labyData, (nX*nY+5)*11);
     return ret;
 }
 
@@ -150,27 +140,27 @@ int getLabyrinth(int* lab, int* tileN, int* tileE, int* tileS, int* tileW, int* 
  * Get the opponent move
  *
  * Parameters:
- * - move: a t_move variable, filled by the function
+ * - move: a string describing the move - filled by the function
+ * - msg: a message (string) filed by the function
+ *      -> returns the tile (5 integers) and the next item to be reached
+ *      -> in case of winning/losing move, it contains a message explaining why the game ends
+ * these two strings must be allocated accordingly
+ *
  * Returns:
  * - NORMAL_MOVE for normal move,
  * - WINNING_MOVE for a winning move, -1
  * - LOOSING_MOVE for a losing (or illegal) move
  * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
-t_return_code getMove(t_move *move)
+t_return_code getMove(char* move, char* msg)
 {
-    char data[MAX_GET_MOVE];
-    char msg[MAX_MESSAGE];
-
+	char tmpMove[MAX_GET_MOVE];
+	char tmpMsg[MAX_MESSAGE];
     /* get the move */
-    int ret = getCGSMove(__FUNCTION__, data, msg);
-
-	/* extract move and extra data*/
-	sscanf( data, "%d %d %d %d %d ", (int*) &(move->insert), &(move->number), &(move->rotation),
-			&(move->x), &(move->y));
-    sscanf( msg, "%d %d %d %d %d %d", &(move->tileN), &(move->tileE), &(move->tileS), &(move->tileW), &(move->tileItem),
-			&(move->nextItem));
-	dispDebug(__FUNCTION__,2,"move type:%d, ret:%d",move->insert, ret);
+    int ret = getCGSMove(__FUNCTION__, tmpMove, tmpMsg);
+	/* copy the answers */
+	strcpy(move, tmpMove);
+	strcpy(msg, tmpMsg);
 	return ret;
 }
 
@@ -180,21 +170,25 @@ t_return_code getMove(t_move *move)
  * Send a move
  *
  * Parameters:
- * - move: a move
+ * - move: a string describing the move
+ * - msg: a message (string) filed by the function
+ *      -> returns the tile (5 integers) and the next item to be reached
+ *      -> in case of winning/losing move, it contains a message explaining why the game ends
+ * these last string must be allocated accordingly
  *
- * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
+ * Returns a return_code
+ * NORMAL_MOVE for normal move,
+ * WINNING_MOVE for a winning move, -1
+ * LOSING_MOVE for a losing (or illegal) move
+ * this code is relative to your program (WINNING_MOVE if YOU win, ...)
  */
-t_return_code sendMove(t_move* move)
+t_return_code sendMove(const char* move, char* msg)
 {
-    /* build the string move */
-    char data[128];
-    char answer[MAX_MESSAGE];
-    sprintf( data, "%d %d %d %d %d", move->insert, move->number, move->rotation, move->x, move->y);
-// dispDebug(__FUNCTION__,"move send : %s",data);
-    /* send the move */
-	int ret = sendCGSMove( __FUNCTION__, data, answer);
-	/* get the new tile */
-	sscanf(answer, "%d %d %d %d %d %d", &(move->tileN), &(move->tileE), &(move->tileS), &(move->tileW), &(move->tileItem), &(move->nextItem));
+	char tmpMsg[MAX_MESSAGE];
+     /* send the move */
+	int ret = sendCGSMove( __FUNCTION__, move, tmpMsg);
+	/* copy the answer */
+	strcpy(msg, tmpMsg);
 	return ret;
 }
 

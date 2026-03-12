@@ -36,36 +36,6 @@ Copyright 2021 T. Hilaire
 #include "clientAPI.h"
 
 
-typedef enum
-{
-	INSERT_LINE_LEFT = 	0,
-	INSERT_LINE_RIGHT = 1,
-	INSERT_COLUMN_TOP = 2,
-	INSERT_COLUMN_BOTTOM = 3
-} t_insertion;
-
-
-/*
-A move is a composed of:
-- a type of insertion (that can be INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_UP, or INSERT_COLUMN_DOWN)
-- the line or column number for the insertion
-- the rotation of the tile to be inserted (from 0 to 3 clockwise quarters)
-- a tuple (x,y) that indicates where to move
-- info on the new tile (if it has a wall on North, East, South, West, and it's item number)
-- next item for the player who has played
-*/
-typedef struct
-{
-	t_insertion insert; 	/* type of the insertion */
-	int number;				/* column or line number */
-	int rotation;
-	int x, y; 				/* coordinate where to move */
-	int tileN, tileE, tileS, tileW, tileItem;	/* new tile (set by playMove or getMove) */
-	int nextItem;			/* next item for the player (set by playMove or getMove) */
-} t_move;
-
-
-
 /* -------------------------------------
  * Initialize connection with the server
  * Quit the program if the connection to the server 
@@ -73,8 +43,7 @@ typedef struct
  *
  * Parameters:
  * - serverName: (string) address of the server 
- *   (it could be "localhost" if the server is run in local, 
- *   or "pc4521.polytech.upmc.fr" if the server runs there)
+ *   (it should be "vps-1a2cee88.vps.ovh.net" if the server runs there)
  * - port: (int) port number used for the connection
  * - name: (string) name of this bot (max 20 characters)
  */
@@ -91,17 +60,17 @@ void closeConnection();
 
 
 /* ------------------------------------------------------------------------------
- * Wait for a Game, and retrieve its name and first data (array of the labyrinth
+ * Wait for a Game, and retrieve its name and first data (size of the labyrinth)
  *
  * Parameters:
  * - gameType: string (max 200 characters) type of the game we want to play (empty string for regular game)
  * - labyrinthName: string (max 50 characters), corresponds to the game name (filled by the function)
- * - sizeX, sizeY: sizes of the labyrinth
+ * - sizeX, sizeY: sizes of the labyrinth (filled by the function)
  *
- * gameType is a string like "GAME key1=value1 key2=value1 ..."
+ * gameType is a string like "<GAME> key1=value1 key2=value1 ..."
  * - It indicates the type of the game you want to plys
  *   it could be "TRAINING <BOT>" to play against bot <BOT>
- *   or "TOURNAMENT xxxx" to join the tournament xxxx
+ *   or "TOURNAMENT <xxxx"> to join the tournament <xxxx>
  *   or "" (empty string) to wait for an opponent (decided by the server)
  * - key=value pairs are used for options (each training player has its own options)
  *   invalid keys are ignored, invalid values leads to error
@@ -109,9 +78,13 @@ void closeConnection();
  *   - timeout: allows an define the timeout when training (in seconds)
  *   - 'seed': allows to set the seed of the random generator
  *   - 'start': allows to set who starts ('0' or '1')
+ *   - 'margin': if set to 1, then add spaces between lines and columns when the labyrinth is displayed
+ *   - 'display': if equal to "display", then the labyrinth is not displayed, but instead its data is (5 numbers per tile)
  *
  * The bot name <BOT> could be:
- * - "PLAY_RANDOM" for a player that make random (but legal) moves
+ * - "DONTMOVE" for a player that insert randomly the extra tile and don't move
+ * - "RANDOM" for a player that insert randomly the extra tile and move to the next item if reachable
+ * - "BASIC" for a player that search for the best insertion in order to move to the next item
  *
  */
 void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int* sizeY);
@@ -119,16 +92,16 @@ void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int
 
 /* -------------------------------------
  * Get the labyrinth and tell who starts
- * It fills the char* lab with the data of the labyrinth
- * 1 if there's a wall, 0 for nothing
+ * It fills the char* labyData with the data of the labyrinth
  *
  * Parameters:
- * - lab: the array of labyrinth (the pointer data MUST HAVE allocated with the right size !!)
- * - tile North, East, South, West and Item : extern tile (to be later inserted)
+ * - labyData: the data of labyrinth (the pointer data MUST HAVE allocated with at least (sizeX*sizeY+5)*11 characters)
+ * The data is stored in a string and is composed of sizeX*sizeY tiles, plus the extra tile.
+ * Each tile is composed by 5 integers, one of each wall on North, East, South and West (1 if there is a wall, 0 if none), plus the item number (0 if no item)
  *
  * Returns 0 if you begin, or 1 if the opponent begins
  */
- int getLabyrinth(int* lab, int* tileN, int* tileE, int* tileS, int* tileW, int* tileItem);
+ int getLabyrinth(char* labyData);
 
 
 
@@ -136,14 +109,19 @@ void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int
  * Get the opponent move
  *
  * Parameters:
- * - move: a t_move variable, filled by the function
+ * - move: a string describing the move - filled by the function
+ * - msg: a message (string) filed by the function
+ *      -> returns the tile (5 integers) and the next item to be reached
+ *      -> in case of winning/losing move, it contains a message explaining why the game ends
+ * these two strings must be allocated accordingly
+ *
  * Returns:
  * - NORMAL_MOVE for normal move,
  * - WINNING_MOVE for a winning move, -1
  * - LOOSING_MOVE for a losing (or illegal) move
  * - this code is relative to the opponent (WINNING_MOVE if HE wins, ...)
  */
- t_return_code getMove(t_move* move);
+ t_return_code getMove(char* move, char* msg);
 
 
 
@@ -151,15 +129,19 @@ void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int
  * Send a move
  *
  * Parameters:
- * - move: a move
+ * - move: a string describing the move
+ * - msg: a message (string) filed by the function
+ *      -> returns the tile (5 integers) and the next item to be reached
+ *      -> in case of winning/losing move, it contains a message explaining why the game ends
+ * these last string must be allocated accordingly
  *
  * Returns a return_code
  * NORMAL_MOVE for normal move,
  * WINNING_MOVE for a winning move, -1
  * LOSING_MOVE for a losing (or illegal) move
- * this code is relative to your programm (WINNING_MOVE if YOU win, ...)
+ * this code is relative to your program (WINNING_MOVE if YOU win, ...)
  */
-t_return_code sendMove(t_move* move);
+t_return_code sendMove(const char* move, char* msg);
 
 
 

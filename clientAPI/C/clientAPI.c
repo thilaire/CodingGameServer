@@ -17,7 +17,6 @@ File: clientAPI.c
 Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 
-/* TODO: allows to try to connect to a list of servers? Or just returns 0 if the connection fails */
 
 
 #include <stdio.h>
@@ -112,7 +111,7 @@ size_t read_inbuf(const char *fct, char *buf, size_t nbuf) {
 		dispDebug (fct, 3, "prepare to receive a message of length :%lu",length);
 	}
 	size_t mini = length > nbuf ? nbuf: length;
-	int read_length = 0;
+	size_t read_length = 0;
 	bzero(buf, nbuf);
 	do {
 		r = read(sockfd, buf + read_length, mini-read_length);
@@ -367,7 +366,7 @@ t_return_code getCGSMove(const char* fct, char* move ,char* msg) {
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove( const char* fct, char* move, char* answer) {
+t_return_code sendCGSMove( const char* fct, const char* move, char* answer) {
 	t_return_code result;
 	sendString(fct, "PLAY_MOVE %s", move);
 

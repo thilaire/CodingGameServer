@@ -26,7 +26,7 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 
 
 #define MAX_GET_MOVE 128	    	/* maximum size of the string representing a move */
-#define MAX_MESSAGE 1024			/* maximum size of the message move */
+#define MAX_MESSAGE 200			/* maximum size of the message move */
 
 
 /* defines a return code, used for playMove and getMove */
@@ -148,7 +148,7 @@ t_return_code getCGSMove(const char* fct, char* move ,char* msg);
  *
  * Returns a return_code (0 for normal move, 1 for a winning move, -1 for a losing (or illegal) move
  */
-t_return_code sendCGSMove(const char* fct, char* move, char* answer);
+t_return_code sendCGSMove(const char* fct, const char* move, char* answer);
 
 
 
