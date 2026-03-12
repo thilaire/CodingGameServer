@@ -87,7 +87,7 @@ class LabyrinthClassic(Game):
 		self._seed = self._setseed(options)
 
 		# random Labyrinth
-		self._L = 2 * randint(3, 6) + 1
+		self._L = 2 * randint(6, 10) + 1
 		self._H = 2 * randint(3, 6) + 1
 		if 'mini' in options:
 			self._L = self._H = 7
