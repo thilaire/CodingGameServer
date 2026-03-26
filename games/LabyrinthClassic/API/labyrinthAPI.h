@@ -85,6 +85,7 @@ void closeConnection();
  * - "DONTMOVE" for a player that insert randomly the extra tile and don't move
  * - "RANDOM" for a player that insert randomly the extra tile and move to the next item if reachable
  * - "BASIC" for a player that search for the best insertion in order to move to the next item
+ * - "REGULAR" for a player that plays as BASIC, but also tries to get as much items as possible in one move
  *
  */
 void waitForLabyrinth(const char* gameType, char* labyrinthName, int* sizeX, int* sizeY);
