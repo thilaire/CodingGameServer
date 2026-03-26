@@ -40,6 +40,7 @@ from copy import deepcopy, copy
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
+from .Regular import RegularPlayer
 from .Constants import INSERT_LINE_LEFT, INSERT_LINE_RIGHT, INSERT_COLUMN_TOP, INSERT_COLUMN_BOTTOM
 from .Constants import MAX_ITEM, BACKPLAYER, ITEMCHAR, OPPOSITE
 from .Basic import BasicPlayer
@@ -50,7 +51,7 @@ from .Laby import Tile, Laby
 
 logger = getLogger("Labyclassic")  # general logger ('root')
 
-regdd = compile(r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)")  # regex to parse a "%d %d %d %d %d" string
+regdd = compile(r"(\d+)\s+(\d+)\s+(\d+)\s+((\d+)\s+(\d+)){1,10}")  # regex to parse a "%d %d %d %d %d" string
 
 
 class LabyrinthClassic(Game):
@@ -73,7 +74,7 @@ class LabyrinthClassic(Game):
 	"""
 
 	# dictionary of the possible training Players (non-regular players)
-	type_dict = {"RANDOM": PlayRandomPlayer, "BASIC": BasicPlayer, "DONTMOVE": PlayDontMove}
+	type_dict = {"RANDOM": PlayRandomPlayer, "BASIC": BasicPlayer, "DONTMOVE": PlayDontMove, "REGULAR": RegularPlayer}
 
 	def __init__(self, player1, player2, **options):
 		"""
@@ -223,16 +224,14 @@ class LabyrinthClassic(Game):
 		- msg: a message to send to the player, with the new extra tile (N, E, S, W, item) and the new item chased by the player
 		"""
 		# parse the move
-		result = regdd.match(move)
-		# check if the data receive is valid
-		if result is None:
-			return LOSING_MOVE, "The move is not in correct form ('%d %d %d %d %d') !"
-		# get the type and the value
-		insert = int(result.group(1))
-		number = int(result.group(2))
-		rotation = int(result.group(3))
-		x = int(result.group(4))
-		y = int(result.group(5))
+		try:
+			res = list(map(int,move.split()))
+			# get the type and the value
+			insert, number, rotation = res[:3]
+			xy = list(zip(res[3::2], res[4::2]))
+		except:
+			return LOSING_MOVE, "The move is not in correct form ('%d %d %d (%d %d)*{1,10}') !"
+
 		# check the possible values
 		if not (INSERT_LINE_LEFT <= insert <= INSERT_COLUMN_BOTTOM):
 			return LOSING_MOVE, "The insertion is not valid !"
@@ -244,34 +243,40 @@ class LabyrinthClassic(Game):
 			return LOSING_MOVE, "The column/line number must be odd !"
 		if not (0 <= rotation <= 3):
 			return LOSING_MOVE, "The rotation is not valid !"
-		if not (0 <= x < self.L):
-			return LOSING_MOVE, "The position x is not valid !"
-		if not (0 <= y < self.H):
-			return LOSING_MOVE, "The position y is not valid !"
 		if self._lastInsert == (OPPOSITE[insert], number):
 			return LOSING_MOVE, "The extra tile cannot be pushed back at the same place as previous move !"
+		if len(xy) > 10:
+			return LOSING_MOVE, "Cannot give more than 10 positions"
+		for x, y in xy:
+			if not (0 <= x < self.L):
+				return LOSING_MOVE, "One of the position x is not valid !"
+			if not (0 <= y < self.H):
+				return LOSING_MOVE, "One of the position y is not valid !"
 		# rotate the line/column and insert the rotated extra tile
 		self._lab.extraTile.rotate(rotation)
 		inserted = copy(self._lab.extraTile)
 		self._lab.insertExtraTile(insert, number, self._playerPos)
 
-		# move the player
+		# move the player to the different positions (and take items if possible)
 		self._lab.reachable(*self._playerPos[self._whoPlays])
-		if not self._lab[x, y].reachable:
-			return LOSING_MOVE, "The position %d,%d is not reachable !" % (x, y)
-		else:
-			self._playerPos[self._whoPlays] = x, y
-
-		# check if the item is found
-		if self._lab[x, y].item == self._playerItem[self._whoPlays]:
-			# found !
-			self._playerItem[self._whoPlays] += -1 if self._whoPlays else +1
-			self.sendComment(self.playerWhoPlays, "I've found a new item!")
-			# is it the last one ?
-			if self._playerItem[self._whoPlays] == (0 if self._whoPlays else MAX_ITEM+1):
-				return WINNING_MOVE, "The last item has been reached!"
+		for x, y in xy:
+			# move to x,y
+			if not self._lab[x, y].reachable:
+				return LOSING_MOVE, "The position %d,%d is not reachable !" % (x, y)
 			else:
-				self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
+				self._playerPos[self._whoPlays] = x,y
+
+			# check if the item is found and take it
+			if self._lab[x, y].item == self._playerItem[self._whoPlays]:
+				# found !
+				self._playerItem[self._whoPlays] += -1 if self._whoPlays else +1
+				self.sendComment(self.playerWhoPlays, "I've found a new item!")
+				# is it the last one ?
+				if self._playerItem[self._whoPlays] == (0 if self._whoPlays else MAX_ITEM+1):
+					return WINNING_MOVE, "The last item has been reached!"
+				else:
+					self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
+
 
 		# then return the new extra tile and numbering of the next item of the player
 		self._lastInsert = insert, number
@@ -279,7 +284,7 @@ class LabyrinthClassic(Game):
 			'insert': insert,
 			'number': number,
 			'inserted': inserted.toType(),
-			'rotation' : rotation,
+			'rotation': rotation,
 			'playerPos': self._playerPos[:],
 			'itemPos': self._playerItem[:],
 		})
