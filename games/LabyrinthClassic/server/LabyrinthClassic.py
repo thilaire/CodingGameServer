@@ -37,6 +37,7 @@ from ansi2html import Ansi2HTMLConverter
 from colorama import Fore, Back
 from logging import getLogger
 from copy import deepcopy, copy
+from itertools import pairwise
 
 from CGSserver.Constants import NORMAL_MOVE, WINNING_MOVE, LOSING_MOVE
 from CGSserver.Game import Game
@@ -46,7 +47,7 @@ from .Constants import MAX_ITEM, BACKPLAYER, ITEMCHAR, OPPOSITE
 from .Basic import BasicPlayer
 from .PlayRandomPlayer import PlayRandomPlayer
 from .DontMove import PlayDontMove
-from .Laby import Tile, Laby
+from .Laby import Tile, Laby, L1dist
 
 
 logger = getLogger("Labyclassic")  # general logger ('root')
@@ -277,6 +278,10 @@ class LabyrinthClassic(Game):
 				else:
 					self.sendComment(self.playerWhoPlays, "My next item is #%d" % self._playerItem[self._whoPlays])
 
+		# check the total distance
+		dist = sum(L1dist(a, b) for a, b in pairwise(xy))
+		if dist > 10:
+			return LOSING_MOVE, "The distance is more than 10!"
 
 		# then return the new extra tile and numbering of the next item of the player
 		self._lastInsert = insert, number

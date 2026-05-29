@@ -25,8 +25,7 @@ from math import sqrt
 from CGSserver.Player import TrainingPlayer
 from random import choice, randint
 from .Constants import INSERT_COLUMN_BOTTOM, INSERT_COLUMN_TOP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT, OPPOSITE
-
-
+from .Laby import L1dist
 
 
 class BasicPlayer(TrainingPlayer):
@@ -59,7 +58,7 @@ class BasicPlayer(TrainingPlayer):
 		nir = list(product(ni, range(0, 4)))
 		shuffle(nir)
 
-		# iter over all the possinilities
+		# iter over all the possibilities
 		for (number, insert), rotate in nir:
 			# copy the labyrinth and play the move
 			lab = deepcopy(self.game._lab)
@@ -74,7 +73,7 @@ class BasicPlayer(TrainingPlayer):
 
 			#try to reach the next item
 			lab.reachable(*playerPos[self.game._whoPlays])
-			if lab[xitem, yitem].reachable:
+			if lab[xitem, yitem].reachable and L1dist((xitem, yitem), playerPos[self.game._whoPlays]) < 10:
 				self.game.sendComment(self, "Yet another item !")
 				return "%d %d %d %d %d" % (insert, number, rotate, xitem, yitem)
 

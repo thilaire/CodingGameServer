@@ -25,6 +25,7 @@ from math import sqrt
 from CGSserver.Player import TrainingPlayer
 from random import choice, randint
 from .Constants import INSERT_COLUMN_BOTTOM, INSERT_COLUMN_TOP, INSERT_LINE_LEFT, INSERT_LINE_RIGHT, OPPOSITE, MAX_ITEM
+from .Laby import L1dist
 
 
 class RegularPlayer(TrainingPlayer):
@@ -68,6 +69,9 @@ class RegularPlayer(TrainingPlayer):
 
 			nbI = 0
 			lpos = ""
+			l1d = 0
+			lab.reachable(*playerPos[self.game._whoPlays])
+			lastPos = playerPos[self.game._whoPlays]
 			while True:
 				# search for the next item
 				nextItem = self.game._playerItem[self.game._whoPlays] + (-nbI if self.game._whoPlays else +nbI)
@@ -78,10 +82,12 @@ class RegularPlayer(TrainingPlayer):
 				xitem, yitem = itemPos[0] if itemPos else playerPos[self.game._whoPlays]
 
 				#try to reach the next item
-				lab.reachable(*playerPos[self.game._whoPlays])
-				if lab[xitem, yitem].reachable:
+
+				if lab[xitem, yitem].reachable and (l1d + L1dist((xitem, yitem), lastPos)) < 10:
 					nbI += 1
+					l1d += L1dist((xitem, yitem), playerPos[self.game._whoPlays])
 					lpos += "%d %d " % (xitem, yitem)
+					lastPos = xitem, yitem
 					if nbI > 9:
 						break
 				else:

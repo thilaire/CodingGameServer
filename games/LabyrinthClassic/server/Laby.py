@@ -35,6 +35,12 @@ TYPE = {(True, False, True, False): ('I', 0), (False, True, False, True): ('I', 
 		(False, False, True, False): ('T', 2), (False, False, False, True): ('T', 3)
 }
 
+
+def L1dist(xy1, xy2):
+	"""return the L1 distance between two points"""
+	return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+
 @dataclass
 class Tile:
 	"""simple class for a tile"""
