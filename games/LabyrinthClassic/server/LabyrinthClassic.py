@@ -104,6 +104,7 @@ class LabyrinthClassic(Game):
 
 		# item
 		self._playerItem = [1, MAX_ITEM]
+		self._nbMoves = 0
 
 		# last move
 		self._lastInsert = 0, 0
@@ -232,6 +233,11 @@ class LabyrinthClassic(Game):
 			xy = list(zip(res[3::2], res[4::2]))
 		except:
 			return LOSING_MOVE, "The move is not in correct form ('%d %d %d (%d %d)*{1,10}') !"
+
+		self._nbMoves += 1
+		if self._nbMoves > 200:
+			if self._playerItem[0] -1 > 24 - self._playerItem[1]:
+				return LOSING_MOVE if self._whoPlays ==1 else WINNING_MOVE, "More than 200 moves!"
 
 		# check the possible values
 		if not (INSERT_LINE_LEFT <= insert <= INSERT_COLUMN_BOTTOM):
