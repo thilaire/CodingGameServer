@@ -235,7 +235,7 @@ class LabyrinthClassic(Game):
 			return LOSING_MOVE, "The move is not in correct form ('%d %d %d (%d %d)*{1,10}') !"
 
 		self._nbMoves += 1
-		if self._nbMoves > 200:
+		if self._nbMoves > 500:
 			if self._playerItem[0] -1 > 24 - self._playerItem[1]:
 				return LOSING_MOVE if self._whoPlays ==1 else WINNING_MOVE, "More than 200 moves!"
 
